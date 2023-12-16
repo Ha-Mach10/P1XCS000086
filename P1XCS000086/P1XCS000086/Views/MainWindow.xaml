@@ -3,8 +3,8 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:core="clr-namespace:P1XCS000086.Core;assembly=P1XCS000086.Core"
-	xmlns:prism="http://prismlibrary.com/"
 	xmlns:mdMetro="http://materialdesigninxaml.net/winfx/xaml/themes"
+	xmlns:prism="http://prismlibrary.com/"
 	Title="{Binding Title}"
 	Width="1000"
 	Height="1000"
@@ -50,8 +50,8 @@
 							</TabItem.Header>
 							<Grid>
 								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="Auto"/>
-									<ColumnDefinition/>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition />
 								</Grid.ColumnDefinitions>
 								<GroupBox Width="320" Padding="8">
 									<GroupBox.Header>
@@ -92,38 +92,38 @@
 											</GroupBox.Header>
 											<VirtualizingStackPanel Margin="8">
 												<TextBlock Text="開発名称" />
-												<TextBox Text="" Margin="0,8,0,8"/>
+												<TextBox Margin="0,8,0,8" Text="" />
 												<TextBlock Text="使用用途" />
-												<VirtualizingStackPanel Orientation="Horizontal" Margin="0,8,0,0">
-													<TextBlock Text="自動"/>
-													<ToggleButton Style="{StaticResource MaterialDesignSwitchLightToggleButton}" Margin="12,0,12,0"/>
-													<TextBlock Text="手動"/>
+												<VirtualizingStackPanel Margin="0,8,0,0" Orientation="Horizontal">
+													<TextBlock Text="自動" />
+													<ToggleButton Margin="12,0,12,0" Style="{StaticResource MaterialDesignSwitchLightToggleButton}" />
+													<TextBlock Text="手動" />
 												</VirtualizingStackPanel>
 												<Grid Margin="0,8,0,8">
 													<Grid.ColumnDefinitions>
-														<ColumnDefinition/>
-														<ColumnDefinition Width="8"/>
-														<ColumnDefinition/>
+														<ColumnDefinition />
+														<ColumnDefinition Width="8" />
+														<ColumnDefinition />
 													</Grid.ColumnDefinitions>
-													<ComboBox/>
-													<ComboBox Grid.Column="2"/>
+													<ComboBox />
+													<ComboBox Grid.Column="2" />
 												</Grid>
 												<TextBlock Text="流用番号" />
-												<TextBox Text="" Margin="0,8,0,8"/>
+												<TextBox Margin="0,8,0,8" Text="" />
 												<TextBlock Text="旧番号" />
-												<TextBox Text="" Margin="0,8,0,8"/>
+												<TextBox Margin="0,8,0,8" Text="" />
 												<TextBlock Text="新番号" />
-												<TextBox Text="" Margin="0,8,0,8"/>
+												<TextBox Margin="0,8,0,8" Text="" />
 												<TextBlock Text="説明" />
-												<RichTextBox Height="80" Margin="0,8,0,8"/>
+												<RichTextBox Height="80" Margin="0,8,0,8" />
 												<TextBlock Text="摘要" />
-												<RichTextBox Height="120" Margin="0,8,0,8"/>
-												<Button Content="登録"/>
+												<RichTextBox Height="120" Margin="0,8,0,8" />
+												<Button Content="登録" />
 											</VirtualizingStackPanel>
 										</GroupBox>
 									</Grid>
 								</GroupBox>
-								<DataGrid Grid.Column="1"/>
+								<DataGrid Grid.Column="1" />
 							</Grid>
 						</TabItem>
 						<TabItem Style="{StaticResource MahApps.Styles.TabItem}">
@@ -135,6 +135,46 @@
 							<TabItem.Header>
 								<TextBlock Margin="8,0,8,0" Text="データベース一覧" />
 							</TabItem.Header>
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition />
+								</Grid.ColumnDefinitions>
+								<StackPanel>
+									<StackPanel Margin="8" Orientation="Horizontal">
+										<RadioButton Content="追加" />
+										<RadioButton Content="編集" Margin="16,0,16,0"/>
+										<RadioButton Content="削除" />
+									</StackPanel>
+									<TextBlock Text="テーブル選択" Margin="0,8,0,8"/>
+									<ComboBox />
+									<GroupBox Margin="0,8,0,0">
+										<GroupBox.Header>
+											<TextBlock Text="選択" />
+										</GroupBox.Header>
+										<ItemsControl ItemsSource="{Binding}">
+											<ItemsControl.ItemsPanel>
+												<ItemsPanelTemplate>
+													<VirtualizingStackPanel/>
+												</ItemsPanelTemplate>
+											</ItemsControl.ItemsPanel>
+											<ItemsControl.ItemTemplate>
+												<DataTemplate>
+													<Grid>
+														<Grid.ColumnDefinitions>
+															<ColumnDefinition Width="100"/>
+															<ColumnDefinition Width="120"/>
+														</Grid.ColumnDefinitions>
+														<TextBlock Text="{Binding}"/>
+														<TextBox Grid.Column="1" Text="{Binding}"/>
+													</Grid>
+												</DataTemplate>
+											</ItemsControl.ItemTemplate>
+										</ItemsControl>
+									</GroupBox>
+									<DataGrid/>
+								</StackPanel>
+							</Grid>
 						</TabItem>
 					</TabControl>
 				</Grid>
