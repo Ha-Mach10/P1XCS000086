@@ -133,47 +133,77 @@
 						</TabItem>
 						<TabItem Style="{StaticResource MahApps.Styles.TabItem}">
 							<TabItem.Header>
-								<TextBlock Margin="8,0,8,0" Text="データベース一覧" />
+								<TextBlock Margin="8,0,8,0" Text="マスタ一覧" />
 							</TabItem.Header>
 							<Grid>
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
 									<ColumnDefinition />
 								</Grid.ColumnDefinitions>
 								<StackPanel>
-									<StackPanel Margin="8" Orientation="Horizontal">
-										<RadioButton Content="追加" />
-										<RadioButton Content="編集" Margin="16,0,16,0"/>
-										<RadioButton Content="削除" />
-									</StackPanel>
-									<TextBlock Text="テーブル選択" Margin="0,8,0,8"/>
-									<ComboBox />
-									<GroupBox Margin="0,8,0,0">
+									<GroupBox Width="200">
 										<GroupBox.Header>
-											<TextBlock Text="選択" />
+											<TextBlock Text="データベース接続" />
 										</GroupBox.Header>
-										<ItemsControl ItemsSource="{Binding}">
-											<ItemsControl.ItemsPanel>
-												<ItemsPanelTemplate>
-													<VirtualizingStackPanel/>
-												</ItemsPanelTemplate>
-											</ItemsControl.ItemsPanel>
-											<ItemsControl.ItemTemplate>
-												<DataTemplate>
-													<Grid>
-														<Grid.ColumnDefinitions>
-															<ColumnDefinition Width="100"/>
-															<ColumnDefinition Width="120"/>
-														</Grid.ColumnDefinitions>
-														<TextBlock Text="{Binding}"/>
-														<TextBox Grid.Column="1" Text="{Binding}"/>
-													</Grid>
-												</DataTemplate>
-											</ItemsControl.ItemTemplate>
-										</ItemsControl>
+										<StackPanel Margin="8">
+											<TextBlock Text="サーバー名" />
+											<TextBox Margin="0,8,0,8" Text="" />
+											<TextBlock Text="ユーザー名" />
+											<TextBox Margin="0,8,0,8" Text="" />
+											<TextBlock Text="データベース名" />
+											<TextBox Margin="0,8,0,8" Text="" />
+											<TextBlock Text="パスワード名" />
+											<TextBox Margin="0,8,0,8" Text="" />
+											<CheckBox Margin="0,8,0,8">
+												<CheckBox.Content>
+													<TextBlock Foreground="White" Text="Persist Security Info" />
+												</CheckBox.Content>
+											</CheckBox>
+											<Button Margin="0,8,0,56" Content="接続テスト" />
+											<mdMetro:Snackbar />
+										</StackPanel>
 									</GroupBox>
-									<DataGrid/>
 								</StackPanel>
+								<GroupBox Grid.Column="1" Padding="8">
+									<GroupBox.Header>
+										<TextBlock Text="マスタ" />
+									</GroupBox.Header>
+									<StackPanel Grid.Column="1">
+										<StackPanel Orientation="Horizontal">
+											<RadioButton Content="追加" />
+											<RadioButton Margin="16,0,16,0" Content="編集" />
+											<RadioButton Content="削除" />
+										</StackPanel>
+										<TextBlock Margin="0,8,0,8" Text="テーブル選択" />
+										<ComboBox />
+										<GroupBox Margin="0,8,0,0">
+											<GroupBox.Header>
+												<TextBlock Text="選択" />
+											</GroupBox.Header>
+											<ItemsControl ItemsSource="{Binding}">
+												<ItemsControl.ItemsPanel>
+													<ItemsPanelTemplate>
+														<VirtualizingStackPanel />
+													</ItemsPanelTemplate>
+												</ItemsControl.ItemsPanel>
+												<ItemsControl.ItemTemplate>
+													<DataTemplate>
+														<Grid>
+															<Grid.ColumnDefinitions>
+																<ColumnDefinition Width="100" />
+																<ColumnDefinition Width="120" />
+															</Grid.ColumnDefinitions>
+															<TextBlock Text="" />
+															<TextBox Grid.Column="1" Text="" />
+														</Grid>
+													</DataTemplate>
+												</ItemsControl.ItemTemplate>
+											</ItemsControl>
+										</GroupBox>
+										<DataGrid />
+									</StackPanel>
+								</GroupBox>
 							</Grid>
 						</TabItem>
 					</TabControl>
