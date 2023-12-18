@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace P1XCS000086.Services.Interfaces
 {
-	public interface IMySqlCommand
+	internal interface ISelectQuery
 	{
-		public void QueryExecute(string sql);
+		public DataTable Select(string query);
 	}
 }

@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Folder Include="Domains\" />
+    <Folder Include="Sql\MySql\" />
   </ItemGroup>
 
 </Project>

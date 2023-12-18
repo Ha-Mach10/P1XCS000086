@@ -6,7 +6,10 @@ namespace P1XCS000086.Services.Models
 {
 	public class MainWindowModel
 	{
-		public MainWindowModel() { }
+		public MainWindowModel()
+		{
+
+		}
 
 	}
 }
