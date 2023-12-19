@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace P1XCS000086.Services.Interfaces
 {
-	internal interface ISelectQuery
+	public interface ISqlSelect
 	{
+		public string GenerateQuery(string table, List<string> columns);
 		public DataTable Select(string query);
 	}
 }
