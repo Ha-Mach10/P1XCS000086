@@ -8,7 +8,8 @@ namespace P1XCS000086.Services.Interfaces
 {
 	public interface ISqlSelect
 	{
-		public string GenerateQuery(string table, List<string> columns);
-		public DataTable Select(string query);
+		public DataTable Select();
+		public DataTable Select(string whereColumn, string whereValue);
+		public DataTable Select(List<string> columns, List<string> whereValues);
 	}
 }
