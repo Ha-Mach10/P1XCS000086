@@ -1,4 +1,5 @@
 ﻿using P1XCS000086.Modules.ModuleName;
+using P1XCS000086.Modules.ViewControls;
 using P1XCS000086.Services;
 using P1XCS000086.Services.Interfaces;
 using P1XCS000086.Views;
@@ -26,6 +27,7 @@ namespace P1XCS000086
 		protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
 		{
 			moduleCatalog.AddModule<ModuleNameModule>();
+			moduleCatalog.AddModule<ViewControlsModule>();
 		}
 	}
 }

@@ -5,6 +5,7 @@
 	xmlns:core="clr-namespace:P1XCS000086.Core;assembly=P1XCS000086.Core"
 	xmlns:mdMetro="http://materialdesigninxaml.net/winfx/xaml/themes"
 	xmlns:prism="http://prismlibrary.com/"
+	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 	Title="{Binding Title}"
 	Width="1000"
 	Height="1000"
@@ -68,9 +69,21 @@
 											</GroupBox.Header>
 											<VirtualizingStackPanel Margin="8">
 												<TextBlock Text="言語種別" />
-												<ComboBox Margin="0,8,0,8" />
+												<ComboBox Margin="0,8,0,8">
+													<i:Interaction.Triggers>
+														<i:EventTrigger EventName="SelectionChanged">
+															<i:InvokeCommandAction Command="{Binding LanguageTypeComboChange}"/>
+														</i:EventTrigger>
+													</i:Interaction.Triggers>
+												</ComboBox>
 												<TextBlock Text="言語種別" />
-												<ComboBox Margin="0,8,0,8" />
+												<ComboBox Margin="0,8,0,8">
+													<i:Interaction.Triggers>
+														<i:EventTrigger EventName="SelectionChanged">
+															<i:InvokeCommandAction Command="{Binding DevelopmentTypeComboChange}"/>
+														</i:EventTrigger>
+													</i:Interaction.Triggers>
+												</ComboBox>
 												<Border
 													Width="180"
 													Margin="0,8,0,8"

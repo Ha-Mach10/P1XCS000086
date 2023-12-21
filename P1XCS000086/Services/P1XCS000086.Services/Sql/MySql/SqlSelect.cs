@@ -103,9 +103,12 @@ namespace P1XCS000086.Services.Sql.MySql
 						// 「@[A-z]{1,100}」は@から始まり、A~Z,a~zまでのいずれかの文字が1~100回繰り返されることを示す
 						var matches = Regex.Matches(_command, @"@[A-z]{1,100}");
 						int count = 0;
+						// 複数のマッチからループ処理を行う
 						foreach (Match match in matches)
 						{
+							// コマンドパラメータを設定
 							command.Parameters.Add(new MySqlParameter(match.ToString(), whereValues[count]));
+							// インクリメント
 							count++;
 						}
 
