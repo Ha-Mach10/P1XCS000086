@@ -36,7 +36,8 @@ namespace P1XCS000086.ViewModels
 
 
 		// 
-		public DataTable _dataGridItems;
+		private List<string> _developmentItemCollections;
+		private DataTable _dataGridItems;
 
 
 		// ReactiveProperties
@@ -49,8 +50,13 @@ namespace P1XCS000086.ViewModels
 		public ReactivePropertySlim<string> LanguageSelectedValue { get; set; }
 		public ReactivePropertySlim<string> DevelopmentSelectedValue { get; set; }
 		public ReactivePropertySlim<List<string>> LanguageItemCollections { get; private set; }
-		public ReactivePropertySlim<List<string>> DevelopmentItemCollections { get; private set; }
+		// public ReactivePropertySlim<List<string>> DevelopmentItemCollections { get; private set; }
 		// public ReactivePropertySlim<DataTable> DataGridItems { get; private set; }
+		public List<string> DevelopmentItemCollections
+		{
+			get => _developmentItemCollections;
+			set => SetProperty(ref _developmentItemCollections, value);
+		}
 		public DataTable DataGridItems
 		{
 			get => _dataGridItems;
@@ -117,7 +123,8 @@ namespace P1XCS000086.ViewModels
 			// Language文字列ComboBoxから取得（Like検索用）
 			string selectedValue = LanguageSelectedValue.Value;
 			List<string> developmentItems = _mainWindowModel.DevelopmentComboBoxItemSetting(selectedValue);
-			DevelopmentItemCollections = new ReactivePropertySlim<List<string>>(developmentItems).AddTo(disposables);
+			DevelopmentItemCollections = developmentItems;
+			// DevelopmentItemCollections = new ReactivePropertySlim<List<string>>(developmentItems).AddTo(disposables);
 
 			// DataGrid用のDataTableを取得
 			DataTable dt = _mainWindowModel.CodeManagerDataGridItemSetting(selectedValue);

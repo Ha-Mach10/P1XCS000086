@@ -82,7 +82,7 @@
 												<TextBlock Text="言語種別" />
 												<ComboBox
 													Margin="0,8,0,8"
-													ItemsSource="{Binding DevelopmentItemCollections.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+													ItemsSource="{Binding DevelopmentItemCollections, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
 													SelectedValue="{Binding DevelopmentSelectedValue.Value, Mode=OneWayToSource}">
 													<i:Interaction.Triggers>
 														<i:EventTrigger EventName="SelectionChanged">
