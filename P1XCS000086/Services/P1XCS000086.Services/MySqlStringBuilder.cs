@@ -28,7 +28,7 @@ namespace P1XCS000086.Services
 			return SetConnectionString();
 		}
 
-		private string SetConnectionString()
+		public string SetConnectionString()
 		{
 			MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder();
 			builder.Server = Server;

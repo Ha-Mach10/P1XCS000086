@@ -15,8 +15,11 @@ namespace P1XCS000086.Services.Sql.MySql
 		private string _conStr;
 		private string _command;
 
-
-		public SqlSelect(string conStr, string command)
+		public SqlSelect(string conStr)
+		{
+			_conStr = conStr;
+		}
+		public SqlSelect(string conStr, string command) : this(conStr)
 		{
 			_command = command;
 		}
@@ -41,6 +44,31 @@ namespace P1XCS000086.Services.Sql.MySql
 				}
 			}
 			catch(MySqlException ex)
+			{
+				Debug.WriteLine(ex.Message);
+			}
+
+			return dt;
+		}
+		public DataTable Select(string command)
+		{
+			DataTable dt = new DataTable();
+
+			try
+			{
+				using (MySqlConnection conn = new MySqlConnection(_conStr))
+				{
+					// コネクションを開く
+					conn.Open();
+
+					// アダプターを生成
+					using (MySqlDataAdapter adapter = new MySqlDataAdapter(command, _conStr))
+					{
+						adapter.Fill(dt);
+					}
+				}
+			}
+			catch (MySqlException ex)
 			{
 				Debug.WriteLine(ex.Message);
 			}

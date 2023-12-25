@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Text;
 
+using P1XCS000086.Services.Interfaces;
+
 namespace P1XCS000086.Services.Objects
 {
 	[JsonObject("JsonConnectionStrings")]
-	internal class JsonConnectionStrings
+	public class JsonConnectionStrings : IJsonConnectionStrings
 	{
 		[JsonProperty("Server")]
 		public string Server {  get; set; }

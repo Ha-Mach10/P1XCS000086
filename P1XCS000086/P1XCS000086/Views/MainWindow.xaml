@@ -3,9 +3,9 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:core="clr-namespace:P1XCS000086.Core;assembly=P1XCS000086.Core"
+	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 	xmlns:mdMetro="http://materialdesigninxaml.net/winfx/xaml/themes"
 	xmlns:prism="http://prismlibrary.com/"
-	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 	Title="{Binding Title}"
 	Width="1000"
 	Height="1000"
@@ -69,18 +69,24 @@
 											</GroupBox.Header>
 											<VirtualizingStackPanel Margin="8">
 												<TextBlock Text="言語種別" />
-												<ComboBox Margin="0,8,0,8">
+												<ComboBox
+													Margin="0,8,0,8"
+													ItemsSource="{Binding LanguageItemCollections.Value, Mode=OneWay}"
+													SelectedValue="{Binding LanguageSelectedValue.Value, Mode=OneWayToSource}">
 													<i:Interaction.Triggers>
 														<i:EventTrigger EventName="SelectionChanged">
-															<i:InvokeCommandAction Command="{Binding LanguageTypeComboChange}"/>
+															<i:InvokeCommandAction Command="{Binding LanguageTypeComboChange}" />
 														</i:EventTrigger>
 													</i:Interaction.Triggers>
 												</ComboBox>
 												<TextBlock Text="言語種別" />
-												<ComboBox Margin="0,8,0,8">
+												<ComboBox
+													Margin="0,8,0,8"
+													ItemsSource="{Binding DevelopmentItemCollections.Value, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+													SelectedValue="{Binding DevelopmentSelectedValue.Value, Mode=OneWayToSource}">
 													<i:Interaction.Triggers>
 														<i:EventTrigger EventName="SelectionChanged">
-															<i:InvokeCommandAction Command="{Binding DevelopmentTypeComboChange}"/>
+															<i:InvokeCommandAction Command="{Binding DevelopmentTypeComboChange}" />
 														</i:EventTrigger>
 													</i:Interaction.Triggers>
 												</ComboBox>
@@ -136,7 +142,18 @@
 										</GroupBox>
 									</Grid>
 								</GroupBox>
-								<DataGrid Grid.Column="1" />
+								<DataGrid
+									Grid.Column="1"
+									CanUserAddRows="False"
+									CanUserDeleteRows="False"
+									CanUserResizeRows="False"
+									GridLinesVisibility="All"
+									ItemsSource="{Binding DataGridItems, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+									SelectionUnit="FullRow"
+									VerticalScrollBarVisibility="Auto"
+									VirtualizingPanel.IsVirtualizing="True"
+									VirtualizingPanel.ScrollUnit="Pixel"
+									VirtualizingPanel.VirtualizationMode="Recycling" />
 							</Grid>
 						</TabItem>
 						<TabItem Style="{StaticResource MahApps.Styles.TabItem}">
@@ -155,26 +172,37 @@
 									<ColumnDefinition />
 								</Grid.ColumnDefinitions>
 								<StackPanel>
-									<GroupBox Width="200">
+									<GroupBox x:Name="DatabaseRegisterGroupBox" Width="200">
 										<GroupBox.Header>
 											<TextBlock Text="データベース接続" />
 										</GroupBox.Header>
 										<StackPanel Margin="8">
 											<TextBlock Text="サーバー名" />
-											<TextBox Margin="0,8,0,8" Text="" />
+											<TextBox Margin="0,8,0,8" Text="{Binding Server.Value}" />
 											<TextBlock Text="ユーザー名" />
-											<TextBox Margin="0,8,0,8" Text="" />
+											<TextBox Margin="0,8,0,8" Text="{Binding User.Value}" />
 											<TextBlock Text="データベース名" />
-											<TextBox Margin="0,8,0,8" Text="" />
+											<TextBox Margin="0,8,0,8" Text="{Binding Database.Value}" />
 											<TextBlock Text="パスワード名" />
-											<TextBox Margin="0,8,0,8" Text="" />
-											<CheckBox Margin="0,8,0,8">
+											<TextBox Margin="0,8,0,8" Text="{Binding Password.Value}" />
+											<CheckBox Margin="0,8,0,8" IsChecked="{Binding PersistSecurityInfo.Value}">
 												<CheckBox.Content>
 													<TextBlock Foreground="White" Text="Persist Security Info" />
 												</CheckBox.Content>
 											</CheckBox>
-											<Button Margin="0,8,0,56" Content="接続テスト" />
-											<mdMetro:Snackbar />
+											<Button
+												Margin="0,8,0,8"
+												Command="{Binding RegistSqlConnectionString}"
+												Content="登録" />
+											<Button
+												Margin="0,8,0,56"
+												Command="{Binding SqlConnectionTest}"
+												Content="接続テスト"
+												Foreground="SpringGreen" />
+											<mdMetro:Snackbar
+												Width="{Binding ElementName=DatabaseRegisterGroupBox, Path=Width}"
+												IsActive="{Binding SnackIsActive}"
+												MessageQueue="{Binding SnackBarMessageQueue.Value}" />
 										</StackPanel>
 									</GroupBox>
 								</StackPanel>

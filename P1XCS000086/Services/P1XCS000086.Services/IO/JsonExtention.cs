@@ -6,11 +6,49 @@ using System.Text;
 
 using Newtonsoft.Json;
 
+using P1XCS000086.Services.Interfaces;
+
 namespace P1XCS000086.Services.IO
 {
-	public static class JsonExtention
+	public class JsonExtention : IJsonExtention
 	{
-		public static async void SerializeJson<T>(T obj, string path, bool append)
+		// Static readonly fields
+		public static readonly string JsonFolderPath = "settings";
+		public static readonly string JsonFilePath = "settings/SqlConnectionString.json";
+
+
+		/// <summary>
+		/// フォルダ及びファイルの存在チェック。存在しなければ生成する。
+		/// </summary>
+		/// <returns>ファイルが存在すれば：true、存在しなければ：false</returns>
+		public bool PathCheckAndGenerate()
+		{
+			// 戻り値用
+			bool isExists = true;
+
+			// JSONファイルを格納するフォルダの存在をチェックし、存在しなければ生成
+			if (!Directory.Exists(JsonFolderPath))
+			{
+				Directory.CreateDirectory(JsonFolderPath);
+			}
+			// JSONファイルの存在をチェックし、存在しなければ生成
+			if (!File.Exists(JsonFilePath))
+			{
+				File.Create(JsonFilePath);
+				isExists = false;
+			}
+
+			return isExists;
+		}
+
+		/// <summary>
+		/// シリアライズ（直列化）
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="obj"></param>
+		/// <param name="path"></param>
+		/// <param name="append"></param>
+		public async void SerializeJson<T>(T obj, string path, bool append)
 		{
 			try
 			{
@@ -26,7 +64,13 @@ namespace P1XCS000086.Services.IO
 			}
 		}
 
-		public static T DeserializeJson<T>(string path)
+		/// <summary>
+		/// デシリアライズ（直列化複合）
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		public T DeserializeJson<T>(string path)
 		{
 			try
 			{
