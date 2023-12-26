@@ -11,6 +11,7 @@ namespace P1XCS000086.Services.Interfaces
 		public List<string> LanguageComboBoxItemSetting();
 		public List<string> DevelopmentComboBoxItemSetting(string scriptType);
 		public DataTable CodeManagerDataGridItemSetting(string languageType);
+		public DataTable CodeManagerDataGridItemSetting(string developType, string languageType);
 		public string ConnectionString();
 		public bool SqlConnection();
 		public IJsonConnectionStrings JsonDeserialize();

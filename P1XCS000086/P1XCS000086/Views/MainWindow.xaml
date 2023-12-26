@@ -71,7 +71,7 @@
 												<TextBlock Text="言語種別" />
 												<ComboBox
 													Margin="0,8,0,8"
-													ItemsSource="{Binding LanguageItemCollections.Value, Mode=OneWay}"
+													ItemsSource="{Binding LanguageItemCollection, Mode=OneWay}"
 													SelectedValue="{Binding LanguageSelectedValue.Value, Mode=OneWayToSource}">
 													<i:Interaction.Triggers>
 														<i:EventTrigger EventName="SelectionChanged">
@@ -82,8 +82,9 @@
 												<TextBlock Text="言語種別" />
 												<ComboBox
 													Margin="0,8,0,8"
-													ItemsSource="{Binding DevelopmentItemCollections, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-													SelectedValue="{Binding DevelopmentSelectedValue.Value, Mode=OneWayToSource}">
+													ItemsSource="{Binding DevelopmentItemCollection, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+													SelectedValue="{Binding DevelopmentSelectedValue.Value, Mode=OneWayToSource}"
+													SelectedIndex="{Binding DevItemSelectedIndex}">
 													<i:Interaction.Triggers>
 														<i:EventTrigger EventName="SelectionChanged">
 															<i:InvokeCommandAction Command="{Binding DevelopmentTypeComboChange}" />
@@ -100,7 +101,7 @@
 													CornerRadius="5">
 													<VirtualizingStackPanel Orientation="Horizontal">
 														<TextBlock Text="レコード数 ：" />
-														<TextBlock Text="{Binding}" />
+														<TextBlock Text="{Binding RowsCount, Mode=OneWay}" />
 													</VirtualizingStackPanel>
 												</Border>
 											</VirtualizingStackPanel>

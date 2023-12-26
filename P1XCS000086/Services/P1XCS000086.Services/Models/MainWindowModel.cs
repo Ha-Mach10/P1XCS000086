@@ -12,6 +12,7 @@ using MySql.Data.MySqlClient;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using MySqlX.XDevAPI.Relational;
+using System.Reflection.Emit;
 
 
 namespace P1XCS000086.Services.Models
@@ -103,8 +104,47 @@ namespace P1XCS000086.Services.Models
 			// クエリを再生成
 			queryCommand = $"SELECT * FROM manager_codes WHERE develop_number LIKE '%{typeCode}%';";
 			DataTable dt = selectExecute.Select(queryCommand);
+			dt = CodeManagerColumnHeaderTrancelate(dt);
 
 			return dt;
+		}
+		public DataTable CodeManagerDataGridItemSetting(string developType, string languageType)
+		{
+			string queryCommand = string.Empty;
+
+			string connStr = ConnectionString();
+			ISqlSelect selectedExecute = new SqlSelect(connStr);
+
+			DataTable tmpDt = new DataTable();
+			queryCommand = $"SELECT type_code FROM manager_language_type WHERE language_type='{languageType}';";
+			tmpDt = selectedExecute.Select(queryCommand);
+			string typeCodeLang = tmpDt.Rows[0][0].ToString();
+
+			queryCommand = $"SELECT type_code FROM manager_develop_type WHERE develop_type='{developType}';";
+			tmpDt = selectedExecute.Select(queryCommand);
+			string typeCodeDev = tmpDt.Rows[0][0].ToString();
+
+			queryCommand = $"SELECT * FROM manager_codes WHERE develop_number LIKE '%{typeCodeDev}{typeCodeLang}%';";
+			DataTable dt = selectedExecute.Select(queryCommand);
+			dt = CodeManagerColumnHeaderTrancelate(dt);
+
+			return dt;
+		}
+		public DataTable CodeManagerColumnHeaderTrancelate(DataTable dataTable)
+		{
+			string connStr = ConnectionString();
+			ISqlSelect selectExecute = new SqlSelect(connStr);
+
+			string queryCommand = $"SELECT japanese FROM table_translator WHERE table_name='manager_codes' AND type='column';";
+			List<string> columnHeaders = QueryExecuteToList(queryCommand);
+			int count = 0;
+			foreach (string columnHeader in columnHeaders)
+			{
+				dataTable.Columns[count].ColumnName = columnHeader;
+				count++;
+			}
+
+			return dataTable;
 		}
 
 		private List<string> QueryExecuteToList(string command)

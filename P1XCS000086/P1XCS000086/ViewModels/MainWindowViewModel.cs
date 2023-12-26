@@ -18,6 +18,10 @@ using Reactive.Bindings.Extensions;
 using P1XCS000086.Services.Objects;
 using System.Data;
 using MaterialDesignThemes.Wpf;
+using System.Collections.ObjectModel;
+using System.Windows.Xps.Serialization;
+using System.Security.Cryptography.Xml;
+using System.CodeDom;
 
 namespace P1XCS000086.ViewModels
 {
@@ -36,8 +40,11 @@ namespace P1XCS000086.ViewModels
 
 
 		// 
-		private List<string> _developmentItemCollections;
+		private ObservableCollection<string> _languageItemCollection;
+		private ObservableCollection<string> _developmentItemCollections;
 		private DataTable _dataGridItems;
+		private int _rowsCount;
+		private int _devItemSelectedIndex;
 
 
 		// ReactiveProperties
@@ -49,10 +56,12 @@ namespace P1XCS000086.ViewModels
 
 		public ReactivePropertySlim<string> LanguageSelectedValue { get; set; }
 		public ReactivePropertySlim<string> DevelopmentSelectedValue { get; set; }
-		public ReactivePropertySlim<List<string>> LanguageItemCollections { get; private set; }
-		// public ReactivePropertySlim<List<string>> DevelopmentItemCollections { get; private set; }
-		// public ReactivePropertySlim<DataTable> DataGridItems { get; private set; }
-		public List<string> DevelopmentItemCollections
+		public ObservableCollection<string> LanguageItemCollection
+		{
+			get => _languageItemCollection;
+			set => SetProperty(ref _languageItemCollection, value);
+		}
+		public ObservableCollection<string> DevelopmentItemCollection
 		{
 			get => _developmentItemCollections;
 			set => SetProperty(ref _developmentItemCollections, value);
@@ -61,6 +70,16 @@ namespace P1XCS000086.ViewModels
 		{
 			get => _dataGridItems;
 			set => SetProperty(ref _dataGridItems, value);
+		}
+		public int RowsCount
+		{
+			get => _rowsCount;
+			set => SetProperty(ref _rowsCount, value);
+		}
+		public int DevItemSelectedIndex
+		{
+			get => _devItemSelectedIndex;
+			set => SetProperty(ref _devItemSelectedIndex, value);
 		}
 
 		public ReactivePropertySlim<bool> SnackIsActive { get; }
@@ -99,8 +118,13 @@ namespace P1XCS000086.ViewModels
 				PersistSecurityInfo = new ReactivePropertySlim<bool>(jsonConnString.PersistSecurityInfo).AddTo(disposables);
 
 				// ComboBoxItem Property
-				List<string> languageItems = mainWindowModel.LanguageComboBoxItemSetting();
-				LanguageItemCollections = new ReactivePropertySlim<List<string>>(languageItems).AddTo(disposables);
+				ObservableCollection<string> languageItems = new ObservableCollection<string>();
+				foreach (string item in mainWindowModel.LanguageComboBoxItemSetting())
+				{
+					languageItems.Add(item);
+				}
+				LanguageItemCollection = languageItems;
+
 			}
 
 			// Command Events
@@ -122,22 +146,32 @@ namespace P1XCS000086.ViewModels
 		{
 			// Language文字列ComboBoxから取得（Like検索用）
 			string selectedValue = LanguageSelectedValue.Value;
-			List<string> developmentItems = _mainWindowModel.DevelopmentComboBoxItemSetting(selectedValue);
-			DevelopmentItemCollections = developmentItems;
-			// DevelopmentItemCollections = new ReactivePropertySlim<List<string>>(developmentItems).AddTo(disposables);
+			ObservableCollection<string> developmentItems = new ObservableCollection<string>();
+			foreach (string item in _mainWindowModel.DevelopmentComboBoxItemSetting(selectedValue))
+			{
+				developmentItems.Add(item);
+			}
+			DevelopmentItemCollection = developmentItems;
 
 			// DataGrid用のDataTableを取得
 			DataTable dt = _mainWindowModel.CodeManagerDataGridItemSetting(selectedValue);
-			// DataGridItems = new ReactivePropertySlim<DataTable>(dt).AddTo(disposables);
-			DataGridItems = _mainWindowModel.CodeManagerDataGridItemSetting(selectedValue);
-			// DataGridItems = dt;
-			int i = 0;
+			DataGridItems = dt;
+
+			RowsCount = dt.Rows.Count;
+
+			DevItemSelectedIndex = -1;
 		}
 		public ReactiveCommand DevelopmentTypeComboChange { get; }
 		private void OnDevelopmentTypeComboChange()
 		{
-			// Language文字列ComboBoxから取得（Like検索用）
-			string selectedValue = DevelopmentSelectedValue.Value;
+			if (DevItemSelectedIndex == -1)
+			{
+				return;
+			}
+			DataTable dt = _mainWindowModel.CodeManagerDataGridItemSetting(DevelopmentSelectedValue.Value, LanguageSelectedValue.Value);
+			DataGridItems = dt;
+
+			RowsCount = dt.Rows.Count;
 		}
 
 		public ReactiveCommand SqlConnectionTest { get; }
@@ -164,9 +198,13 @@ namespace P1XCS000086.ViewModels
 			_mainWindowModel.JsonSerialize(Server.Value, User.Value, Database.Value, Password.Value, PersistSecurityInfo.Value);
 
 			// 「language」ComboBox設定用Listを取得
-			List<string> languageItems = _mainWindowModel.LanguageComboBoxItemSetting();
+			ObservableCollection<string> languageItems = new ObservableCollection<string>();
+			foreach (string languageItem in _mainWindowModel.LanguageComboBoxItemSetting())
+			{
+				languageItems.Add(languageItem);
+			}
 			// 
-			LanguageItemCollections = new ReactivePropertySlim<List<string>>(languageItems).AddTo(disposables);
+			LanguageItemCollection = languageItems;
 		}
 
 
