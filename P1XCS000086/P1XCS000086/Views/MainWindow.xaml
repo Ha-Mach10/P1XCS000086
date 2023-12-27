@@ -125,14 +125,17 @@
 														<ColumnDefinition Width="8" />
 														<ColumnDefinition />
 													</Grid.ColumnDefinitions>
-													<ComboBox />
-													<ComboBox Grid.Column="2" />
+													<ComboBox ItemsSource="{Binding UseApplication}" />
+													<ComboBox ItemsSource="{Binding UseApplicationSub}" Grid.Column="2" />
 												</Grid>
+												<TextBox Margin="0,0,0,8" Text="{Binding}"/>
 												<TextBlock Text="流用番号" />
 												<TextBox Margin="0,8,0,8" Text="" />
 												<TextBlock Text="旧番号" />
 												<TextBox Margin="0,8,0,8" Text="" />
 												<TextBlock Text="新番号" />
+												<TextBox Margin="0,8,0,8" Text="" />
+												<TextBlock Text="継承元番号" />
 												<TextBox Margin="0,8,0,8" Text="" />
 												<TextBlock Text="説明" />
 												<RichTextBox Height="80" Margin="0,8,0,8" />

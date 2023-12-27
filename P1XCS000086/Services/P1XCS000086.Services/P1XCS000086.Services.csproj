@@ -18,4 +18,19 @@
     <Folder Include="Domains\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="MySqlDataSet.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MySqlDataSet.xsd</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="MySqlDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>MySqlDataSet.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
 </Project>

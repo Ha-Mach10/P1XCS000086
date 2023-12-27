@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Net.Http.Headers;
 using MySqlX.XDevAPI.Relational;
 using System.Reflection.Emit;
+using System.Linq;
 
 
 namespace P1XCS000086.Services.Models
@@ -71,17 +72,36 @@ namespace P1XCS000086.Services.Models
 		public List<string> LanguageComboBoxItemSetting()
 		{
 			string queryCommand = "SELECT language_type FROM manager_language_type;";
-			List<string> list = QueryExecuteToList(queryCommand);
-			return list;
-		}
-		public List<string> DevelopmentComboBoxItemSetting(string languageType)
-		{
-			string queryCommand = $"SELECT develop_type FROM manager_develop_type WHERE script_type=(SELECT script_type FROM manager_language_type WHERE language_type='{languageType}');";
-			List<string> list = QueryExecuteToList(queryCommand);
+			List<string> list = QueryExecuteToList("language_type", queryCommand);
 			return list;
 		}
 		/// <summary>
-		/// 「言語種別」にて変更した言語から対象の言語で作成された号番を取得
+		/// 
+		/// </summary>
+		/// <param name="languageType"></param>
+		/// <returns></returns>
+		public List<string> DevelopmentComboBoxItemSetting(string languageType)
+		{
+			string queryCommand = $"SELECT develop_type FROM manager_develop_type WHERE script_type=(SELECT script_type FROM manager_language_type WHERE language_type='{languageType}');";
+			List<string> list = QueryExecuteToList("develop_type", queryCommand);
+			return list;
+		}
+		public List<string> UseApplicationComboBoxItemSetting()
+		{
+			string queryCommand = $"SELECT use_name_jp FROM manager_use_application WHERE sign=1;";
+			List<string> items = QueryExecuteToList("use_name_jp", queryCommand);
+
+			return items;
+		}
+		public List<string> UseApplicationSubComboBoxItemSetting()
+		{
+			string queryCommand = $"SELECT use_name_jp FROM manager_use_application WHERE sign=2;";
+			List<string> items = QueryExecuteToList("use_name_jp", queryCommand);
+
+			return items;
+		}
+		/// <summary>
+		/// 「言語種別」にて変更した言語種別から対象の言語で作成された号番を取得
 		/// </summary>
 		/// <param name="languageType"></param>
 		/// <returns></returns>
@@ -91,7 +111,7 @@ namespace P1XCS000086.Services.Models
 			string queryCommand = string.Empty;
 
 			// 号番検索用に「type_code」を「language_type」から取得
-			queryCommand = $"SELECT type_code FROM manager_language_type WHERE language_type='{languageType}'";
+			queryCommand = $"SELECT language_type_code FROM manager_language_type WHERE language_type='{languageType}'";
 			// 接続文字列を取得
 			string connStr = ConnectionString();
 			// SELECTコマンド実行用のクラスを生成
@@ -108,35 +128,46 @@ namespace P1XCS000086.Services.Models
 
 			return dt;
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="developType"></param>
+		/// <param name="languageType"></param>
+		/// <returns></returns>
 		public DataTable CodeManagerDataGridItemSetting(string developType, string languageType)
 		{
-			string queryCommand = string.Empty;
-
 			string connStr = ConnectionString();
 			ISqlSelect selectedExecute = new SqlSelect(connStr);
 
-			DataTable tmpDt = new DataTable();
-			queryCommand = $"SELECT type_code FROM manager_language_type WHERE language_type='{languageType}';";
-			tmpDt = selectedExecute.Select(queryCommand);
-			string typeCodeLang = tmpDt.Rows[0][0].ToString();
+			string queryCommand = @$"SELECT *
+									 FROM manager_codes
+									 WHERE develop_number
+									 LIKE
+									 (
+										SELECT CONCAT('%', d.develop_type_code, l.language_type_code, '%')
+										FROM manager_language_type AS l
+										JOIN namager_develop_type AS d
+										ON l.script_type = d.script_type
+										WHERE l.language_type_code={languageType} AND d.develop_type_code={developType}
+									 );";
 
-			queryCommand = $"SELECT type_code FROM manager_develop_type WHERE develop_type='{developType}';";
-			tmpDt = selectedExecute.Select(queryCommand);
-			string typeCodeDev = tmpDt.Rows[0][0].ToString();
-
-			queryCommand = $"SELECT * FROM manager_codes WHERE develop_number LIKE '%{typeCodeDev}{typeCodeLang}%';";
 			DataTable dt = selectedExecute.Select(queryCommand);
 			dt = CodeManagerColumnHeaderTrancelate(dt);
 
 			return dt;
 		}
+		/// <summary>
+		/// DataGridへ表示するDataTableのヘッダ名（ColumnName）を日本語へ変換する
+		/// </summary>
+		/// <param name="dataTable">変換元のDataTable</param>
+		/// <returns>ヘッダ変換後のDataTable</returns>
 		public DataTable CodeManagerColumnHeaderTrancelate(DataTable dataTable)
 		{
 			string connStr = ConnectionString();
 			ISqlSelect selectExecute = new SqlSelect(connStr);
 
 			string queryCommand = $"SELECT japanese FROM table_translator WHERE table_name='manager_codes' AND type='column';";
-			List<string> columnHeaders = QueryExecuteToList(queryCommand);
+			List<string> columnHeaders = QueryExecuteToList("japanese", queryCommand);
 			int count = 0;
 			foreach (string columnHeader in columnHeaders)
 			{
@@ -146,23 +177,59 @@ namespace P1XCS000086.Services.Models
 
 			return dataTable;
 		}
-
-		private List<string> QueryExecuteToList(string command)
+		/// <summary>
+		/// クエリを実行し、取得した列からただ１つの項目を返す
+		/// ※取得される項目がただ１つのみになるようクエリを作成すること
+		/// </summary>
+		/// <param name="columnName"></param>
+		/// <param name="queryCommand"></param>
+		/// <returns></returns>
+		public string GetSelectItem(string columnName, string queryCommand)
 		{
+			// SELECTクエリを実行し、結果をDataTableへ格納
 			string connStr = ConnectionString();
+
+			// SELECTクエリ実行用のクラスをインターフェース経由で生成
+			ISqlSelect selectExecute = new SqlSelect(connStr, queryCommand);
+			DataTable dt = selectExecute.Select();
+
+			// LINQで「dt」から指定のカラムのEnumerableRowCollection<DataRow>を取得
+			var rowItmes = dt.AsEnumerable().Select(x => x[columnName]).ToList();
+			
+			// 取得したコレクションから、LINQで最初の項目を取得
+			string item = rowItmes.First().ToString();
+
+			return item;
+		}
+		/// <summary>
+		/// クエリを実行し、取得した列をリストへ格納
+		/// ※取得される列は１列になるようクエリを作成すること
+		/// </summary>
+		/// <param name="command">クエリ</param>
+		/// <returns></returns>
+		private List<string> QueryExecuteToList(string columnName, string queryCommand)
+		{
+			// 接続文字列取得
+			string connStr = ConnectionString();
+
+			// 接続文字列が空の場合、「Non Items」の文字列のみ格納したリストを返す
 			if (connStr == string.Empty)
 			{
 				return new List<string>() { "Non Items" };
 			}
 
-			ISqlSelect selectExecute = new SqlSelect(connStr, command);
+			// SELECTクエリ実行用のクラスをインターフェース経由で生成
+			ISqlSelect selectExecute = new SqlSelect(connStr, queryCommand);
 			DataTable dt = selectExecute.Select();
 
+			// 戻り値用リストを生成
 			List<string> items = new List<string>();
-			// if (dt)
-			foreach (DataRow dr in dt.Rows)
+
+			// LINQで「dt」から指定のカラムのEnumerableRowCollection<DataRow>を取得し、foreachでリストへ格納
+			var rowItems = dt.AsEnumerable().Select(x => x[columnName]).ToList();
+			foreach (DataRow rowItem in rowItems)
 			{
-				items.Add(dr[0].ToString());
+				items.Add(rowItem.ToString());
 			}
 
 			return items;

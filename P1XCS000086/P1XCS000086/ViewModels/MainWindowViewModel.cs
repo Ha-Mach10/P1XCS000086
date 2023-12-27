@@ -22,6 +22,8 @@ using System.Collections.ObjectModel;
 using System.Windows.Xps.Serialization;
 using System.Security.Cryptography.Xml;
 using System.CodeDom;
+using System.Reflection.Emit;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 
 namespace P1XCS000086.ViewModels
 {
@@ -46,8 +48,15 @@ namespace P1XCS000086.ViewModels
 		private int _rowsCount;
 		private int _devItemSelectedIndex;
 
+		private string _developName;
+		private string _useAppLicationManual;
+		private string _referenceNumber;
+		private string _oldNumber;
+		private string _newNumber;
+		private string _inheritenceNumber;
 
-		// ReactiveProperties
+
+		#region ReactiveProperties
 		public ReactivePropertySlim<string> Server { get; set; }
 		public ReactivePropertySlim<string> User { get; set; }
 		public ReactivePropertySlim<string> Database { get; set; }
@@ -82,10 +91,45 @@ namespace P1XCS000086.ViewModels
 			set => SetProperty(ref _devItemSelectedIndex, value);
 		}
 
+		public string DevelopName
+		{
+			get => _developName;
+			set => SetProperty(ref _developName, value);
+		}
+		public ReactivePropertySlim<List<string>> UseApplication { get; }
+		public ReactivePropertySlim<List<string>> UseApplicationSub { get; }
+		public string UseApplicationManual
+		{
+			get => _useAppLicationManual;
+			set => SetProperty(ref _useAppLicationManual, value);
+		}
+		public string ReferenceNumber
+		{
+			get => _referenceNumber;
+			set => SetProperty(ref _referenceNumber, value);
+		}
+		public string OldNumber
+		{
+			get => _oldNumber;
+			set => SetProperty(ref _oldNumber, value);
+		}
+		public string NewNumber
+		{
+			get => _newNumber;
+			set => SetProperty(ref _newNumber, value);
+		}
+		public string InheritenceNumber
+		{
+			get => _inheritenceNumber;
+			set => SetProperty(ref _inheritenceNumber, value);
+		}
+
+
 		public ReactivePropertySlim<bool> SnackIsActive { get; }
 		public ReactivePropertySlim<SnackbarMessageQueue> SnackBarMessageQueue { get; private set; }
 
 		public ReactivePropertySlim<string> ConnectionDatabase { get; }
+		#endregion
 
 
 		/// <summary>
@@ -125,6 +169,10 @@ namespace P1XCS000086.ViewModels
 				}
 				LanguageItemCollection = languageItems;
 
+				List<String> useApplicationItems = mainWindowModel.UseApplicationComboBoxItemSetting();
+				List<String> useApplicationSubItems = mainWindowModel.UseApplicationSubComboBoxItemSetting();
+				UseApplication = new ReactivePropertySlim<List<string>>(useApplicationItems).AddTo(disposables);
+				UseApplicationSub = new ReactivePropertySlim<List<string>(useApplicationSubItems).AddTo(disposables);
 			}
 
 			// Command Events
