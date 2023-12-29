@@ -25,5 +25,19 @@ namespace P1XCS000086.Services.Objects
 
 		[JsonProperty("PersistSecurityInfo")]
 		public bool PersistSecurityInfo { get; set; }
+
+		public bool IsPropertiesExists()
+		{
+			if (Server is not null &&
+				User is not null &&
+				DatabaseName is not null &&
+				Password is not null &&
+				PersistSecurityInfo is not false)
+			{
+				return true;
+			}
+
+			return false;
+		}
 	}
 }

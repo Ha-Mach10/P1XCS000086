@@ -14,6 +14,7 @@ namespace P1XCS000086.Services.Interfaces
 		public List<string> UseApplicationSubComboBoxItemSetting();
 		public DataTable CodeManagerDataGridItemSetting(string languageType);
 		public DataTable CodeManagerDataGridItemSetting(string developType, string languageType);
+		public string RegistCodeNumberComboBoxItemSelect(string selectedValue);
 		public string ConnectionString();
 		public bool SqlConnection();
 		public IJsonConnectionStrings JsonDeserialize();

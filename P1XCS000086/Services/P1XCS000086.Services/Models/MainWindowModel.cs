@@ -37,35 +37,6 @@ namespace P1XCS000086.Services.Models
 
 
 		/// <summary>
-		/// 接続文字列をJSONシリアル化
-		/// </summary>
-		/// <param name="server">サーバー</param>
-		/// <param name="user">ユーザー名</param>
-		/// <param name="database">接続データベース</param>
-		/// <param name="password">パスワード</param>
-		/// <param name="persistSecurityInfo"></param>
-		public void JsonSerialize(string server, string user, string database, string password, bool persistSecurityInfo)
-		{
-			JsonExtention jsonExtention = new JsonExtention();
-
-			// フォルダ・ファイル存在チェック。存在しなければ生成
-			jsonExtention.PathCheckAndGenerate();
-
-			// SQL接続文字列をJSONシリアライズ用クラスの各プロパティへ設定
-			JsonConnectionStrings connStrings = new JsonConnectionStrings();
-			connStrings.Server = server;
-			connStrings.User = user;
-			connStrings.DatabaseName = database;
-			connStrings.Password = password;
-			connStrings.PersistSecurityInfo = persistSecurityInfo;
-
-			// SQLの接続文字列をJSONファイルへシリアライズ化
-			string jsonFilePath = JsonExtention.JsonFilePath;
-			jsonExtention.SerializeJson(connStrings, jsonFilePath, false);
-		}
-
-
-		/// <summary>
 		/// 
 		/// </summary>
 		/// <returns></returns>
@@ -88,14 +59,14 @@ namespace P1XCS000086.Services.Models
 		}
 		public List<string> UseApplicationComboBoxItemSetting()
 		{
-			string queryCommand = $"SELECT use_name_jp FROM manager_use_application WHERE sign=1;";
+			string queryCommand = $"SELECT use_name_jp FROM manager_use_application WHERE sign='1';";
 			List<string> items = QueryExecuteToList("use_name_jp", queryCommand);
 
 			return items;
 		}
 		public List<string> UseApplicationSubComboBoxItemSetting()
 		{
-			string queryCommand = $"SELECT use_name_jp FROM manager_use_application WHERE sign=2;";
+			string queryCommand = $"SELECT use_name_jp FROM manager_use_application WHERE sign='2';";
 			List<string> items = QueryExecuteToList("use_name_jp", queryCommand);
 
 			return items;
@@ -107,15 +78,11 @@ namespace P1XCS000086.Services.Models
 		/// <returns></returns>
 		public DataTable CodeManagerDataGridItemSetting(string languageType)
 		{
-			// コマンドクエリを宣言
-			string queryCommand = string.Empty;
+			// SELECTクエリ実行用のオブジェクトを生成
+			ISqlSelect selectExecute = GetConnectedSqlSelect();
 
 			// 号番検索用に「type_code」を「language_type」から取得
-			queryCommand = $"SELECT language_type_code FROM manager_language_type WHERE language_type='{languageType}'";
-			// 接続文字列を取得
-			string connStr = ConnectionString();
-			// SELECTコマンド実行用のクラスを生成
-			ISqlSelect selectExecute = new SqlSelect(connStr);
+			string queryCommand = $"SELECT language_type_code FROM manager_language_type WHERE language_type='{languageType}'";
 			// 「type_code」を格納するためのDataTableを用意し、SELECTクエリを実行
 			DataTable typeCodeDt = selectExecute.Select(queryCommand);
 			// 「type_code」を取得
@@ -136,9 +103,10 @@ namespace P1XCS000086.Services.Models
 		/// <returns></returns>
 		public DataTable CodeManagerDataGridItemSetting(string developType, string languageType)
 		{
-			string connStr = ConnectionString();
-			ISqlSelect selectedExecute = new SqlSelect(connStr);
+			// SELECTクエリ実行用のオブジェクトを生成
+			ISqlSelect selectExecute = GetConnectedSqlSelect();
 
+			// クエリを作成
 			string queryCommand = @$"SELECT *
 									 FROM manager_codes
 									 WHERE develop_number
@@ -146,13 +114,26 @@ namespace P1XCS000086.Services.Models
 									 (
 										SELECT CONCAT('%', d.develop_type_code, l.language_type_code, '%')
 										FROM manager_language_type AS l
-										JOIN namager_develop_type AS d
+										JOIN manager_develop_type AS d
 										ON l.script_type = d.script_type
-										WHERE l.language_type_code={languageType} AND d.develop_type_code={developType}
+										WHERE l.language_type='{languageType}' AND d.develop_type='{developType}'
 									 );";
 
-			DataTable dt = selectedExecute.Select(queryCommand);
-			dt = CodeManagerColumnHeaderTrancelate(dt);
+			// クエリからDataTableを取得
+			DataTable dt = selectExecute.Select(queryCommand);
+
+
+			// 翻訳テーブルから号番テーブル（namager_codes）カラムの翻訳語を取得し、リストへ格納
+			string queryTranclateCommand = $"SELECT japanese FROM table_translator WHERE table_name='manager_codes' AND type='column';";
+			List<string> columnHeaders = QueryExecuteToList("japanese", queryTranclateCommand);
+			
+			// 格納したリストからDataTableのカラムを書き換える
+			int count = 0;
+			foreach (string columnHeader in columnHeaders)
+			{
+				dt.Columns[count].ColumnName = columnHeader;
+				count++;
+			}
 
 			return dt;
 		}
@@ -163,9 +144,6 @@ namespace P1XCS000086.Services.Models
 		/// <returns>ヘッダ変換後のDataTable</returns>
 		public DataTable CodeManagerColumnHeaderTrancelate(DataTable dataTable)
 		{
-			string connStr = ConnectionString();
-			ISqlSelect selectExecute = new SqlSelect(connStr);
-
 			string queryCommand = $"SELECT japanese FROM table_translator WHERE table_name='manager_codes' AND type='column';";
 			List<string> columnHeaders = QueryExecuteToList("japanese", queryCommand);
 			int count = 0;
@@ -176,6 +154,20 @@ namespace P1XCS000086.Services.Models
 			}
 
 			return dataTable;
+		}
+		public string RegistCodeNumberComboBoxItemSelect(string selectedValue)
+		{
+			string queryCommand = $"SELECT use_name_en FROM manager_use_application WHERE use_name_jp='{selectedValue}';";
+			string getValue = GetSelectItem(selectedValue, queryCommand);
+
+			return getValue;
+		}
+		private ISqlSelect GetConnectedSqlSelect()
+		{
+			string connStr = ConnectionString();
+			ISqlSelect slectedExecute = new SqlSelect(connStr);
+
+			return slectedExecute;
 		}
 		/// <summary>
 		/// クエリを実行し、取得した列からただ１つの項目を返す
@@ -227,7 +219,7 @@ namespace P1XCS000086.Services.Models
 
 			// LINQで「dt」から指定のカラムのEnumerableRowCollection<DataRow>を取得し、foreachでリストへ格納
 			var rowItems = dt.AsEnumerable().Select(x => x[columnName]).ToList();
-			foreach (DataRow rowItem in rowItems)
+			foreach (var rowItem in rowItems)
 			{
 				items.Add(rowItem.ToString());
 			}
@@ -243,6 +235,33 @@ namespace P1XCS000086.Services.Models
 			string item = dt.Rows[0][0].ToString();
 
 			return item;
+		}
+		/// <summary>
+		/// 接続文字列をJSONシリアル化
+		/// </summary>
+		/// <param name="server">サーバー</param>
+		/// <param name="user">ユーザー名</param>
+		/// <param name="database">接続データベース</param>
+		/// <param name="password">パスワード</param>
+		/// <param name="persistSecurityInfo"></param>
+		public void JsonSerialize(string server, string user, string database, string password, bool persistSecurityInfo)
+		{
+			JsonExtention jsonExtention = new JsonExtention();
+
+			// フォルダ・ファイル存在チェック。存在しなければ生成
+			jsonExtention.PathCheckAndGenerate();
+
+			// SQL接続文字列をJSONシリアライズ用クラスの各プロパティへ設定
+			JsonConnectionStrings connStrings = new JsonConnectionStrings();
+			connStrings.Server = server;
+			connStrings.User = user;
+			connStrings.DatabaseName = database;
+			connStrings.Password = password;
+			connStrings.PersistSecurityInfo = persistSecurityInfo;
+
+			// SQLの接続文字列をJSONファイルへシリアライズ化
+			string jsonFilePath = JsonExtention.JsonFilePath;
+			jsonExtention.SerializeJson(connStrings, jsonFilePath, false);
 		}
 		/// <summary>
 		/// SQLの接続テスト用メソッド
@@ -307,7 +326,10 @@ namespace P1XCS000086.Services.Models
 
 			// JSONファイルからSQL接続文字列を復号し、プロパティにセット
 			string jsonFilePath = JsonExtention.JsonFilePath;
-			return jsonExtention.DeserializeJson<JsonConnectionStrings>(jsonFilePath);
+			IJsonConnectionStrings jsonConnString = jsonExtention.DeserializeJson<JsonConnectionStrings>(jsonFilePath);
+			if (!jsonConnString.IsPropertiesExists()) { return null; }
+
+			return jsonConnString;
 		}
 	}
 }

@@ -24,6 +24,9 @@ using System.Security.Cryptography.Xml;
 using System.CodeDom;
 using System.Reflection.Emit;
 using Org.BouncyCastle.Bcpg.OpenPgp;
+using System.Windows;
+using Reactive.Bindings.ObjectExtensions;
+using System.Reactive;
 
 namespace P1XCS000086.ViewModels
 {
@@ -47,13 +50,12 @@ namespace P1XCS000086.ViewModels
 		private DataTable _dataGridItems;
 		private int _rowsCount;
 		private int _devItemSelectedIndex;
+		private bool _isDevItemSelected = false;
 
-		private string _developName;
-		private string _useAppLicationManual;
-		private string _referenceNumber;
-		private string _oldNumber;
-		private string _newNumber;
-		private string _inheritenceNumber;
+		private bool _useApplicationIsChecked;
+
+		private Visibility _useApplicationComboBoxVisibility;
+		private Visibility _useApplicationTextBoxVisibility;
 
 
 		#region ReactiveProperties
@@ -91,42 +93,42 @@ namespace P1XCS000086.ViewModels
 			set => SetProperty(ref _devItemSelectedIndex, value);
 		}
 
-		public string DevelopName
+		// public ReactivePropertySlim<bool> UseApplicationIsChecked { get; set; }
+		public bool UseApplicationIsChecked
 		{
-			get => _developName;
-			set => SetProperty(ref _developName, value);
+			get => _useApplicationIsChecked;
+			set => SetProperty(ref _useApplicationIsChecked, value);
 		}
+		public ReactivePropertySlim<string> DevelopName { get; }
+		public ReactivePropertySlim<string> CodeName { get; }
 		public ReactivePropertySlim<List<string>> UseApplication { get; }
 		public ReactivePropertySlim<List<string>> UseApplicationSub { get; }
-		public string UseApplicationManual
+		public ReactivePropertySlim<string> UseApplicationSelectedValue { get; }
+		public ReactivePropertySlim<string> UseApplicationSubSelectedValue { get; }
+		public ReactivePropertySlim<string> UseApplicationManual { get; }
+		public ReactivePropertySlim<string> ReferenceNumber { get; }
+		public ReactivePropertySlim<string> OldNumber { get; }
+		public ReactivePropertySlim<string> NewNumber { get; }
+		public ReactivePropertySlim<string> InheritenceNumber { get; }
+		public ReactivePropertySlim<string> Explanation { get; }
+		public ReactivePropertySlim<string> Summary { get; }
+
+
+public Visibility UseApplicationComboBoxVisibility
 		{
-			get => _useAppLicationManual;
-			set => SetProperty(ref _useAppLicationManual, value);
+			get => _useApplicationComboBoxVisibility;
+			set => SetProperty(ref _useApplicationComboBoxVisibility, value);
 		}
-		public string ReferenceNumber
+		public Visibility UseApplicationTextBoxVisibility
 		{
-			get => _referenceNumber;
-			set => SetProperty(ref _referenceNumber, value);
-		}
-		public string OldNumber
-		{
-			get => _oldNumber;
-			set => SetProperty(ref _oldNumber, value);
-		}
-		public string NewNumber
-		{
-			get => _newNumber;
-			set => SetProperty(ref _newNumber, value);
-		}
-		public string InheritenceNumber
-		{
-			get => _inheritenceNumber;
-			set => SetProperty(ref _inheritenceNumber, value);
+			get => _useApplicationTextBoxVisibility;
+			set => SetProperty(ref _useApplicationTextBoxVisibility, value);
 		}
 
 
 		public ReactivePropertySlim<bool> SnackIsActive { get; }
 		public ReactivePropertySlim<SnackbarMessageQueue> SnackBarMessageQueue { get; private set; }
+
 
 		public ReactivePropertySlim<string> ConnectionDatabase { get; }
 		#endregion
@@ -145,20 +147,40 @@ namespace P1XCS000086.ViewModels
 			_mainWindowModel = mainWindowModel;
 
 
+			// ----------------------------------------------------------------------------------
 			// Properties
+			// ----------------------------------------------------------------------------------
+
+			// 
 			LanguageSelectedValue = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
-			DevelopmentSelectedValue = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);			
+			DevelopmentSelectedValue = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+
+			// 開発番号登録フィールド用プロパティ群
+			DevelopName				 = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+			CodeName				 = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+			UseApplicationManual	 = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+			ReferenceNumber			 = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+			OldNumber				 = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+			NewNumber				 = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+			InheritenceNumber		 = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+			Explanation				 = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+			Summary					 = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+			
+			UseApplicationIsChecked = true;
+			UseApplicationComboBoxVisibility = Visibility.Visible;
+			UseApplicationTextBoxVisibility = Visibility.Collapsed;
+
 
 			// JSONファイルが存在していない場合
 			IJsonExtention jsonExtention = new JsonExtention();
 			IJsonConnectionStrings jsonConnString = mainWindowModel.JsonDeserialize();
-			if (jsonExtention.PathCheckAndGenerate())
+			if (jsonExtention.PathCheckAndGenerate() && jsonConnString.IsPropertiesExists())
 			{
 				// Properties SQL Connection
-				Server = new ReactivePropertySlim<string>(jsonConnString.Server).AddTo(disposables);
-				User = new ReactivePropertySlim<string>(jsonConnString.User).AddTo(disposables);
-				Database = new ReactivePropertySlim<string>(jsonConnString.DatabaseName).AddTo(disposables);
-				Password = new ReactivePropertySlim<string>(jsonConnString.Password).AddTo(disposables);
+				Server				= new ReactivePropertySlim<string>(jsonConnString.Server).AddTo(disposables);
+				User				= new ReactivePropertySlim<string>(jsonConnString.User).AddTo(disposables);
+				Database			= new ReactivePropertySlim<string>(jsonConnString.DatabaseName).AddTo(disposables);
+				Password			= new ReactivePropertySlim<string>(jsonConnString.Password).AddTo(disposables);
 				PersistSecurityInfo = new ReactivePropertySlim<bool>(jsonConnString.PersistSecurityInfo).AddTo(disposables);
 
 				// ComboBoxItem Property
@@ -169,11 +191,12 @@ namespace P1XCS000086.ViewModels
 				}
 				LanguageItemCollection = languageItems;
 
-				List<String> useApplicationItems = mainWindowModel.UseApplicationComboBoxItemSetting();
-				List<String> useApplicationSubItems = mainWindowModel.UseApplicationSubComboBoxItemSetting();
+				List<string> useApplicationItems = mainWindowModel.UseApplicationComboBoxItemSetting();
+				List<string> useApplicationSubItems = mainWindowModel.UseApplicationSubComboBoxItemSetting();
 				UseApplication = new ReactivePropertySlim<List<string>>(useApplicationItems).AddTo(disposables);
-				UseApplicationSub = new ReactivePropertySlim<List<string>(useApplicationSubItems).AddTo(disposables);
+				UseApplicationSub = new ReactivePropertySlim<List<string>>(useApplicationSubItems).AddTo(disposables);
 			}
+
 
 			// Command Events
 			LanguageTypeComboChange = new ReactiveCommand();
@@ -185,6 +208,12 @@ namespace P1XCS000086.ViewModels
 			SqlConnectionTest.Subscribe(() => OnSqlConnectionTest()).AddTo(disposables);
 			RegistSqlConnectionString = new ReactiveCommand();
 			RegistSqlConnectionString.Subscribe(() => OnRegistSqlConnectionString()).AddTo(disposables);
+
+			CheckedStateChanged = new ReactiveCommand();
+			CheckedStateChanged.Subscribe(() => OnCheckedStateChanged()).AddTo(disposables);
+
+			CodeNumberRegist = new ReactiveCommand();
+			CodeNumberRegist.Subscribe(() => OnCodeNumberRegist()).AddTo(disposables);
 		}
 
 
@@ -212,8 +241,11 @@ namespace P1XCS000086.ViewModels
 		public ReactiveCommand DevelopmentTypeComboChange { get; }
 		private void OnDevelopmentTypeComboChange()
 		{
-			if (DevItemSelectedIndex == -1)
+			// 初回起動時または言語種別ComboBox変更時
+			if (DevItemSelectedIndex == -1 || _isDevItemSelected == false)
 			{
+				_isDevItemSelected = true;
+
 				return;
 			}
 			DataTable dt = _mainWindowModel.CodeManagerDataGridItemSetting(DevelopmentSelectedValue.Value, LanguageSelectedValue.Value);
@@ -243,7 +275,17 @@ namespace P1XCS000086.ViewModels
 		private void OnRegistSqlConnectionString()
 		{
 			// 接続文字列をJSONファイルへシリアル化
-			_mainWindowModel.JsonSerialize(Server.Value, User.Value, Database.Value, Password.Value, PersistSecurityInfo.Value);
+			// 接続文字列入力フィールドへ入力されていない場合
+			if (Server is null || User is null || Database is null || Password is null)
+			{
+				string emptyValue = string.Empty;
+				_mainWindowModel.JsonSerialize(emptyValue, emptyValue, emptyValue, emptyValue, PersistSecurityInfo.Value);
+			}
+			// 入力されている場合
+			else
+			{
+				_mainWindowModel.JsonSerialize(Server.Value, User.Value, Database.Value, Password.Value, PersistSecurityInfo.Value);
+			}
 
 			// 「language」ComboBox設定用Listを取得
 			ObservableCollection<string> languageItems = new ObservableCollection<string>();
@@ -253,6 +295,60 @@ namespace P1XCS000086.ViewModels
 			}
 			// 
 			LanguageItemCollection = languageItems;
+		}
+
+		public ReactiveCommand CheckedStateChanged { get; }
+		private void OnCheckedStateChanged()
+		{
+			if (UseApplicationIsChecked == false)
+			{
+				UseApplicationComboBoxVisibility = Visibility.Visible;
+				UseApplicationTextBoxVisibility = Visibility.Collapsed;
+			}
+			else if (UseApplicationIsChecked == true)
+			{
+				UseApplicationComboBoxVisibility = Visibility.Collapsed;
+				UseApplicationTextBoxVisibility = Visibility.Visible;
+			}
+		}
+
+		public ReactiveCommand CodeNumberRegist { get; }
+		private void OnCodeNumberRegist()
+		{
+			// 一時的な
+			string developName = string.Empty;
+			string codeName = string.Empty;
+			string useApplication = string.Empty;
+			string useApplicationSub = string.Empty;
+			string referenceNumber = string.Empty;
+			string oldNumber = string.Empty;
+			string newNumber = string.Empty;
+			string inheritenceNumber = string.Empty;
+			string explanation = string.Empty;
+			string summary = string.Empty;
+
+			if (DevelopName is not null) { developName = DevelopName.Value; }
+			if (CodeName is not null) { codeName = CodeName.Value; }
+
+			if (UseApplicationSelectedValue is not null || UseApplicationSubSelectedValue is not null)
+			{
+				useApplication = _mainWindowModel.RegistCodeNumberComboBoxItemSelect(UseApplicationSelectedValue.Value);
+				useApplicationSub = _mainWindowModel.RegistCodeNumberComboBoxItemSelect(UseApplicationSubSelectedValue.Value);
+			}
+			else if (UseApplicationManual is not null)
+			{
+				useApplication = UseApplicationManual.Value;
+			}
+
+			if (ReferenceNumber is not null) { referenceNumber = ReferenceNumber.Value; }
+			if (OldNumber is not null) { oldNumber = OldNumber.Value; }
+			if (NewNumber is not null) { newNumber = NewNumber.Value; }
+			if (InheritenceNumber is not null) { inheritenceNumber = InheritenceNumber.Value; }
+
+			if (Explanation is not null) {  explanation = Explanation.Value; }
+			if (Summary is not null) {  summary = Summary.Value; }
+			
+			int i = 0;
 		}
 
 

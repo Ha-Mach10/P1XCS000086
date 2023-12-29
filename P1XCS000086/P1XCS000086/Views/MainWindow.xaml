@@ -4,11 +4,12 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:core="clr-namespace:P1XCS000086.Core;assembly=P1XCS000086.Core"
 	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+	xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
 	xmlns:mdMetro="http://materialdesigninxaml.net/winfx/xaml/themes"
 	xmlns:prism="http://prismlibrary.com/"
 	Title="{Binding Title}"
 	Width="1000"
-	Height="1000"
+	Height="1200"
 	prism:ViewModelLocator.AutoWireViewModel="True">
 
 	<Window.Resources>
@@ -83,8 +84,8 @@
 												<ComboBox
 													Margin="0,8,0,8"
 													ItemsSource="{Binding DevelopmentItemCollection, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-													SelectedValue="{Binding DevelopmentSelectedValue.Value, Mode=OneWayToSource}"
-													SelectedIndex="{Binding DevItemSelectedIndex}">
+													SelectedIndex="{Binding DevItemSelectedIndex}"
+													SelectedValue="{Binding DevelopmentSelectedValue.Value, Mode=OneWayToSource}">
 													<i:Interaction.Triggers>
 														<i:EventTrigger EventName="SelectionChanged">
 															<i:InvokeCommandAction Command="{Binding DevelopmentTypeComboChange}" />
@@ -112,36 +113,59 @@
 											</GroupBox.Header>
 											<VirtualizingStackPanel Margin="8">
 												<TextBlock Text="開発名称" />
-												<TextBox Margin="0,8,0,8" Text="" />
+												<TextBox Margin="0,8,0,8" Text="{Binding DevelopName}" />
+												<TextBlock Text="コードネーム" />
+												<TextBox Margin="0,8,0,8" Text="{Binding CodeName.Value}" />
 												<TextBlock Text="使用用途" />
-												<VirtualizingStackPanel Margin="0,8,0,0" Orientation="Horizontal">
-													<TextBlock Text="自動" />
-													<ToggleButton Margin="12,0,12,0" Style="{StaticResource MaterialDesignSwitchLightToggleButton}" />
-													<TextBlock Text="手動" />
-												</VirtualizingStackPanel>
-												<Grid Margin="0,8,0,8">
+												<mah:ToggleSwitch
+													Margin="8,0,0,0"
+													Padding="0"
+													Command="{Binding CheckedStateChanged}"
+													Foreground="White"
+													IsOn="{Binding UseApplicationIsChecked}"
+													OffContent="自動"
+													OnContent="手動" />
+												<Grid Margin="0,0,0,8" Visibility="{Binding UseApplicationComboBoxVisibility}">
 													<Grid.ColumnDefinitions>
 														<ColumnDefinition />
 														<ColumnDefinition Width="8" />
 														<ColumnDefinition />
 													</Grid.ColumnDefinitions>
-													<ComboBox ItemsSource="{Binding UseApplication}" />
-													<ComboBox ItemsSource="{Binding UseApplicationSub}" Grid.Column="2" />
+													<ComboBox ItemsSource="{Binding UseApplication.Value}" SelectedValue="{Binding UseApplicationSelectedValue.Value}" />
+													<ComboBox
+														Grid.Column="2"
+														ItemsSource="{Binding UseApplicationSub.Value}"
+														SelectedValue="{Binding UseApplicationSubSelectedValue.Value}" />
 												</Grid>
-												<TextBox Margin="0,0,0,8" Text="{Binding}"/>
+												<TextBox
+													Margin="0,0,0,8"
+													Text="{Binding UseApplicationManual}"
+													Visibility="{Binding UseApplicationTextBoxVisibility}" />
 												<TextBlock Text="流用番号" />
-												<TextBox Margin="0,8,0,8" Text="" />
+												<TextBox Margin="0,8,0,8" Text="{Binding ReferenceNumber}" />
 												<TextBlock Text="旧番号" />
-												<TextBox Margin="0,8,0,8" Text="" />
+												<TextBox Margin="0,8,0,8" Text="{Binding OldNumber}" />
 												<TextBlock Text="新番号" />
-												<TextBox Margin="0,8,0,8" Text="" />
+												<TextBox Margin="0,8,0,8" Text="{Binding NewNumber}" />
 												<TextBlock Text="継承元番号" />
-												<TextBox Margin="0,8,0,8" Text="" />
+												<TextBox Margin="0,8,0,8" Text="{Binding InheritenceNumber}" />
 												<TextBlock Text="説明" />
-												<RichTextBox Height="80" Margin="0,8,0,8" />
+												<TextBox
+													Height="60"
+													Margin="0,8,0,8"
+													VerticalContentAlignment="Top"
+													AcceptsReturn="True"
+													Text="{Binding Explanation.Value}"
+													TextWrapping="Wrap" />
 												<TextBlock Text="摘要" />
-												<RichTextBox Height="120" Margin="0,8,0,8" />
-												<Button Content="登録" />
+												<TextBox
+													Height="60"
+													Margin="0,8,0,8"
+													VerticalContentAlignment="Top"
+													AcceptsReturn="True"
+													Text="{Binding Summary.Value}"
+													TextWrapping="Wrap" />
+												<Button Command="{Binding CodeNumberRegist}" Content="登録" />
 											</VirtualizingStackPanel>
 										</GroupBox>
 									</Grid>
