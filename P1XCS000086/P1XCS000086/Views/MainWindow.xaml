@@ -113,7 +113,7 @@
 											</GroupBox.Header>
 											<VirtualizingStackPanel Margin="8">
 												<TextBlock Text="開発名称" />
-												<TextBox Margin="0,8,0,8" Text="{Binding DevelopName}" />
+												<TextBox Margin="0,8,0,8" Text="{Binding DevelopName.Value}" />
 												<TextBlock Text="コードネーム" />
 												<TextBox Margin="0,8,0,8" Text="{Binding CodeName.Value}" />
 												<TextBlock Text="使用用途" />
@@ -139,16 +139,16 @@
 												</Grid>
 												<TextBox
 													Margin="0,0,0,8"
-													Text="{Binding UseApplicationManual}"
+													Text="{Binding UseApplicationManual.Value}"
 													Visibility="{Binding UseApplicationTextBoxVisibility}" />
 												<TextBlock Text="流用番号" />
-												<TextBox Margin="0,8,0,8" Text="{Binding ReferenceNumber}" />
+												<TextBox Margin="0,8,0,8" Text="{Binding ReferenceNumber.Value}" />
 												<TextBlock Text="旧番号" />
-												<TextBox Margin="0,8,0,8" Text="{Binding OldNumber}" />
+                                                <TextBox Margin="0,8,0,8" Text="{Binding OldNumber.Value}" />
 												<TextBlock Text="新番号" />
-												<TextBox Margin="0,8,0,8" Text="{Binding NewNumber}" />
+                                                <TextBox Margin="0,8,0,8" Text="{Binding NewNumber.Value}" />
 												<TextBlock Text="継承元番号" />
-												<TextBox Margin="0,8,0,8" Text="{Binding InheritenceNumber}" />
+                                                <TextBox Margin="0,8,0,8" Text="{Binding InheritenceNumber.Value}" />
 												<TextBlock Text="説明" />
 												<TextBox
 													Height="60"
@@ -200,7 +200,7 @@
 									<ColumnDefinition />
 								</Grid.ColumnDefinitions>
 								<StackPanel>
-									<GroupBox x:Name="DatabaseRegisterGroupBox" Width="200">
+									<GroupBox x:Name="DatabaseRegisterGroupBox" Width="290">
 										<GroupBox.Header>
 											<TextBlock Text="データベース接続" />
 										</GroupBox.Header>
@@ -230,7 +230,7 @@
 											<mdMetro:Snackbar
 												Width="{Binding ElementName=DatabaseRegisterGroupBox, Path=Width}"
 												IsActive="{Binding SnackIsActive}"
-												MessageQueue="{Binding SnackBarMessageQueue.Value}" />
+												MessageQueue="{Binding SnackBarMessageQueue}" />
 										</StackPanel>
 									</GroupBox>
 								</StackPanel>

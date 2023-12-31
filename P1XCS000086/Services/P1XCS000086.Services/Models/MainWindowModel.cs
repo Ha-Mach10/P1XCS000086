@@ -21,11 +21,11 @@ namespace P1XCS000086.Services.Models
 	public class MainWindowModel : IMainWindowModel
 	{
 		// Properies 
-		public string Server { get; private set; }
-		public string User {  get; private set; }
-		public string Database {  get; private set; }
-		public string Password { get; private set; }
-		public bool PersistSecurityInfo { get; private set; }
+		public string Server { get; set; }
+		public string User {  get; set; }
+		public string Database {  get; set; }
+		public string Password { get; set; }
+		public bool PersistSecurityInfo { get; set; }
 
 		public JsonConnectionStrings JsonConnString { get; private set; }
 
@@ -311,6 +311,15 @@ namespace P1XCS000086.Services.Models
 				builder.PersistSecurityInfo = jsonConnString.PersistSecurityInfo;
 				connStr = builder.GetConnectionString();
 			}
+			else
+			{
+                builder.Server = Server;
+                builder.User = User;
+                builder.Database = Database;
+                builder.Password = Password;
+                builder.PersistSecurityInfo = PersistSecurityInfo;
+                connStr = builder.GetConnectionString();
+            }
 
 			return connStr;
 		}
@@ -321,13 +330,14 @@ namespace P1XCS000086.Services.Models
 		{
 			JsonExtention jsonExtention = new JsonExtention();
 
+			if (jsonExtention is null) { return null; }
 			// ファイルが存在していなければ生成し、処理を抜ける
 			if (!jsonExtention.PathCheckAndGenerate()) { return null; }
 
 			// JSONファイルからSQL接続文字列を復号し、プロパティにセット
 			string jsonFilePath = JsonExtention.JsonFilePath;
 			IJsonConnectionStrings jsonConnString = jsonExtention.DeserializeJson<JsonConnectionStrings>(jsonFilePath);
-			if (!jsonConnString.IsPropertiesExists()) { return null; }
+			if (jsonConnString is null || !jsonConnString.IsPropertiesExists()) { return null; }
 
 			return jsonConnString;
 		}

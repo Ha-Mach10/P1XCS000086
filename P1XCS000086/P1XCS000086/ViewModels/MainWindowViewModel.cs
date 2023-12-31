@@ -27,6 +27,8 @@ using Org.BouncyCastle.Bcpg.OpenPgp;
 using System.Windows;
 using Reactive.Bindings.ObjectExtensions;
 using System.Reactive;
+using System.Configuration;
+using System.Threading.Tasks;
 
 namespace P1XCS000086.ViewModels
 {
@@ -57,16 +59,19 @@ namespace P1XCS000086.ViewModels
 		private Visibility _useApplicationComboBoxVisibility;
 		private Visibility _useApplicationTextBoxVisibility;
 
+		private SnackbarMessageQueue _snackBarMessageQueue;
+		private bool _snackIsActive = false;
 
-		#region ReactiveProperties
-		public ReactivePropertySlim<string> Server { get; set; }
-		public ReactivePropertySlim<string> User { get; set; }
-		public ReactivePropertySlim<string> Database { get; set; }
-		public ReactivePropertySlim<string> Password { get; set; }
-		public ReactivePropertySlim<bool> PersistSecurityInfo { get; set; }
 
-		public ReactivePropertySlim<string> LanguageSelectedValue { get; set; }
-		public ReactivePropertySlim<string> DevelopmentSelectedValue { get; set; }
+        #region ReactiveProperties
+        public ReactivePropertySlim<string> Server { get; }
+		public ReactivePropertySlim<string> User { get; }
+		public ReactivePropertySlim<string> Database { get; }
+		public ReactivePropertySlim<string> Password { get; }
+		public ReactivePropertySlim<bool> PersistSecurityInfo { get; }
+
+		public ReactivePropertySlim<string> LanguageSelectedValue { get; }
+		public ReactivePropertySlim<string> DevelopmentSelectedValue { get; }
 		public ObservableCollection<string> LanguageItemCollection
 		{
 			get => _languageItemCollection;
@@ -114,7 +119,7 @@ namespace P1XCS000086.ViewModels
 		public ReactivePropertySlim<string> Summary { get; }
 
 
-public Visibility UseApplicationComboBoxVisibility
+		public Visibility UseApplicationComboBoxVisibility
 		{
 			get => _useApplicationComboBoxVisibility;
 			set => SetProperty(ref _useApplicationComboBoxVisibility, value);
@@ -126,8 +131,16 @@ public Visibility UseApplicationComboBoxVisibility
 		}
 
 
-		public ReactivePropertySlim<bool> SnackIsActive { get; }
-		public ReactivePropertySlim<SnackbarMessageQueue> SnackBarMessageQueue { get; private set; }
+		public bool SnackIsActive
+		{
+			get => _snackIsActive;
+			set => SetProperty(ref _snackIsActive, value);
+		}
+		public SnackbarMessageQueue SnackBarMessageQueue
+		{
+			get => _snackBarMessageQueue;
+			set => SetProperty(ref _snackBarMessageQueue, value);
+		}
 
 
 		public ReactivePropertySlim<string> ConnectionDatabase { get; }
@@ -174,7 +187,7 @@ public Visibility UseApplicationComboBoxVisibility
 			// JSONファイルが存在していない場合
 			IJsonExtention jsonExtention = new JsonExtention();
 			IJsonConnectionStrings jsonConnString = mainWindowModel.JsonDeserialize();
-			if (jsonExtention.PathCheckAndGenerate() && jsonConnString.IsPropertiesExists())
+            if (jsonExtention.PathCheckAndGenerate() && jsonConnString is not null)
 			{
 				// Properties SQL Connection
 				Server				= new ReactivePropertySlim<string>(jsonConnString.Server).AddTo(disposables);
@@ -196,6 +209,14 @@ public Visibility UseApplicationComboBoxVisibility
 				UseApplication = new ReactivePropertySlim<List<string>>(useApplicationItems).AddTo(disposables);
 				UseApplicationSub = new ReactivePropertySlim<List<string>>(useApplicationSubItems).AddTo(disposables);
 			}
+			else if (jsonConnString is null)
+			{
+                Server = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+                User = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+                Database = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+                Password = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+                PersistSecurityInfo = new ReactivePropertySlim<bool>(false).AddTo(disposables);
+            }
 
 
 			// Command Events
@@ -255,21 +276,40 @@ public Visibility UseApplicationComboBoxVisibility
 		}
 
 		public ReactiveCommand SqlConnectionTest { get; }
-		private void OnSqlConnectionTest()
+		private async void OnSqlConnectionTest()
 		{
 			SnackbarMessageQueue messageQueue = new SnackbarMessageQueue(new TimeSpan(2));
+			SnackIsActive = true;
 
 			if (_mainWindowModel.SqlConnection())
 			{
 				messageQueue.Enqueue("接続成功");
-				SnackBarMessageQueue = new ReactivePropertySlim<SnackbarMessageQueue>(messageQueue).AddTo(disposables);
+				SnackBarMessageQueue = messageQueue;
 
 				return;
 			}
+			else
+			{
+				_mainWindowModel.Server = Server.Value;
+				_mainWindowModel.User = User.Value;
+				_mainWindowModel.Database = Database.Value;
+				_mainWindowModel.Password = Password.Value;
+				_mainWindowModel.PersistSecurityInfo = PersistSecurityInfo.Value;
+
+                messageQueue.Enqueue("接続成功");
+                SnackBarMessageQueue = messageQueue;
+
+                return;
+            }
 
 			messageQueue.Enqueue("接続失敗");
-			SnackBarMessageQueue = new ReactivePropertySlim<SnackbarMessageQueue>(messageQueue).AddTo(disposables);
-		}
+            SnackBarMessageQueue = messageQueue;
+
+			// 待機 2秒
+			await Task.Delay(2000);
+			// スナックバーを非活性化
+			SnackIsActive = false;
+        }
 
 		public ReactiveCommand RegistSqlConnectionString { get; }
 		private void OnRegistSqlConnectionString()
