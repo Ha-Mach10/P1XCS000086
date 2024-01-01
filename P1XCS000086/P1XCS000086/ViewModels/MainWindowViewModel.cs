@@ -298,8 +298,6 @@ namespace P1XCS000086.ViewModels
 
                 messageQueue.Enqueue("接続成功");
                 SnackBarMessageQueue = messageQueue;
-
-                return;
             }
 
 			messageQueue.Enqueue("接続失敗");
