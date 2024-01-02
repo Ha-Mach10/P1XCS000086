@@ -223,13 +223,12 @@
 												Command="{Binding RegistSqlConnectionString}"
 												Content="登録" />
 											<Button
-												Margin="0,8,0,56"
+												Margin="0,8,0,16"
 												Command="{Binding SqlConnectionTest}"
 												Content="接続テスト"
 												Foreground="SpringGreen" />
 											<mdMetro:Snackbar
 												Width="{Binding ElementName=DatabaseRegisterGroupBox, Path=Width}"
-												IsActive="{Binding SnackIsActive}"
 												MessageQueue="{Binding SnackBarMessageQueue}" />
 										</StackPanel>
 									</GroupBox>

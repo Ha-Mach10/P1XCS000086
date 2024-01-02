@@ -59,7 +59,7 @@ namespace P1XCS000086.ViewModels
 		private Visibility _useApplicationComboBoxVisibility;
 		private Visibility _useApplicationTextBoxVisibility;
 
-		private SnackbarMessageQueue _snackBarMessageQueue;
+		private SnackbarMessageQueue _snackBarMessageQueue = new SnackbarMessageQueue(TimeSpan.FromMilliseconds(2000));
 		private bool _snackIsActive = false;
 
 
@@ -276,19 +276,15 @@ namespace P1XCS000086.ViewModels
 		}
 
 		public ReactiveCommand SqlConnectionTest { get; }
-		private async void OnSqlConnectionTest()
+		private void OnSqlConnectionTest()
 		{
-			SnackbarMessageQueue messageQueue = new SnackbarMessageQueue(new TimeSpan(2));
-			SnackIsActive = true;
-
 			if (_mainWindowModel.SqlConnection())
 			{
-				messageQueue.Enqueue("接続成功");
-				SnackBarMessageQueue = messageQueue;
+                SnackBarMessageQueue.Enqueue("接続成功");
 
 				return;
 			}
-			else
+			else if (!_mainWindowModel.SqlConnection())
 			{
 				_mainWindowModel.Server = Server.Value;
 				_mainWindowModel.User = User.Value;
@@ -296,17 +292,12 @@ namespace P1XCS000086.ViewModels
 				_mainWindowModel.Password = Password.Value;
 				_mainWindowModel.PersistSecurityInfo = PersistSecurityInfo.Value;
 
-                messageQueue.Enqueue("接続成功");
-                SnackBarMessageQueue = messageQueue;
+                SnackBarMessageQueue.Enqueue("接続成功");
+
+				return;
             }
 
-			messageQueue.Enqueue("接続失敗");
-            SnackBarMessageQueue = messageQueue;
-
-			// 待機 2秒
-			await Task.Delay(2000);
-			// スナックバーを非活性化
-			SnackIsActive = false;
+            SnackBarMessageQueue.Enqueue("接続失敗");
         }
 
 		public ReactiveCommand RegistSqlConnectionString { get; }
