@@ -107,7 +107,7 @@
 												</Border>
 											</VirtualizingStackPanel>
 										</GroupBox>
-										<GroupBox Grid.Row="1" Margin="0,12,0,0">
+										<GroupBox Grid.Row="1" Margin="0,12,0,0" Visibility="{Binding GroupBoxVisibility}">
 											<GroupBox.Header>
 												<TextBlock Text="記番登録処理" />
 											</GroupBox.Header>
@@ -120,7 +120,8 @@
 												<mah:ToggleSwitch
 													Margin="8,0,0,0"
 													Padding="0"
-													Command="{Binding CheckedStateChanged}"
+													OnCommand="{Binding CheckedStateChanged}"
+													OffCommand="{Binding CheckedStateChanged}"
 													Foreground="White"
 													IsOn="{Binding UseApplicationIsChecked}"
 													OffContent="自動"

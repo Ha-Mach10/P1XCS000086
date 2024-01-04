@@ -54,13 +54,10 @@ namespace P1XCS000086.ViewModels
 		private int _devItemSelectedIndex;
 		private bool _isDevItemSelected = false;
 
-		private bool _useApplicationIsChecked;
-
-		private Visibility _useApplicationComboBoxVisibility;
-		private Visibility _useApplicationTextBoxVisibility;
 
 		private SnackbarMessageQueue _snackBarMessageQueue = new SnackbarMessageQueue(TimeSpan.FromMilliseconds(2000));
 		private bool _snackIsActive = false;
+
 
 
         #region ReactiveProperties
@@ -98,7 +95,7 @@ namespace P1XCS000086.ViewModels
 			set => SetProperty(ref _devItemSelectedIndex, value);
 		}
 
-		// public ReactivePropertySlim<bool> UseApplicationIsChecked { get; set; }
+		private bool _useApplicationIsChecked = false;
 		public bool UseApplicationIsChecked
 		{
 			get => _useApplicationIsChecked;
@@ -118,12 +115,13 @@ namespace P1XCS000086.ViewModels
 		public ReactivePropertySlim<string> Explanation { get; }
 		public ReactivePropertySlim<string> Summary { get; }
 
-
+		private Visibility _useApplicationComboBoxVisibility = Visibility.Visible;
 		public Visibility UseApplicationComboBoxVisibility
 		{
 			get => _useApplicationComboBoxVisibility;
 			set => SetProperty(ref _useApplicationComboBoxVisibility, value);
 		}
+		private Visibility _useApplicationTextBoxVisibility = Visibility.Collapsed;
 		public Visibility UseApplicationTextBoxVisibility
 		{
 			get => _useApplicationTextBoxVisibility;
@@ -140,6 +138,13 @@ namespace P1XCS000086.ViewModels
 		{
 			get => _snackBarMessageQueue;
 			set => SetProperty(ref _snackBarMessageQueue, value);
+		}
+
+		private Visibility _groupBoxVisibility = Visibility.Collapsed;
+		public Visibility GroupBoxVisibility
+		{
+			get => _groupBoxVisibility;
+			set => SetProperty(ref _groupBoxVisibility, value);
 		}
 
 
@@ -258,6 +263,9 @@ namespace P1XCS000086.ViewModels
 			RowsCount = dt.Rows.Count;
 
 			DevItemSelectedIndex = -1;
+
+			// GroupBoxのVisibilityを変更（非表示）
+			GroupBoxVisibility = Visibility.Collapsed;
 		}
 		public ReactiveCommand DevelopmentTypeComboChange { get; }
 		private void OnDevelopmentTypeComboChange()
@@ -273,6 +281,9 @@ namespace P1XCS000086.ViewModels
 			DataGridItems = dt;
 
 			RowsCount = dt.Rows.Count;
+
+			// GroupBoxのVisibilityを変更（表示）
+			GroupBoxVisibility = Visibility.Visible;
 		}
 
 		public ReactiveCommand SqlConnectionTest { get; }
@@ -356,7 +367,10 @@ namespace P1XCS000086.ViewModels
 			string explanation = string.Empty;
 			string summary = string.Empty;
 
-			if (DevelopName is not null) { developName = DevelopName.Value; }
+			if (DevelopName is not null)
+			{
+				developName = DevelopName.Value;
+			}
 			if (CodeName is not null) { codeName = CodeName.Value; }
 
 			if (UseApplicationSelectedValue is not null || UseApplicationSubSelectedValue is not null)

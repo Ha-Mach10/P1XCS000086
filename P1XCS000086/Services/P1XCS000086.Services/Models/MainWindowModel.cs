@@ -96,7 +96,7 @@ namespace P1XCS000086.Services.Models
 			return dt;
 		}
 		/// <summary>
-		/// 
+		/// 「言語種別」にて変更した言語種別から対象の言語で作成された号番を取得
 		/// </summary>
 		/// <param name="developType"></param>
 		/// <param name="languageType"></param>
@@ -122,18 +122,7 @@ namespace P1XCS000086.Services.Models
 			// クエリからDataTableを取得
 			DataTable dt = selectExecute.Select(queryCommand);
 
-
-			// 翻訳テーブルから号番テーブル（namager_codes）カラムの翻訳語を取得し、リストへ格納
-			string queryTranclateCommand = $"SELECT japanese FROM table_translator WHERE table_name='manager_codes' AND type='column';";
-			List<string> columnHeaders = QueryExecuteToList("japanese", queryTranclateCommand);
-			
-			// 格納したリストからDataTableのカラムを書き換える
-			int count = 0;
-			foreach (string columnHeader in columnHeaders)
-			{
-				dt.Columns[count].ColumnName = columnHeader;
-				count++;
-			}
+			dt = CodeManagerColumnHeaderTrancelate(dt);
 
 			return dt;
 		}
@@ -155,12 +144,26 @@ namespace P1XCS000086.Services.Models
 
 			return dataTable;
 		}
+
 		public string RegistCodeNumberComboBoxItemSelect(string selectedValue)
 		{
 			string queryCommand = $"SELECT use_name_en FROM manager_use_application WHERE use_name_jp='{selectedValue}';";
 			string getValue = GetSelectItem(selectedValue, queryCommand);
 
 			return getValue;
+		}
+		public string CodeNumberClassifications(string developType, string languageType)
+		{
+			// SELECTクエリ実行用のオブジェクトを生成
+			ISqlSelect selectExecute = GetConnectedSqlSelect();
+
+			// クエリを作成
+			string queryCommand = @$"SELECT CONCAT(d.develop_type_code, l.language_type_code)
+									 FROM manager_language_type AS l
+									 JOIN manager_develop_type AS d
+									 ON l.script_type = d.script_type
+									 WHERE l.language_type='C#' AND d.develop_type='学習用プログラム1';";
+
 		}
 		private ISqlSelect GetConnectedSqlSelect()
 		{
