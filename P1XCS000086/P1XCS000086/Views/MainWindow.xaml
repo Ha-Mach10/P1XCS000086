@@ -107,24 +107,33 @@
 												</Border>
 											</VirtualizingStackPanel>
 										</GroupBox>
-										<GroupBox Grid.Row="1" Margin="0,12,0,0" Visibility="{Binding GroupBoxVisibility}">
+										<GroupBox
+											Grid.Row="1"
+											Margin="0,12,0,0"
+											Visibility="{Binding GroupBoxVisibility}">
 											<GroupBox.Header>
 												<TextBlock Text="記番登録処理" />
 											</GroupBox.Header>
 											<VirtualizingStackPanel Margin="8">
 												<TextBlock Text="開発名称" />
-												<TextBox Margin="0,8,0,8" Text="{Binding DevelopName.Value}" />
+												<TextBox Margin="0,8,0,8" Text="{Binding DevelopName.Value}">
+													<i:Interaction.Triggers>
+														<i:EventTrigger EventName="TextChanged">
+															<i:InvokeCommandAction Command="{Binding TextChanged}" />
+														</i:EventTrigger>
+													</i:Interaction.Triggers>
+												</TextBox>
 												<TextBlock Text="コードネーム" />
 												<TextBox Margin="0,8,0,8" Text="{Binding CodeName.Value}" />
 												<TextBlock Text="使用用途" />
 												<mah:ToggleSwitch
 													Margin="8,0,0,0"
 													Padding="0"
-													OnCommand="{Binding CheckedStateChanged}"
-													OffCommand="{Binding CheckedStateChanged}"
 													Foreground="White"
 													IsOn="{Binding UseApplicationIsChecked}"
+													OffCommand="{Binding CheckedStateChanged}"
 													OffContent="自動"
+													OnCommand="{Binding CheckedStateChanged}"
 													OnContent="手動" />
 												<Grid Margin="0,0,0,8" Visibility="{Binding UseApplicationComboBoxVisibility}">
 													<Grid.ColumnDefinitions>
@@ -132,7 +141,13 @@
 														<ColumnDefinition Width="8" />
 														<ColumnDefinition />
 													</Grid.ColumnDefinitions>
-													<ComboBox ItemsSource="{Binding UseApplication.Value}" SelectedValue="{Binding UseApplicationSelectedValue.Value}" />
+													<ComboBox ItemsSource="{Binding UseApplication.Value}" SelectedValue="{Binding UseApplicationSelectedValue.Value}">
+														<i:Interaction.Triggers>
+															<i:EventTrigger EventName="SelectionChanged">
+																<i:InvokeCommandAction Command="{Binding ComboChanged}" />
+															</i:EventTrigger>
+														</i:Interaction.Triggers>
+													</ComboBox>
 													<ComboBox
 														Grid.Column="2"
 														ItemsSource="{Binding UseApplicationSub.Value}"
@@ -141,15 +156,21 @@
 												<TextBox
 													Margin="0,0,0,8"
 													Text="{Binding UseApplicationManual.Value}"
-													Visibility="{Binding UseApplicationTextBoxVisibility}" />
+													Visibility="{Binding UseApplicationTextBoxVisibility}">
+													<i:Interaction.Triggers>
+														<i:EventTrigger EventName="TextChanged">
+															<i:InvokeCommandAction Command="{Binding TextChanged}" />
+														</i:EventTrigger>
+													</i:Interaction.Triggers>
+												</TextBox>
 												<TextBlock Text="流用番号" />
 												<TextBox Margin="0,8,0,8" Text="{Binding ReferenceNumber.Value}" />
 												<TextBlock Text="旧番号" />
-                                                <TextBox Margin="0,8,0,8" Text="{Binding OldNumber.Value}" />
+												<TextBox Margin="0,8,0,8" Text="{Binding OldNumber.Value}" />
 												<TextBlock Text="新番号" />
-                                                <TextBox Margin="0,8,0,8" Text="{Binding NewNumber.Value}" />
+												<TextBox Margin="0,8,0,8" Text="{Binding NewNumber.Value}" />
 												<TextBlock Text="継承元番号" />
-                                                <TextBox Margin="0,8,0,8" Text="{Binding InheritenceNumber.Value}" />
+												<TextBox Margin="0,8,0,8" Text="{Binding InheritenceNumber.Value}" />
 												<TextBlock Text="説明" />
 												<TextBox
 													Height="60"
@@ -166,7 +187,10 @@
 													AcceptsReturn="True"
 													Text="{Binding Summary.Value}"
 													TextWrapping="Wrap" />
-												<Button Command="{Binding CodeNumberRegist}" Content="登録" />
+												<Button
+													Command="{Binding CodeNumberRegist}"
+													Content="登録"
+													Visibility="{Binding RegistButtonVisibility}" />
 											</VirtualizingStackPanel>
 										</GroupBox>
 									</Grid>
@@ -177,7 +201,7 @@
 									CanUserDeleteRows="False"
 									CanUserResizeRows="False"
 									GridLinesVisibility="All"
-									ItemsSource="{Binding DataGridItems, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+									ItemsSource="{Binding DataGridItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
 									SelectionUnit="FullRow"
 									VerticalScrollBarVisibility="Auto"
 									VirtualizingPanel.IsVirtualizing="True"
@@ -228,9 +252,7 @@
 												Command="{Binding SqlConnectionTest}"
 												Content="接続テスト"
 												Foreground="SpringGreen" />
-											<mdMetro:Snackbar
-												Width="{Binding ElementName=DatabaseRegisterGroupBox, Path=Width}"
-												MessageQueue="{Binding SnackBarMessageQueue}" />
+											<mdMetro:Snackbar Width="{Binding ElementName=DatabaseRegisterGroupBox, Path=Width}" MessageQueue="{Binding SnackBarMessageQueue}" />
 										</StackPanel>
 									</GroupBox>
 								</StackPanel>
@@ -285,6 +307,8 @@
 			<StatusBarItem Content="CodeManager" />
 			<Separator Style="{StaticResource MahApps.Styles.Separator.StatusBar}" />
 			<StatusBarItem Content="Selected Tab:" />
+			<Separator Style="{StaticResource MahApps.Styles.Separator.StatusBar}"/>
+			<StatusBarItem Content="{Binding ProjectDirectryText}" />
 		</StatusBar>
 	</Grid>
 </Window>

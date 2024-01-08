@@ -24,7 +24,8 @@ namespace P1XCS000086.Services.Interfaces
 		public DataTable CodeManagerDataGridItemSetting(string languageType);
 		public DataTable CodeManagerDataGridItemSetting(string developType, string languageType);
 		public string RegistCodeNumberComboBoxItemSelect(string selectedValue);
-		public string CodeNumberClassifications(string developType, string languageType);
+		public string CodeNumberClassification(string developType, string languageType);
+		public string GetProjectDirectry(string languageType);
 		public string ConnectionString();
 		public bool SqlConnection();
 		public IJsonConnectionStrings JsonDeserialize();

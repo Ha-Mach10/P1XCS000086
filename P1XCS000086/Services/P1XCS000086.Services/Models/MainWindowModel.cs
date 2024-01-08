@@ -152,7 +152,7 @@ namespace P1XCS000086.Services.Models
 
 			return getValue;
 		}
-		public string CodeNumberClassifications(string developType, string languageType)
+		public string CodeNumberClassification(string developType, string languageType)
 		{
 			// SELECTクエリ実行用のオブジェクトを生成
 			ISqlSelect selectExecute = GetConnectedSqlSelect();
@@ -162,8 +162,27 @@ namespace P1XCS000086.Services.Models
 									 FROM manager_language_type AS l
 									 JOIN manager_develop_type AS d
 									 ON l.script_type = d.script_type
-									 WHERE l.language_type='C#' AND d.develop_type='学習用プログラム1';";
+									 WHERE l.language_type='{languageType}' AND d.develop_type='{developType}';";
+			string columnName = "CONCAT(d.develop_type_code, l.language_type_code)";
+			string classificationString = GetSelectItem(columnName, queryCommand);
 
+			return classificationString;
+		}
+		public string GetProjectDirectry(string languageType)
+		{
+			ISqlSelect selectExecute = GetConnectedSqlSelect();
+
+			string queryCommand = @$"SELECT language_directry
+									 FROM project_language_directry
+									 WHERE language_type=
+									 (
+										SELECT language_type_code
+										FROM manager_language_type
+										WHERE language_type='{languageType}'
+									 );";
+			string directryPath = GetSelectItem("language_directry", queryCommand);
+
+			return directryPath;
 		}
 		private ISqlSelect GetConnectedSqlSelect()
 		{
@@ -190,7 +209,10 @@ namespace P1XCS000086.Services.Models
 
 			// LINQで「dt」から指定のカラムのEnumerableRowCollection<DataRow>を取得
 			var rowItmes = dt.AsEnumerable().Select(x => x[columnName]).ToList();
-			
+
+			// もし「rowItems」の項目数が１未満のとき、"Empty"を返す
+			if (rowItmes.Count < 1) { return "Empty"; }
+
 			// 取得したコレクションから、LINQで最初の項目を取得
 			string item = rowItmes.First().ToString();
 

@@ -127,6 +127,12 @@ namespace P1XCS000086.ViewModels
 			get => _useApplicationTextBoxVisibility;
 			set => SetProperty(ref _useApplicationTextBoxVisibility, value);
 		}
+		private Visibility _registButtonVisibility = Visibility.Collapsed;
+		public Visibility RegistButtonVisibility
+		{
+			get => _registButtonVisibility;
+			set => SetProperty(ref _registButtonVisibility, value);
+		}
 
 
 		public bool SnackIsActive
@@ -139,12 +145,18 @@ namespace P1XCS000086.ViewModels
 			get => _snackBarMessageQueue;
 			set => SetProperty(ref _snackBarMessageQueue, value);
 		}
-
 		private Visibility _groupBoxVisibility = Visibility.Collapsed;
 		public Visibility GroupBoxVisibility
 		{
 			get => _groupBoxVisibility;
 			set => SetProperty(ref _groupBoxVisibility, value);
+		}
+
+		private string _projectDirectryText;
+		public string ProjectDirectryText
+		{
+			get => _projectDirectryText;
+			set => SetProperty(ref _projectDirectryText, value);
 		}
 
 
@@ -240,6 +252,12 @@ namespace P1XCS000086.ViewModels
 
 			CodeNumberRegist = new ReactiveCommand();
 			CodeNumberRegist.Subscribe(() => OnCodeNumberRegist()).AddTo(disposables);
+
+			TextChanged = new ReactiveCommand();
+			TextChanged.Subscribe(() => OnChangedValue()).AddTo(disposables);
+
+			ComboChanged = new ReactiveCommand();
+			ComboChanged.Subscribe(() => OnChangedValue()).AddTo(disposables);
 		}
 
 
@@ -259,6 +277,10 @@ namespace P1XCS000086.ViewModels
 			// DataGrid用のDataTableを取得
 			DataTable dt = _mainWindowModel.CodeManagerDataGridItemSetting(selectedValue);
 			DataGridItems = dt;
+
+			// プロジェクトのディレクトリを取得
+			string directryPath = _mainWindowModel.GetProjectDirectry(selectedValue);
+			ProjectDirectryText = $"対象ディレクトリ ： {directryPath}";
 
 			RowsCount = dt.Rows.Count;
 
@@ -367,10 +389,12 @@ namespace P1XCS000086.ViewModels
 			string explanation = string.Empty;
 			string summary = string.Empty;
 
-			if (DevelopName is not null)
-			{
-				developName = DevelopName.Value;
-			}
+			// 開発番号の生成
+			string codeNumberClassificationString =
+				_mainWindowModel.CodeNumberClassification(DevelopmentSelectedValue.Value, LanguageSelectedValue.Value);
+			string codeNumber = $"{codeNumberClassificationString}{(RowsCount + 1).ToString("000000")}";
+
+			if (DevelopName is not null) { developName = DevelopName.Value; }
 			if (CodeName is not null) { codeName = CodeName.Value; }
 
 			if (UseApplicationSelectedValue is not null || UseApplicationSubSelectedValue is not null)
@@ -392,6 +416,18 @@ namespace P1XCS000086.ViewModels
 			if (Summary is not null) {  summary = Summary.Value; }
 			
 			int i = 0;
+		}
+		public ReactiveCommand TextChanged { get; }
+		public ReactiveCommand ComboChanged { get; }
+		private void OnChangedValue()
+		{
+			if (DevelopName is not null || UseApplicationManual is not null)
+			{
+				RegistButtonVisibility = Visibility.Visible;
+				return;
+			}
+
+			RegistButtonVisibility = Visibility.Collapsed;
 		}
 
 
