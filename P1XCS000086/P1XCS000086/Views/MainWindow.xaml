@@ -195,18 +195,24 @@
 										</GroupBox>
 									</Grid>
 								</GroupBox>
-								<DataGrid
-									Grid.Column="1"
-									CanUserAddRows="False"
-									CanUserDeleteRows="False"
-									CanUserResizeRows="False"
-									GridLinesVisibility="All"
-									ItemsSource="{Binding DataGridItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-									SelectionUnit="FullRow"
-									VerticalScrollBarVisibility="Auto"
-									VirtualizingPanel.IsVirtualizing="True"
-									VirtualizingPanel.ScrollUnit="Pixel"
-									VirtualizingPanel.VirtualizationMode="Recycling" />
+								<Grid Grid.Column="1">
+									<Grid.RowDefinitions>
+										<RowDefinition />
+										<RowDefinition Height="Auto" />
+									</Grid.RowDefinitions>
+									<DataGrid
+										CanUserAddRows="False"
+										CanUserDeleteRows="False"
+										CanUserResizeRows="False"
+										GridLinesVisibility="All"
+										ItemsSource="{Binding DataGridItems, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+										SelectionUnit="FullRow"
+										VerticalScrollBarVisibility="Auto"
+										VirtualizingPanel.IsVirtualizing="True"
+										VirtualizingPanel.ScrollUnit="Pixel"
+										VirtualizingPanel.VirtualizationMode="Recycling" />
+									<mdMetro:Snackbar Grid.Row="1" MessageQueue="{Binding }"/>
+								</Grid>
 							</Grid>
 						</TabItem>
 						<TabItem Style="{StaticResource MahApps.Styles.TabItem}">
@@ -307,7 +313,7 @@
 			<StatusBarItem Content="CodeManager" />
 			<Separator Style="{StaticResource MahApps.Styles.Separator.StatusBar}" />
 			<StatusBarItem Content="Selected Tab:" />
-			<Separator Style="{StaticResource MahApps.Styles.Separator.StatusBar}"/>
+			<Separator Style="{StaticResource MahApps.Styles.Separator.StatusBar}" />
 			<StatusBarItem Content="{Binding ProjectDirectryText}" />
 		</StatusBar>
 	</Grid>

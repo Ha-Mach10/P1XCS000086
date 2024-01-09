@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using P1XCS000086.Services.Interfaces;
 
 namespace P1XCS000086.Services.Sql.MySql
 {
-	public class SqlInsert
+	public class SqlInsert : ISqlInsert
 	{
 		private string _connStr;
 		private string _command;
@@ -31,8 +32,10 @@ namespace P1XCS000086.Services.Sql.MySql
 		}
 
 
-		public void Insert(string command, List<string> columns, List<string> values)
+		public bool Insert(string command, List<string> columns, List<string> values)
 		{
+			ResultMessage = string.Empty;
+
 			try
 			{
 				// コネクションを生成し、コマンドを生成
@@ -64,7 +67,7 @@ namespace P1XCS000086.Services.Sql.MySql
 
 							// ロールバックする
 							tran.Rollback();
-							return;
+							return false;
 						}
 
 						// コミットする
@@ -74,6 +77,7 @@ namespace P1XCS000086.Services.Sql.MySql
 					catch (MySqlException ex)
 					{
 						ExceptionMessage = $"Error: {ex.Message}";
+						return false;
 					}
 				}
 			}
@@ -81,7 +85,15 @@ namespace P1XCS000086.Services.Sql.MySql
 			catch(MySqlException ex)
 			{
 				ExceptionMessage = ex.Message;
+				return false;
 			}
+
+
+
+			// 成功した場合
+			ResultMessage = "success";
+			ExceptionMessage = string.Empty;
+			return true;
 		}
 	}
 }

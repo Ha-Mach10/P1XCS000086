@@ -14,6 +14,7 @@ using System.Net.Http.Headers;
 using MySqlX.XDevAPI.Relational;
 using System.Reflection.Emit;
 using System.Linq;
+using MySqlX.XDevAPI;
 
 
 namespace P1XCS000086.Services.Models
@@ -28,6 +29,9 @@ namespace P1XCS000086.Services.Models
 		public bool PersistSecurityInfo { get; set; }
 
 		public JsonConnectionStrings JsonConnString { get; private set; }
+
+		public string ResultMessage { get; private set; }
+		public string ExceptionMessage { get; private set; }
 
 
 		public MainWindowModel()
@@ -251,16 +255,46 @@ namespace P1XCS000086.Services.Models
 
 			return items;
 		}
-		private string QueryExecute(string command)
+		private bool RegistExecute(List<string> values)
 		{
+			// カラム名のリストを生成
+			List<string> columns = new List<string>()
+			{
+				"develop_number",
+				"develop_name",
+				"code_name",
+				"create_date",
+				"use_applications",
+				"version",
+				"revision_date", "old_number", "new_number", "inheritence_number",
+				"explanation", "summary"
+			};
+
+			// INSERT用のカラム列を生成
+			string columnsStr = string.Join(", ", columns);
+			// パラメータクエリ用の値列を生成(SQLインジェクション対策)
+            string valueStr = $"@{string.Join(", @", columns)}";
+
+			// クエリ文字列を生成
+            string queryCommand = @$"INSERT INTO manager_codes({columnsStr}) VALUES({valueStr});";
+
+			// 接続文字列を生成
 			string connStr = ConnectionString();
-			ISqlSelect selectExecute = new SqlSelect(connStr, command);
-			DataTable dt = selectExecute.Select();
+			ISqlInsert insertExecute = new SqlInsert(connStr);
+			// INSERTクエリを実行
+			bool result = insertExecute.Insert(queryCommand, columns, values);
+			
+			// 結果文字列または例外文字列に値がセットされている場合
+			if (insertExecute.ResultMessage != "" || insertExecute.ExceptionMessage != "")
+			{
+				ResultMessage = insertExecute.ResultMessage;
+				ExceptionMessage = insertExecute.ExceptionMessage;
+			}
 
-			string item = dt.Rows[0][0].ToString();
-
-			return item;
+			return result;
 		}
+
+
 		/// <summary>
 		/// 接続文字列をJSONシリアル化
 		/// </summary>

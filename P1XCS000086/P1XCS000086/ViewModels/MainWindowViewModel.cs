@@ -55,10 +55,6 @@ namespace P1XCS000086.ViewModels
 		private bool _isDevItemSelected = false;
 
 
-		private SnackbarMessageQueue _snackBarMessageQueue = new SnackbarMessageQueue(TimeSpan.FromMilliseconds(2000));
-		private bool _snackIsActive = false;
-
-
 
         #region ReactiveProperties
         public ReactivePropertySlim<string> Server { get; }
@@ -135,16 +131,13 @@ namespace P1XCS000086.ViewModels
 		}
 
 
-		public bool SnackIsActive
-		{
-			get => _snackIsActive;
-			set => SetProperty(ref _snackIsActive, value);
-		}
+		private SnackbarMessageQueue _snackBarMessageQueue = new SnackbarMessageQueue(TimeSpan.FromMilliseconds(2000));
 		public SnackbarMessageQueue SnackBarMessageQueue
 		{
 			get => _snackBarMessageQueue;
 			set => SetProperty(ref _snackBarMessageQueue, value);
 		}
+		// private SnackbarMessageQueue _snackBarInsertSuccessedMessageQueue = new SnackbarMessageQueue(times)
 		private Visibility _groupBoxVisibility = Visibility.Collapsed;
 		public Visibility GroupBoxVisibility
 		{
@@ -336,16 +329,18 @@ namespace P1XCS000086.ViewModels
 		public ReactiveCommand RegistSqlConnectionString { get; }
 		private void OnRegistSqlConnectionString()
 		{
-			// 接続文字列をJSONファイルへシリアル化
 			// 接続文字列入力フィールドへ入力されていない場合
 			if (Server is null || User is null || Database is null || Password is null)
 			{
+				// 空文字列を生成
 				string emptyValue = string.Empty;
+
+				// 接続文字列をJSONファイルへシリアル化
 				_mainWindowModel.JsonSerialize(emptyValue, emptyValue, emptyValue, emptyValue, PersistSecurityInfo.Value);
 			}
-			// 入力されている場合
 			else
 			{
+				// 接続文字列をJSONファイルへシリアル化
 				_mainWindowModel.JsonSerialize(Server.Value, User.Value, Database.Value, Password.Value, PersistSecurityInfo.Value);
 			}
 
@@ -412,10 +407,11 @@ namespace P1XCS000086.ViewModels
 			if (NewNumber is not null) { newNumber = NewNumber.Value; }
 			if (InheritenceNumber is not null) { inheritenceNumber = InheritenceNumber.Value; }
 
-			if (Explanation is not null) {  explanation = Explanation.Value; }
-			if (Summary is not null) {  summary = Summary.Value; }
+			if (Explanation is not null) { explanation = Explanation.Value; }
+			if (Summary is not null) { summary = Summary.Value; }
 			
-			int i = 0;
+
+			int a = 0;
 		}
 		public ReactiveCommand TextChanged { get; }
 		public ReactiveCommand ComboChanged { get; }

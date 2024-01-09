@@ -14,6 +14,9 @@ namespace P1XCS000086.Services.Interfaces
 		public string Password { get; set; }
 		public bool PersistSecurityInfo { get; set; }
 
+		public string ResultMessage { get; }
+		public string ExceptionMessage { get; }
+
 
 		// Methods
 		public void JsonSerialize(string server, string user, string database, string password, bool persistSecurityInfo);
