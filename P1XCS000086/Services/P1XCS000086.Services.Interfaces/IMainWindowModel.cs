@@ -29,6 +29,7 @@ namespace P1XCS000086.Services.Interfaces
 		public string RegistCodeNumberComboBoxItemSelect(string selectedValue);
 		public string CodeNumberClassification(string developType, string languageType);
 		public string GetProjectDirectry(string languageType);
+		public bool RegistExecute(List<string> values);
 		public string ConnectionString();
 		public bool SqlConnection();
 		public IJsonConnectionStrings JsonDeserialize();

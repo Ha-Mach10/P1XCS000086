@@ -396,6 +396,8 @@ namespace P1XCS000086.ViewModels
 			{
 				useApplication = _mainWindowModel.RegistCodeNumberComboBoxItemSelect(UseApplicationSelectedValue.Value);
 				useApplicationSub = _mainWindowModel.RegistCodeNumberComboBoxItemSelect(UseApplicationSubSelectedValue.Value);
+				
+				useApplication = $"{useApplication}_{useApplicationSub}";
 			}
 			else if (UseApplicationManual is not null)
 			{
@@ -409,7 +411,24 @@ namespace P1XCS000086.ViewModels
 
 			if (Explanation is not null) { explanation = Explanation.Value; }
 			if (Summary is not null) { summary = Summary.Value; }
-			
+
+			List<string> values = new List<string>()
+			{
+				codeNumberClassificationString,
+				developName,
+				codeName,
+				DateTime.Now.ToString(),
+				useApplication,
+				referenceNumber, oldNumber, newNumber, inheritenceNumber,
+				explanation, summary
+			};
+
+			// 
+			if (!_mainWindowModel.RegistExecute(values))
+			{
+				string message = $"{_mainWindowModel.ResultMessage}\n{_mainWindowModel.ExceptionMessage}";
+				SnackBarMessageQueue.Enqueue(message);
+			}
 
 			int a = 0;
 		}

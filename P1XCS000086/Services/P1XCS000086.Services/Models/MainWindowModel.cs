@@ -255,7 +255,7 @@ namespace P1XCS000086.Services.Models
 
 			return items;
 		}
-		private bool RegistExecute(List<string> values)
+		public bool RegistExecute(List<string> values)
 		{
 			// カラム名のリストを生成
 			List<string> columns = new List<string>()
@@ -287,6 +287,7 @@ namespace P1XCS000086.Services.Models
 			// 結果文字列または例外文字列に値がセットされている場合
 			if (insertExecute.ResultMessage != "" || insertExecute.ExceptionMessage != "")
 			{
+				// メッセージを取得
 				ResultMessage = insertExecute.ResultMessage;
 				ExceptionMessage = insertExecute.ExceptionMessage;
 			}
