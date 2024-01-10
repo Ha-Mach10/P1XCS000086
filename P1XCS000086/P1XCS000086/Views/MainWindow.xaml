@@ -8,7 +8,7 @@
 	xmlns:mdMetro="http://materialdesigninxaml.net/winfx/xaml/themes"
 	xmlns:prism="http://prismlibrary.com/"
 	Title="{Binding Title}"
-	Width="1000"
+	Width="1300"
 	Height="1200"
 	prism:ViewModelLocator.AutoWireViewModel="True">
 
@@ -34,7 +34,7 @@
 			<MenuItem Header="ファイル(_f)" />
 		</Menu>
 
-		<TabControl Grid.Row="1">
+		<TabControl Grid.Row="1" SelectedIndex="{Binding SelectedTabIndex.Value}">
 			<TabItem Style="{StaticResource MahApps.Styles.TabItem}">
 				<TabItem.Header>
 					<TextBlock Margin="8,0,8,0" Text="記番台帳" />
@@ -45,6 +45,24 @@
 							<TabItem.Header>
 								<TextBlock Margin="8,0,8,0" Text="ビューア" />
 							</TabItem.Header>
+							<Grid>
+								<Grid.RowDefinitions>
+									<RowDefinition Height="38"/>
+									<RowDefinition />
+								</Grid.RowDefinitions>
+								<VirtualizingStackPanel Orientation="Horizontal" Margin="4">
+									<TextBlock Text="言語種別" Margin="8,0,8,0" VerticalAlignment="Center"/>
+									<ComboBox Width="150"/>
+									<TextBlock Text="開発種別" Margin="8,0,8,0" VerticalAlignment="Center"/>
+									<ComboBox Width="200"/>
+									<TextBlock Text="検索" Margin="24,0,8,0" VerticalAlignment="Center"/>
+									<TextBox Text="{Binding SearchTextDevName.Value}" Width="150" Margin="0,0,4,0" mah:TextBoxHelper.Watermark="開発名称"/>
+									<TextBox Text="{Binding SearchTextCodeName.Value}" Width="150" Margin="0,0,4,0" mah:TextBoxHelper.Watermark="コードネーム"/>
+									<ComboBox ItemsSource="{Binding }" Width="150" Margin="0,0,8,0" mah:TextBoxHelper.Watermark="使用用途"/>
+									<Button Content="クリア" Padding="8,0,8,0" Command="{Binding SearchTextClaar}" />
+								</VirtualizingStackPanel>
+								<DataGrid Grid.Row="1"/>
+							</Grid>
 						</TabItem>
 						<TabItem Style="{StaticResource MahApps.Styles.TabItem}">
 							<TabItem.Header>

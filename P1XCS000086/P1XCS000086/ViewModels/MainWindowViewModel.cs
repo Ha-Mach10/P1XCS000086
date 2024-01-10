@@ -57,7 +57,12 @@ namespace P1XCS000086.ViewModels
 
 
         #region ReactiveProperties
-        public ReactivePropertySlim<string> Server { get; }
+		public ReactivePropertySlim<int> SelectedTabIndex { get; }
+		public ReactivePropertySlim<string> SearchTextDevName { get; }
+		public ReactivePropertySlim<string> SearchTextCodeName { get; }
+		public ReactivePropertySlim<List<string>> SearchTextUseApplivation { get; }
+
+		public ReactivePropertySlim<string> Server { get; }
 		public ReactivePropertySlim<string> User { get; }
 		public ReactivePropertySlim<string> Database { get; }
 		public ReactivePropertySlim<string> Password { get; }
@@ -137,7 +142,6 @@ namespace P1XCS000086.ViewModels
 			get => _snackBarMessageQueue;
 			set => SetProperty(ref _snackBarMessageQueue, value);
 		}
-		// private SnackbarMessageQueue _snackBarInsertSuccessedMessageQueue = new SnackbarMessageQueue(times)
 		private Visibility _groupBoxVisibility = Visibility.Collapsed;
 		public Visibility GroupBoxVisibility
 		{
@@ -170,9 +174,16 @@ namespace P1XCS000086.ViewModels
 			_mainWindowModel = mainWindowModel;
 
 
-			// ----------------------------------------------------------------------------------
+			// -----------------------------------------------------------------------------------------------------
 			// Properties
-			// ----------------------------------------------------------------------------------
+			// -----------------------------------------------------------------------------------------------------
+
+			// タブの初期選択インデックスを設定
+			SelectedTabIndex = new ReactivePropertySlim<int>(0).AddTo(disposables);
+
+			// 
+			SearchTextDevName			= new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+			SearchTextCodeName			= new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
 
 			// 
 			LanguageSelectedValue = new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
@@ -214,10 +225,15 @@ namespace P1XCS000086.ViewModels
 				}
 				LanguageItemCollection = languageItems;
 
+				// 
 				List<string> useApplicationItems = mainWindowModel.UseApplicationComboBoxItemSetting();
 				List<string> useApplicationSubItems = mainWindowModel.UseApplicationSubComboBoxItemSetting();
 				UseApplication = new ReactivePropertySlim<List<string>>(useApplicationItems).AddTo(disposables);
 				UseApplicationSub = new ReactivePropertySlim<List<string>>(useApplicationSubItems).AddTo(disposables);
+
+				// 
+				// List<string> searchTextUseApplicationItems = mainWindowModel.SearchTextUseApplicationComboBoxItemSetting();
+				SearchTextUseApplivation = new ReactivePropertySlim<List<string>>(new List<string>()).AddTo(disposables);
 			}
 			else if (jsonConnString is null)
 			{
@@ -229,26 +245,33 @@ namespace P1XCS000086.ViewModels
             }
 
 
+			// -----------------------------------------------------------------------------------------------------
 			// Command Events
+			// -----------------------------------------------------------------------------------------------------
+
+			// 
+			SearchTextClaar = new ReactiveCommand();
+			SearchTextClaar.Subscribe(() => OnSearchTextClaar()).AddTo(disposables);
+			// 
 			LanguageTypeComboChange = new ReactiveCommand();
 			LanguageTypeComboChange.Subscribe(() => OnLanguageTypeComboChange()).AddTo(disposables);
 			DevelopmentTypeComboChange = new ReactiveCommand();
 			DevelopmentTypeComboChange.Subscribe(() => OnDevelopmentTypeComboChange()).AddTo(disposables);
-
+			// 
 			SqlConnectionTest = new ReactiveCommand();
 			SqlConnectionTest.Subscribe(() => OnSqlConnectionTest()).AddTo(disposables);
 			RegistSqlConnectionString = new ReactiveCommand();
 			RegistSqlConnectionString.Subscribe(() => OnRegistSqlConnectionString()).AddTo(disposables);
-
+			// 
 			CheckedStateChanged = new ReactiveCommand();
 			CheckedStateChanged.Subscribe(() => OnCheckedStateChanged()).AddTo(disposables);
-
+			// 
 			CodeNumberRegist = new ReactiveCommand();
 			CodeNumberRegist.Subscribe(() => OnCodeNumberRegist()).AddTo(disposables);
-
+			// 
 			TextChanged = new ReactiveCommand();
 			TextChanged.Subscribe(() => OnChangedValue()).AddTo(disposables);
-
+			// 
 			ComboChanged = new ReactiveCommand();
 			ComboChanged.Subscribe(() => OnChangedValue()).AddTo(disposables);
 		}
@@ -443,6 +466,14 @@ namespace P1XCS000086.ViewModels
 			}
 
 			RegistButtonVisibility = Visibility.Collapsed;
+		}
+		public ReactiveCommand SearchTextClaar { get; }
+		private void OnSearchTextClaar()
+		{
+			SearchTextDevName.Value = string.Empty;
+			SearchTextCodeName.Value = string.Empty;
+
+			int i = 0;
 		}
 
 

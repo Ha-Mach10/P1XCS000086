@@ -75,6 +75,24 @@ namespace P1XCS000086.Services.Models
 
 			return items;
 		}
+		public List<string> SearchTextUseApplicationComboBoxItemSetting(string developType, string languageType)
+		{
+			string queryCommand = @$"SELECT DISTINCT use_applications
+									 FROM manager_codes
+									 WHERE develop_number
+									 LIKE
+									 (
+										SELECT CONCAT('%', d.develop_type_code, l.language_type_code, '%')
+										FROM manager_language_type AS l
+										JOIN manager_develop_type AS d
+										ON l.script_type = d.script_type
+										WHERE l.language_type='{languageType}' AND d.develop_type='{developType}'
+									 );";
+
+			List<string> items = QueryExecuteToList("use_application", queryCommand);
+
+			return items;
+		}
 		/// <summary>
 		/// 「言語種別」にて変更した言語種別から対象の言語で作成された号番を取得
 		/// </summary>
