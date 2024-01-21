@@ -1,13 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+using System.Data;
+using System.Windows;
 using System.Diagnostics;
+using System.Reactive;
+using System.Configuration;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Reactive.Disposables;
+using System.Windows.Xps.Serialization;
+using System.Security.Cryptography.Xml;
+using System.CodeDom;
+using System.Reflection.Emit;
 
 using P1XCS000086.Services;
 using P1XCS000086.Services.Models;
 using P1XCS000086.Services.IO;
 using P1XCS000086.Services.Interfaces;
+using P1XCS000086.Services.Objects;
 
 using Prism.Mvvm;
 using Prism.Navigation;
@@ -15,20 +26,12 @@ using Prism.Regions;
 
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using P1XCS000086.Services.Objects;
-using System.Data;
-using MaterialDesignThemes.Wpf;
-using System.Collections.ObjectModel;
-using System.Windows.Xps.Serialization;
-using System.Security.Cryptography.Xml;
-using System.CodeDom;
-using System.Reflection.Emit;
-using Org.BouncyCastle.Bcpg.OpenPgp;
-using System.Windows;
 using Reactive.Bindings.ObjectExtensions;
-using System.Reactive;
-using System.Configuration;
-using System.Threading.Tasks;
+
+using MaterialDesignThemes.Wpf;
+
+using Org.BouncyCastle.Bcpg.OpenPgp;
+
 
 namespace P1XCS000086.ViewModels
 {
@@ -57,17 +60,26 @@ namespace P1XCS000086.ViewModels
 
 
         #region ReactiveProperties
+		// 
+		public ReactivePropertySlim<List<string>> LanguageClassificationsItemViewCollection { get; }
+		public ReactivePropertySlim<List<string>> UseApplicationsItemViewCollection { get; }
+		public ReactivePropertySlim<string> LangViewSelectedItem { get; }
+		public ReactivePropertySlim<string> UseAppViewSelectedItem { get; }
+		public ReactiveProperty<DataTable> ViewOnlyCodesDataTable { get; }
+
+
+		// 
 		public ReactivePropertySlim<int> SelectedTabIndex { get; }
 		public ReactivePropertySlim<string> SearchTextDevName { get; }
 		public ReactivePropertySlim<string> SearchTextCodeName { get; }
 		public ReactivePropertySlim<List<string>> SearchTextUseApplivation { get; }
-
+		// 
 		public ReactivePropertySlim<string> Server { get; }
 		public ReactivePropertySlim<string> User { get; }
 		public ReactivePropertySlim<string> Database { get; }
 		public ReactivePropertySlim<string> Password { get; }
 		public ReactivePropertySlim<bool> PersistSecurityInfo { get; }
-
+		// 
 		public ReactivePropertySlim<string> LanguageSelectedValue { get; }
 		public ReactivePropertySlim<string> DevelopmentSelectedValue { get; }
 		public ObservableCollection<string> LanguageItemCollection
@@ -129,11 +141,12 @@ namespace P1XCS000086.ViewModels
 			set => SetProperty(ref _useApplicationTextBoxVisibility, value);
 		}
 		private Visibility _registButtonVisibility = Visibility.Collapsed;
-		public Visibility RegistButtonVisibility
+		public ReactivePropertySlim<Visibility> RegistButtonVisibility { get; }
+		/*public Visibility RegistButtonVisibility
 		{
 			get => _registButtonVisibility;
 			set => SetProperty(ref _registButtonVisibility, value);
-		}
+		}*/
 
 
 		private SnackbarMessageQueue _snackBarMessageQueue = new SnackbarMessageQueue(TimeSpan.FromMilliseconds(2000));
@@ -175,11 +188,18 @@ namespace P1XCS000086.ViewModels
 
 
 			// -----------------------------------------------------------------------------------------------------
-			// Properties
+			// Properties Initialize
 			// -----------------------------------------------------------------------------------------------------
 
 			// タブの初期選択インデックスを設定
 			SelectedTabIndex = new ReactivePropertySlim<int>(0).AddTo(disposables);
+
+			// View用ComboBox選択要素取得用プロパティ初期設定
+			LanguageClassificationsItemViewCollection	= new ReactivePropertySlim<List<string>>().AddTo(disposables);
+			UseApplicationsItemViewCollection			= new ReactivePropertySlim<List<string>>().AddTo(disposables);
+			LangViewSelectedItem						= new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+			UseAppViewSelectedItem						= new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+			ViewOnlyCodesDataTable						= new ReactiveProperty<DataTable>().AddTo(disposables);
 
 			// 
 			SearchTextDevName			= new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
@@ -204,6 +224,9 @@ namespace P1XCS000086.ViewModels
 			UseApplicationComboBoxVisibility = Visibility.Visible;
 			UseApplicationTextBoxVisibility = Visibility.Collapsed;
 
+			RegistButtonVisibility = new ReactivePropertySlim<Visibility>(Visibility.Collapsed).AddTo(disposables);
+
+
 
 			// JSONファイルが存在していない場合
 			IJsonExtention jsonExtention = new JsonExtention();
@@ -224,6 +247,13 @@ namespace P1XCS000086.ViewModels
 					languageItems.Add(item);
 				}
 				LanguageItemCollection = languageItems;
+
+				// 
+				List<string> languageItemList = mainWindowModel.LanguageComboBoxItemSetting();
+				List<string> developmentItemList = mainWindowModel.ViewUseApplicationComboBoxItemSetting();
+				LanguageClassificationsItemViewCollection = new ReactivePropertySlim<List<string>>(languageItemList).AddTo(disposables);
+				UseApplicationsItemViewCollection = new ReactivePropertySlim<List<string>>(developmentItemList).AddTo(disposables);
+
 
 				// 
 				List<string> useApplicationItems = mainWindowModel.UseApplicationComboBoxItemSetting();
@@ -274,10 +304,26 @@ namespace P1XCS000086.ViewModels
 			// 
 			ComboChanged = new ReactiveCommand();
 			ComboChanged.Subscribe(() => OnChangedValue()).AddTo(disposables);
+			
+			// 
+			DataGridSelectComboChanged = new ReactiveCommand();
+			DataGridSelectComboChanged.Subscribe(() => OnDataGridSelectComboChanged()).AddTo(disposables);
 		}
 
 
 		// Command Events
+		public ReactiveCommand DataGridSelectComboChanged { get; }
+		private void OnDataGridSelectComboChanged()
+		{
+			string langValue = LangViewSelectedItem.Value;
+			string useAppValue = UseAppViewSelectedItem.Value;
+
+			if (langValue is null) { langValue = string.Empty; }
+			if (useAppValue is null) { useAppValue = string.Empty; }
+			
+			ViewOnlyCodesDataTable.Value = _mainWindowModel.GetViewDataTable(langValue, useAppValue);
+		}
+
 		public ReactiveCommand LanguageTypeComboChange { get; }
 		private void OnLanguageTypeComboChange()
 		{
@@ -461,11 +507,11 @@ namespace P1XCS000086.ViewModels
 		{
 			if (DevelopName is not null || UseApplicationManual is not null)
 			{
-				RegistButtonVisibility = Visibility.Visible;
+				RegistButtonVisibility.Value = Visibility.Visible;
 				return;
 			}
 
-			RegistButtonVisibility = Visibility.Collapsed;
+			RegistButtonVisibility.Value = Visibility.Collapsed;
 		}
 		public ReactiveCommand SearchTextClaar { get; }
 		private void OnSearchTextClaar()

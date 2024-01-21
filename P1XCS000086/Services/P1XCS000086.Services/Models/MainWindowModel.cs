@@ -5,16 +5,18 @@ using P1XCS000086.Services.Sql.MySql;
 
 using System;
 using System.Text;
-using System.Collections.Generic;
-using System.Data;
-using System.Net.Mail;
-using MySql.Data.MySqlClient;
-using System.Diagnostics;
-using System.Net.Http.Headers;
-using MySqlX.XDevAPI.Relational;
-using System.Reflection.Emit;
 using System.Linq;
+using System.Data;
+using System.Diagnostics;
+using System.Collections.Generic;
+using System.Net.Mail;
+using System.Net.Http.Headers;
+using System.Reflection.Emit;
+
+using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI.Relational;
 using MySqlX.XDevAPI;
+using System.IO;
 
 
 namespace P1XCS000086.Services.Models
@@ -75,6 +77,47 @@ namespace P1XCS000086.Services.Models
 
 			return items;
 		}
+		public List<string> ViewUseApplicationComboBoxItemSetting()
+		{
+			// SELECTクエリ実行用のオブジェクトを生成
+			ISqlSelect selectExecute = GetConnectedSqlSelect();
+
+			// 号番検索用に「type_code」を「language_type」から取得
+			string queryCommand = $"SELECT DISTINCT use_applications FROM manager_codes;";
+
+			// 「type_code」から「use_applications」カラムをリストで取得
+			List<string> useApps = selectExecute.Select(queryCommand).AsEnumerable().Select(x => x["use_applications"].ToString()).ToList();
+
+			// IEnumerable<IEnumerable<string>>の型で整形
+			var splitedUseApps = useApps.Select(x => ToWords(x));
+
+			List<string> items = new();
+			// useApplication
+			foreach (var item in splitedUseApps)
+			{
+				switch (item.Count())
+				{
+					case 1:
+						// ただ一つの値を取得
+						string useNameEn = item.Select(x => x).First();
+						queryCommand = $"SELECT use_name_jp FROM manager_use_application WHERE use_name_en = '{useNameEn}';";
+						break;
+					case >= 2:
+						// IEnumerable<string>型をJoinで文字列に整形
+						string joinedUseNameEn = string.Join(", ", item.Select(x => $"\'{x}\'"));
+						queryCommand = $"SELECT use_name_jp FROM manager_use_application WHERE use_name_en IN ({joinedUseNameEn});";
+						break;
+					default:
+						break;
+				}
+
+				// 「use_name_jp」カラムから取得したリストを半角スペースで区切り、取得（例：「学習用 汎用機能」）
+				string useAppNameJp = string.Join(" ", QueryExecuteToList("use_name_jp", queryCommand).Select(x => x));
+				items.Add(useAppNameJp);
+			}
+
+			return items;
+		}
 		public List<string> SearchTextUseApplicationComboBoxItemSetting(string developType, string languageType)
 		{
 			string queryCommand = @$"SELECT DISTINCT use_applications
@@ -92,6 +135,62 @@ namespace P1XCS000086.Services.Models
 			List<string> items = QueryExecuteToList("use_application", queryCommand);
 
 			return items;
+		}
+		public DataTable GetViewDataTable(string langValue = "", string useAppValue = "")
+		{
+			// 
+			ISqlSelect selectExecute = GetConnectedSqlSelect();
+
+			// 
+			string queryCommand = $"SELECT * FROM manager_codes **;";
+
+
+			StringBuilder sb = new StringBuilder();
+			if (langValue != "")
+			{
+				// 号番検索用に「type_code」を「language_type」から取得
+				string queryCommandSub = $"SELECT language_type_code FROM manager_language_type WHERE language_type='{langValue}'";
+				// 「type_code」を取得
+				string typeCode = QueryExecuteToList("language_type_code", queryCommandSub).Select(x => x).First().ToString();
+
+				sb.Append($"WHERE develop_number LIKE '%{typeCode}%'");
+			}
+			if (useAppValue != "")
+			{
+				string spliteItem = string.Join(",", useAppValue.Split(' '));
+				string queryCommandSub = string.Empty;
+				if (useAppValue.Split(' ').Count() > 1)
+				{
+					queryCommandSub = $"SELECT language_type_code FROM manager_language_type WHERE language_type IN ({spliteItem});";
+				}
+				else
+				{
+					queryCommandSub = $"SELECT language_type_code FROM manager_language_type WHERE language_type = {useAppValue};";
+				}
+				
+				string useApp = string.Join("", QueryExecuteToList("language_type_code", queryCommandSub).Select(x => x));
+				string replaceUseApp = $"WHERE use_applications = {useApp}";
+
+				if (useAppValue != "")
+				{
+					replaceUseApp = $"AND use_applications = {useApp}";
+				}
+
+				sb.Append(replaceUseApp);
+			}
+			// 引数が全て空の時
+			if (langValue == "" && useAppValue == "")
+			{
+				queryCommand = queryCommand.Replace(" **", "");
+			}
+
+			string replaceStr = sb.ToString();
+			queryCommand = queryCommand.Replace("**", replaceStr);
+
+			DataTable dt = selectExecute.Select(queryCommand);
+			dt = CodeManagerColumnHeaderTrancelate(dt);
+
+			return dt;
 		}
 		/// <summary>
 		/// 「言語種別」にて変更した言語種別から対象の言語で作成された号番を取得
@@ -418,6 +517,42 @@ namespace P1XCS000086.Services.Models
 			if (jsonConnString is null || !jsonConnString.IsPropertiesExists()) { return null; }
 
 			return jsonConnString;
+		}
+		
+		/// <summary>
+		/// 
+		/// 参考サイト：https://qiita.com/mytk-k/items/4a338965cb7bc3d584ec
+		/// </summary>
+		/// <param name="source"></param>
+		/// <returns></returns>
+		public static IEnumerable<string> ToWords(string source)
+		{
+			// 作業用変数の宣言           
+			var wordbreakIndex = 0;          // 現在の単語の始まりのインデックス
+			var currentWordLength = 0;       // 現在の単語の文字数
+			var current = '\0';              // ループの中で現在参照している文字
+			var isLowerBefore = false;       // 一つ前の文字が小文字だったかどうか
+			var isUpperCurrent = false;      // 現在の文字が大文字かどうか
+
+			for (var i = 0; i < source.Length; i++)
+			{
+				current = source[i];
+				isUpperCurrent = char.IsUpper(current);
+
+				if (isLowerBefore && isUpperCurrent)
+				{
+					// 小文字から大文字に切り替わった時に単語を切り出す。
+					yield return source.Substring(wordbreakIndex, currentWordLength);
+					wordbreakIndex = i;
+					currentWordLength = 0;
+				}
+
+				currentWordLength++;
+				isLowerBefore = char.IsLower(current);
+			}
+
+			// 最後の単語の返却漏れがないように
+			yield return source.Substring(wordbreakIndex, source.Length - wordbreakIndex);
 		}
 	}
 }

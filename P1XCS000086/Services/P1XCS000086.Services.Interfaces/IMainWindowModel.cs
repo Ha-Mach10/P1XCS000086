@@ -24,7 +24,9 @@ namespace P1XCS000086.Services.Interfaces
 		public List<string> DevelopmentComboBoxItemSetting(string scriptType);
 		public List<string> UseApplicationComboBoxItemSetting();
 		public List<string> UseApplicationSubComboBoxItemSetting();
+		public List<string> ViewUseApplicationComboBoxItemSetting();
 		public List<string> SearchTextUseApplicationComboBoxItemSetting(string developType, string languageType);
+		public DataTable GetViewDataTable(string langValue = "", string useAppValue = "");
 		public DataTable CodeManagerDataGridItemSetting(string languageType);
 		public DataTable CodeManagerDataGridItemSetting(string developType, string languageType);
 		public string RegistCodeNumberComboBoxItemSelect(string selectedValue);
