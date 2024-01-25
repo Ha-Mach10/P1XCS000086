@@ -80,7 +80,7 @@ namespace P1XCS000086.Services.Models
 		public List<string> ViewUseApplicationComboBoxItemSetting()
 		{
 			// SELECTクエリ実行用のオブジェクトを生成
-			ISqlSelect selectExecute = GetConnectedSqlSelect();
+			ISqlSelect selectExecute = new SqlSelect(ConnectionString());
 
 			// 号番検索用に「type_code」を「language_type」から取得
 			string queryCommand = $"SELECT DISTINCT use_applications FROM manager_codes;";
@@ -118,6 +118,12 @@ namespace P1XCS000086.Services.Models
 
 			return items;
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="developType"></param>
+		/// <param name="languageType"></param>
+		/// <returns></returns>
 		public List<string> SearchTextUseApplicationComboBoxItemSetting(string developType, string languageType)
 		{
 			string queryCommand = @$"SELECT DISTINCT use_applications
@@ -136,16 +142,60 @@ namespace P1XCS000086.Services.Models
 
 			return items;
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public List<string> ShowTableItems()
+		{
+			string connStr = ConnectionString();
+
+			string queryCommand = $"SELECT `japanese`, `table_name` FROM table_translator WHERE `type` = 'table';";
+			ISqlSelect selectExecute = new SqlSelect(connStr);
+			DataTable dt = selectExecute.Select(queryCommand);
+
+			// ISqlShowTables showTables = new SqlShowTables(connStr);
+			List<string> tables = dt.AsEnumerable().Select(x => x["japanese"].ToString()).ToList();
+
+			return tables;
+		}
+		public List<string> GetInPutFieldColumns(string tableName)
+		{
+			string queryCommand = @$"SELECT japanese
+									 FROM table_translator
+									 WHERE `table_name` = (
+										 SELECT `table_name`
+										 FROM table_translator
+										 WHERE `type` = 'table'
+										 AND japanese = '{tableName}'
+									 )
+									 AND `type` = 'column';";
+
+			List<string> columnNames = QueryExecuteToList("japanese", queryCommand);
+			return columnNames;
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="langValue"></param>
+		/// <param name="useAppValue"></param>
+		/// <returns></returns>
 		public DataTable GetViewDataTable(string langValue = "", string useAppValue = "")
 		{
 			// 
-			ISqlSelect selectExecute = GetConnectedSqlSelect();
+			ISqlSelect selectExecute = new SqlSelect(ConnectionString());
 
 			// 
 			string queryCommand = $"SELECT * FROM manager_codes **;";
 
 
 			StringBuilder sb = new StringBuilder();
+
+			// 引数が全て空の時
+			if (langValue == "" && useAppValue == "")
+			{
+				queryCommand = queryCommand.Replace(" **", "");
+			}
 			if (langValue != "")
 			{
 				// 号番検索用に「type_code」を「language_type」から取得
@@ -157,31 +207,26 @@ namespace P1XCS000086.Services.Models
 			}
 			if (useAppValue != "")
 			{
-				string spliteItem = string.Join(",", useAppValue.Split(' '));
+				string spliteItem = string.Join(", ", useAppValue.Split(' ').Select(x => $"\'{x}\'"));
 				string queryCommandSub = string.Empty;
 				if (useAppValue.Split(' ').Count() > 1)
 				{
-					queryCommandSub = $"SELECT language_type_code FROM manager_language_type WHERE language_type IN ({spliteItem});";
+					queryCommandSub = $"SELECT use_name_en FROM manager_use_application WHERE use_name_jp IN ({spliteItem});";
 				}
 				else
 				{
-					queryCommandSub = $"SELECT language_type_code FROM manager_language_type WHERE language_type = {useAppValue};";
+					queryCommandSub = $"SELECT use_name_en FROM manager_use_application WHERE use_name_jp = '{useAppValue}';";
 				}
 				
-				string useApp = string.Join("", QueryExecuteToList("language_type_code", queryCommandSub).Select(x => x));
-				string replaceUseApp = $"WHERE use_applications = {useApp}";
+				string useApp = string.Join("", QueryExecuteToList("use_name_en", queryCommandSub).Select(x => x));
+				string replaceUseApp = $"WHERE use_applications = '{useApp}'";
 
-				if (useAppValue != "")
+				if (langValue != "")
 				{
-					replaceUseApp = $"AND use_applications = {useApp}";
+					replaceUseApp = $" AND use_applications = '{useApp}'";
 				}
 
 				sb.Append(replaceUseApp);
-			}
-			// 引数が全て空の時
-			if (langValue == "" && useAppValue == "")
-			{
-				queryCommand = queryCommand.Replace(" **", "");
 			}
 
 			string replaceStr = sb.ToString();
@@ -200,7 +245,7 @@ namespace P1XCS000086.Services.Models
 		public DataTable CodeManagerDataGridItemSetting(string languageType)
 		{
 			// SELECTクエリ実行用のオブジェクトを生成
-			ISqlSelect selectExecute = GetConnectedSqlSelect();
+			ISqlSelect selectExecute = new SqlSelect(ConnectionString());
 
 			// 号番検索用に「type_code」を「language_type」から取得
 			string queryCommand = $"SELECT language_type_code FROM manager_language_type WHERE language_type='{languageType}'";
@@ -225,7 +270,7 @@ namespace P1XCS000086.Services.Models
 		public DataTable CodeManagerDataGridItemSetting(string developType, string languageType)
 		{
 			// SELECTクエリ実行用のオブジェクトを生成
-			ISqlSelect selectExecute = GetConnectedSqlSelect();
+			ISqlSelect selectExecute = new SqlSelect(ConnectionString());
 
 			// クエリを作成
 			string queryCommand = @$"SELECT *
@@ -265,7 +310,27 @@ namespace P1XCS000086.Services.Models
 
 			return dataTable;
 		}
+		public DataTable MasterTableData(string tableName)
+		{
+			string lastTableName = string.Empty;
 
+			Encoding encoding = Encoding.GetEncoding("Shift-JIS");
+			// 全角文字の場合、falseを返す
+			bool isSameLength = tableName.Length != encoding.GetByteCount(tableName);
+			if (isSameLength)
+			{
+				// 引数「tableName」が2バイト文字の場合
+				string subQueryCommand = $"SELECT `table_name` FROM table_translator WHERE japanese = '{tableName}';";
+				lastTableName = GetSelectItem("table_name", subQueryCommand);
+			}
+
+			string queryCommand = $"SELECT * FROM {lastTableName};";
+
+			ISqlSelect selectExecute = new SqlSelect(ConnectionString());
+			DataTable dt = selectExecute.Select(queryCommand);
+
+			return dt;
+		}
 		public string RegistCodeNumberComboBoxItemSelect(string selectedValue)
 		{
 			string queryCommand = $"SELECT use_name_en FROM manager_use_application WHERE use_name_jp='{selectedValue}';";
@@ -275,9 +340,6 @@ namespace P1XCS000086.Services.Models
 		}
 		public string CodeNumberClassification(string developType, string languageType)
 		{
-			// SELECTクエリ実行用のオブジェクトを生成
-			ISqlSelect selectExecute = GetConnectedSqlSelect();
-
 			// クエリを作成
 			string queryCommand = @$"SELECT CONCAT(d.develop_type_code, l.language_type_code)
 									 FROM manager_language_type AS l
@@ -291,8 +353,6 @@ namespace P1XCS000086.Services.Models
 		}
 		public string GetProjectDirectry(string languageType)
 		{
-			ISqlSelect selectExecute = GetConnectedSqlSelect();
-
 			string queryCommand = @$"SELECT language_directry
 									 FROM project_language_directry
 									 WHERE language_type=
@@ -304,13 +364,6 @@ namespace P1XCS000086.Services.Models
 			string directryPath = GetSelectItem("language_directry", queryCommand);
 
 			return directryPath;
-		}
-		private ISqlSelect GetConnectedSqlSelect()
-		{
-			string connStr = ConnectionString();
-			ISqlSelect slectedExecute = new SqlSelect(connStr);
-
-			return slectedExecute;
 		}
 		/// <summary>
 		/// クエリを実行し、取得した列からただ１つの項目を返す

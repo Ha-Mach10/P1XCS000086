@@ -58,6 +58,7 @@
 										Text="言語種別" />
 									<ComboBox
 										Width="150"
+										mah:TextBoxHelper.ClearTextButton="True"
 										ItemsSource="{Binding LanguageClassificationsItemViewCollection.Value}"
 										SelectedItem="{Binding LangViewSelectedItem.Value}">
 										<i:Interaction.Triggers>
@@ -72,6 +73,7 @@
 										Text="使用用途" />
 									<ComboBox
 										Width="200"
+										mah:TextBoxHelper.ClearTextButton="True"
 										ItemsSource="{Binding UseApplicationsItemViewCollection.Value}"
 										SelectedItem="{Binding UseAppViewSelectedItem.Value}">
 										<i:Interaction.Triggers>
@@ -351,17 +353,26 @@
 									</GroupBox.Header>
 									<StackPanel Grid.Column="1">
 										<StackPanel Orientation="Horizontal">
-											<RadioButton Content="追加" />
-											<RadioButton Margin="16,0,16,0" Content="編集" />
-											<RadioButton Content="削除" />
+											<RadioButton Content="追加" IsChecked="{Binding AddRadioIsChecked.Value}" />
+											<RadioButton
+												Margin="16,0,16,0"
+												Content="編集"
+												IsChecked="{Binding EditRadioIsChecked.Value}" />
+											<RadioButton Content="削除" IsChecked="{Binding DeleteRadioIsChecked.Value}" />
 										</StackPanel>
 										<TextBlock Margin="0,8,0,8" Text="テーブル選択" />
-										<ComboBox />
+										<ComboBox ItemsSource="{Binding DatabaseTables.Value}" SelectedValue="{Binding DBTableSelectedValue.Value}">
+											<i:Interaction.Triggers>
+												<i:EventTrigger EventName="SelectionChanged">
+													<prism:InvokeCommandAction Command="{Binding TableSelectionChange}" />
+												</i:EventTrigger>
+											</i:Interaction.Triggers>
+										</ComboBox>
 										<GroupBox Margin="0,8,0,0">
 											<GroupBox.Header>
 												<TextBlock Text="選択" />
 											</GroupBox.Header>
-											<ItemsControl ItemsSource="{Binding}">
+											<ItemsControl ItemsSource="{Binding DBTableColumnsFieldItems.Value}">
 												<ItemsControl.ItemsPanel>
 													<ItemsPanelTemplate>
 														<VirtualizingStackPanel />
@@ -374,8 +385,8 @@
 																<ColumnDefinition Width="100" />
 																<ColumnDefinition Width="120" />
 															</Grid.ColumnDefinitions>
-															<TextBlock Text="" />
-															<TextBox Grid.Column="1" Text="" />
+															<TextBlock Text="{Binding ColumnName}" />
+															<TextBox Grid.Column="1" Text="{Binding FieldValue}" />
 														</Grid>
 													</DataTemplate>
 												</ItemsControl.ItemTemplate>
@@ -384,6 +395,7 @@
 										<DataGrid />
 									</StackPanel>
 								</GroupBox>
+								<DataGrid Grid.Column="2" ItemsSource="{Binding TableDataGridItem.Value}" />
 							</Grid>
 						</TabItem>
 					</TabControl>

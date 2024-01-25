@@ -31,6 +31,9 @@ using Reactive.Bindings.ObjectExtensions;
 using MaterialDesignThemes.Wpf;
 
 using Org.BouncyCastle.Bcpg.OpenPgp;
+using P1XCS000086.Services.Sql.MySql;
+using P1XCS000086.Services.Domains;
+using System.Linq;
 
 
 namespace P1XCS000086.ViewModels
@@ -65,7 +68,17 @@ namespace P1XCS000086.ViewModels
 		public ReactivePropertySlim<List<string>> UseApplicationsItemViewCollection { get; }
 		public ReactivePropertySlim<string> LangViewSelectedItem { get; }
 		public ReactivePropertySlim<string> UseAppViewSelectedItem { get; }
-		public ReactiveProperty<DataTable> ViewOnlyCodesDataTable { get; }
+		public ReactivePropertySlim<DataTable> ViewOnlyCodesDataTable { get; }
+
+
+		// 
+		public ReactivePropertySlim<bool> AddRadioIsChecked { get; }
+		public ReactivePropertySlim<bool> EditRadioIsChecked { get; }
+		public ReactivePropertySlim<bool> DeleteRadioIsChecked { get; }
+		public ReactivePropertySlim<List<string>> DatabaseTables { get; }
+		public ReactivePropertySlim<List<DBTableColumnFieldItem>> DBTableColumnsFieldItems { get; }
+		public ReactivePropertySlim<string> DBTableSelectedValue { get; }
+		public ReactivePropertySlim<DataTable> TableDataGridItem { get; }
 
 
 		// 
@@ -140,13 +153,7 @@ namespace P1XCS000086.ViewModels
 			get => _useApplicationTextBoxVisibility;
 			set => SetProperty(ref _useApplicationTextBoxVisibility, value);
 		}
-		private Visibility _registButtonVisibility = Visibility.Collapsed;
 		public ReactivePropertySlim<Visibility> RegistButtonVisibility { get; }
-		/*public Visibility RegistButtonVisibility
-		{
-			get => _registButtonVisibility;
-			set => SetProperty(ref _registButtonVisibility, value);
-		}*/
 
 
 		private SnackbarMessageQueue _snackBarMessageQueue = new SnackbarMessageQueue(TimeSpan.FromMilliseconds(2000));
@@ -199,7 +206,7 @@ namespace P1XCS000086.ViewModels
 			UseApplicationsItemViewCollection			= new ReactivePropertySlim<List<string>>().AddTo(disposables);
 			LangViewSelectedItem						= new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
 			UseAppViewSelectedItem						= new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
-			ViewOnlyCodesDataTable						= new ReactiveProperty<DataTable>().AddTo(disposables);
+			ViewOnlyCodesDataTable						= new ReactivePropertySlim<DataTable>().AddTo(disposables);
 
 			// 
 			SearchTextDevName			= new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
@@ -225,6 +232,14 @@ namespace P1XCS000086.ViewModels
 			UseApplicationTextBoxVisibility = Visibility.Collapsed;
 
 			RegistButtonVisibility = new ReactivePropertySlim<Visibility>(Visibility.Collapsed).AddTo(disposables);
+
+
+			// 
+			AddRadioIsChecked		= new ReactivePropertySlim<bool>(true).AddTo(disposables);
+			EditRadioIsChecked		= new ReactivePropertySlim<bool>(false).AddTo(disposables);
+			DeleteRadioIsChecked	= new ReactivePropertySlim<bool>(false).AddTo(disposables);
+			DBTableSelectedValue	= new ReactivePropertySlim<string>(string.Empty).AddTo(disposables);
+			TableDataGridItem		= new ReactivePropertySlim<DataTable>().AddTo(disposables);
 
 
 
@@ -264,6 +279,12 @@ namespace P1XCS000086.ViewModels
 				// 
 				// List<string> searchTextUseApplicationItems = mainWindowModel.SearchTextUseApplicationComboBoxItemSetting();
 				SearchTextUseApplivation = new ReactivePropertySlim<List<string>>(new List<string>()).AddTo(disposables);
+
+
+				// 
+				DatabaseTables = new ReactivePropertySlim<List<string>>(mainWindowModel.ShowTableItems()).AddTo(disposables);
+				DBTableColumnsFieldItems = new ReactivePropertySlim<List<DBTableColumnFieldItem>>().AddTo(disposables);
+
 			}
 			else if (jsonConnString is null)
 			{
@@ -308,6 +329,10 @@ namespace P1XCS000086.ViewModels
 			// 
 			DataGridSelectComboChanged = new ReactiveCommand();
 			DataGridSelectComboChanged.Subscribe(() => OnDataGridSelectComboChanged()).AddTo(disposables);
+
+			// 
+			TableSelectionChange = new ReactiveCommand();
+			TableSelectionChange.Subscribe(() => OnTableSelectionChange()).AddTo(disposables);
 		}
 
 
@@ -520,6 +545,19 @@ namespace P1XCS000086.ViewModels
 			SearchTextCodeName.Value = string.Empty;
 
 			int i = 0;
+		}
+		public ReactiveCommand TableSelectionChange { get; }
+		private void OnTableSelectionChange()
+		{
+			// ComboBoxの中身を取得する
+			string selectedValue = DBTableSelectedValue.Value;
+
+			// 
+			var items = _mainWindowModel.GetInPutFieldColumns(selectedValue).Select(x => new DBTableColumnFieldItem(x)).ToList();
+			DBTableColumnsFieldItems.Value = items;
+
+			// DataGridへ出力
+			TableDataGridItem.Value = _mainWindowModel.MasterTableData(selectedValue);
 		}
 
 
