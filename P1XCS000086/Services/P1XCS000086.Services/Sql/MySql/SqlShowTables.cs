@@ -1,6 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Asn1.Cmp;
-using P1XCS000086.Services.Interfaces;
+using P1XCS000086.Services.Interfaces.Sql;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,7 +11,7 @@ using System.Xml.Serialization;
 
 namespace P1XCS000086.Services.Sql.MySql
 {
-	public class SqlShowTables : ISqlShowTables
+    public class SqlShowTables : ISqlShowTables
 	{
 		private string _connStr;
 		

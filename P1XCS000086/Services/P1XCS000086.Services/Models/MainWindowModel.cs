@@ -17,11 +17,12 @@ using MySql.Data.MySqlClient;
 using MySqlX.XDevAPI.Relational;
 using MySqlX.XDevAPI;
 using System.IO;
+using P1XCS000086.Services.Interfaces.Sql;
 
 
 namespace P1XCS000086.Services.Models
 {
-	public class MainWindowModel : IMainWindowModel
+    public class MainWindowModel : IMainWindowModel
 	{
 		// Properies 
 		public string Server { get; set; }
@@ -331,6 +332,12 @@ namespace P1XCS000086.Services.Models
 
 			return dt;
 		}
+		/// <summary>
+		/// ＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+		/// 削除予定
+		/// </summary>
+		/// <param name="selectedValue"></param>
+		/// <returns></returns>
 		public string RegistCodeNumberComboBoxItemSelect(string selectedValue)
 		{
 			string queryCommand = $"SELECT use_name_en FROM manager_use_application WHERE use_name_jp='{selectedValue}';";
@@ -338,6 +345,13 @@ namespace P1XCS000086.Services.Models
 
 			return getValue;
 		}
+		/// <summary>
+		/// ＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+		/// 削除予定
+		/// </summary>
+		/// <param name="developType"></param>
+		/// <param name="languageType"></param>
+		/// <returns></returns>
 		public string CodeNumberClassification(string developType, string languageType)
 		{
 			// クエリを作成

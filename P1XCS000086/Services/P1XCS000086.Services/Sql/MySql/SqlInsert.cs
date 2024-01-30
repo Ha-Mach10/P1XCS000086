@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 using MySql.Data;
 using MySql.Data.MySqlClient;
-using P1XCS000086.Services.Interfaces;
+using P1XCS000086.Services.Interfaces.Sql;
 
 namespace P1XCS000086.Services.Sql.MySql
 {
-	public class SqlInsert : ISqlInsert
+    public class SqlInsert : ISqlInsert
 	{
 		private string _connStr;
 		private string _command;

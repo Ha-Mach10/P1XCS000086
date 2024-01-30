@@ -13,6 +13,10 @@
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Modules\P1XCS000086.Modules.CodeManageEditor\P1XCS000086.Modules.CodeManageEditor.csproj" />
+    <ProjectReference Include="..\Modules\P1XCS000086.Modules.CodeManageMaster\P1XCS000086.Modules.CodeManageMaster.csproj" />
+    <ProjectReference Include="..\Modules\P1XCS000086.Modules.CodeManageRegister\P1XCS000086.Modules.CodeManageRegister.csproj" />
+    <ProjectReference Include="..\Modules\P1XCS000086.Modules.CodeManageViewer\P1XCS000086.Modules.CodeManageViewer.csproj" />
     <ProjectReference Include="..\Modules\P1XCS000086.Modules.ViewControls\P1XCS000086.Modules.ViewControls.csproj" />
     <ProjectReference Include="..\P1XCS000086.Core\P1XCS000086.Core.csproj" />
     <ProjectReference Include="..\Modules\P1XCS000086.Modules.ModuleName\P1XCS000086.Modules.ModuleName.csproj" />

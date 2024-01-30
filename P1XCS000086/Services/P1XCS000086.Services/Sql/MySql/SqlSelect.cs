@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using MySql.Data.MySqlClient;
-using P1XCS000086.Services.Interfaces;
+using P1XCS000086.Services.Interfaces.Sql;
 
 namespace P1XCS000086.Services.Sql.MySql
 {
-	internal class SqlSelect : ISqlSelect
+    public class SqlSelect : ISqlSelect
 	{
 		private string _conStr;
 		private string _command;

@@ -37,6 +37,11 @@
 		<TabControl Grid.Row="1" SelectedIndex="{Binding SelectedTabIndex.Value}">
 			<TabItem Style="{StaticResource MahApps.Styles.TabItem}">
 				<TabItem.Header>
+					<TextBlock Text="台帳"/>
+				</TabItem.Header>
+			</TabItem>
+			<TabItem Style="{StaticResource MahApps.Styles.TabItem}">
+				<TabItem.Header>
 					<TextBlock Margin="8,0,8,0" Text="記番台帳" />
 				</TabItem.Header>
 				<Grid>
@@ -315,43 +320,45 @@
 									<ColumnDefinition Width="Auto" />
 									<ColumnDefinition />
 								</Grid.ColumnDefinitions>
-								<StackPanel>
-									<GroupBox x:Name="DatabaseRegisterGroupBox" Width="290">
-										<GroupBox.Header>
-											<TextBlock Text="データベース接続" />
-										</GroupBox.Header>
-										<StackPanel Margin="8">
-											<TextBlock Text="サーバー名" />
-											<TextBox Margin="0,8,0,8" Text="{Binding Server.Value}" />
-											<TextBlock Text="ユーザー名" />
-											<TextBox Margin="0,8,0,8" Text="{Binding User.Value}" />
-											<TextBlock Text="データベース名" />
-											<TextBox Margin="0,8,0,8" Text="{Binding Database.Value}" />
-											<TextBlock Text="パスワード名" />
-											<TextBox Margin="0,8,0,8" Text="{Binding Password.Value}" />
-											<CheckBox Margin="0,8,0,8" IsChecked="{Binding PersistSecurityInfo.Value}">
-												<CheckBox.Content>
-													<TextBlock Foreground="White" Text="Persist Security Info" />
-												</CheckBox.Content>
-											</CheckBox>
-											<Button
-												Margin="0,8,0,8"
-												Command="{Binding RegistSqlConnectionString}"
-												Content="登録" />
-											<Button
-												Margin="0,8,0,16"
-												Command="{Binding SqlConnectionTest}"
-												Content="接続テスト"
-												Foreground="SpringGreen" />
-											<mdMetro:Snackbar Width="{Binding ElementName=DatabaseRegisterGroupBox, Path=Width}" MessageQueue="{Binding SnackBarMessageQueue}" />
-										</StackPanel>
-									</GroupBox>
-								</StackPanel>
+								<Grid.RowDefinitions>
+									<RowDefinition />
+								</Grid.RowDefinitions>
+								<GroupBox x:Name="DatabaseRegisterGroupBox" Width="290">
+									<GroupBox.Header>
+										<TextBlock Text="データベース接続" />
+									</GroupBox.Header>
+									<StackPanel Margin="8">
+										<TextBlock Text="サーバー名" />
+										<TextBox Margin="0,8,0,8" Text="{Binding Server.Value}" />
+										<TextBlock Text="ユーザー名" />
+										<TextBox Margin="0,8,0,8" Text="{Binding User.Value}" />
+										<TextBlock Text="データベース名" />
+										<TextBox Margin="0,8,0,8" Text="{Binding Database.Value}" />
+										<TextBlock Text="パスワード名" />
+										<TextBox Margin="0,8,0,8" Text="{Binding Password.Value}" />
+										<CheckBox Margin="0,8,0,8" IsChecked="{Binding PersistSecurityInfo.Value}">
+											<CheckBox.Content>
+												<TextBlock Foreground="White" Text="Persist Security Info" />
+											</CheckBox.Content>
+										</CheckBox>
+										<Button
+											Margin="0,8,0,8"
+											Command="{Binding RegistSqlConnectionString}"
+											Content="登録" />
+										<Button
+											Margin="0,8,0,16"
+											Command="{Binding SqlConnectionTest}"
+											Content="接続テスト"
+											Foreground="SpringGreen" />
+										<mdMetro:Snackbar Width="{Binding ElementName=DatabaseRegisterGroupBox, Path=Width}" MessageQueue="{Binding SnackBarMessageQueue}" />
+										<StackPanel />
+									</StackPanel>
+								</GroupBox>
 								<GroupBox Grid.Column="1" Padding="8">
 									<GroupBox.Header>
 										<TextBlock Text="マスタ" />
 									</GroupBox.Header>
-									<StackPanel Grid.Column="1">
+									<StackPanel>
 										<StackPanel Orientation="Horizontal">
 											<RadioButton Content="追加" IsChecked="{Binding AddRadioIsChecked.Value}" />
 											<RadioButton
@@ -380,10 +387,10 @@
 												</ItemsControl.ItemsPanel>
 												<ItemsControl.ItemTemplate>
 													<DataTemplate>
-														<Grid>
+														<Grid Margin="0,4,0,4">
 															<Grid.ColumnDefinitions>
-																<ColumnDefinition Width="100" />
-																<ColumnDefinition Width="120" />
+																<ColumnDefinition Width="150" />
+																<ColumnDefinition Width="200" />
 															</Grid.ColumnDefinitions>
 															<TextBlock Text="{Binding ColumnName}" />
 															<TextBox Grid.Column="1" Text="{Binding FieldValue}" />
@@ -392,10 +399,20 @@
 												</ItemsControl.ItemTemplate>
 											</ItemsControl>
 										</GroupBox>
-										<DataGrid />
 									</StackPanel>
 								</GroupBox>
-								<DataGrid Grid.Column="2" ItemsSource="{Binding TableDataGridItem.Value}" />
+								<DataGrid
+									Grid.Column="2"
+									CanUserAddRows="False"
+									CanUserDeleteRows="False"
+									CanUserResizeRows="False"
+									GridLinesVisibility="All"
+									ItemsSource="{Binding TableDataGridItem.Value}"
+									SelectionUnit="FullRow"
+									VerticalScrollBarVisibility="Auto"
+									VirtualizingPanel.IsVirtualizing="True"
+									VirtualizingPanel.ScrollUnit="Pixel"
+									VirtualizingPanel.VirtualizationMode="Recycling" />
 							</Grid>
 						</TabItem>
 					</TabControl>
