@@ -22,7 +22,8 @@ namespace P1XCS000086.Services.Sql.MySql
 		public string ExceptionMessage {  get; private set; }
 
 		
-		public SqlInsert(string connStr)
+		public SqlInsert() { }
+		public SqlInsert(string connStr) : this()
 		{
 			_connStr = connStr;
 		}
@@ -32,6 +33,84 @@ namespace P1XCS000086.Services.Sql.MySql
 		}
 
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="connStr"></param>
+		/// <param name="command"></param>
+		/// <param name="columns"></param>
+		/// <param name="values"></param>
+		/// <returns></returns>
+		public bool Insert(string connStr, string command, List<string> columns, List<string> values)
+		{
+			ResultMessage = string.Empty;
+
+			try
+			{
+				// コネクションを生成し、コマンドを生成
+				using (MySqlConnection conn = new MySqlConnection(connStr))
+				using (MySqlCommand cmd = new MySqlCommand(command, conn))
+				{
+					MySqlTransaction tran = null;
+
+					try
+					{
+						// コネクションを開く
+						conn.Open();
+						// トランザクションを開始
+						tran = conn.BeginTransaction();
+
+						// コマンドパラメータを設定（SQLインジェクション対策）
+						for (int i = 0; i > columns.Count; i++)
+						{
+							cmd.Parameters.Add(new MySqlParameter(columns[i], values[i]));
+						}
+
+						// コマンドを実行
+						var result = cmd.ExecuteNonQuery();
+
+						// 実行された結果が1行未満のとき
+						if (result != 1)
+						{
+							ResultMessage = "データを更新できませんでした。";
+
+							// ロールバックする
+							tran.Rollback();
+							return false;
+						}
+
+						// コミットする
+						tran.Commit();
+					}
+					// データベース操作で例外が発生した場合
+					catch (MySqlException ex)
+					{
+						ExceptionMessage = $"Error: {ex.Message}";
+						return false;
+					}
+				}
+			}
+			// コネクションおよびコマンド生成時に例外が発生した場合
+			catch (MySqlException ex)
+			{
+				ExceptionMessage = ex.Message;
+				return false;
+			}
+
+
+
+			// 成功した場合
+			ResultMessage = "success";
+			ExceptionMessage = string.Empty;
+			return true;
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="command"></param>
+		/// <param name="columns"></param>
+		/// <param name="values"></param>
+		/// <returns></returns>
 		public bool Insert(string command, List<string> columns, List<string> values)
 		{
 			ResultMessage = string.Empty;

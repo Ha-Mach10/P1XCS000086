@@ -12,6 +12,8 @@ namespace P1XCS000086.Services.Interfaces.Sql
 
 
         // Methods
-        public bool Insert(string command, List<string> columns, List<string> values);
+        public bool Insert(string connStr, string command, List<string> columns, List<string> values);
+
+		public bool Insert(string command, List<string> columns, List<string> values);
     }
 }

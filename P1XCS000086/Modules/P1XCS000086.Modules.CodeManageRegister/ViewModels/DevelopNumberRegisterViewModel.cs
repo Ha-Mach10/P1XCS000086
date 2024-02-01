@@ -75,6 +75,7 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 			_select = select;
 			_insert = insert;
 
+			// インジェクションされたインターフェースをモデルにセット
 			_model.SetModelBuiltin(_select, _insert, _connStr);
 
 			// 初期値設定用変数
@@ -118,6 +119,10 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 
 		// 
 		public ReactiveCommandSlim CheckedChangedToOff { get; }
+		/// <summary>
+		/// 使用用途欄のトグルスイッチOFF時の処理
+		/// 「自動」ComboBox入力時
+		/// </summary>
 		private void OnCheckedChangedToOff()
 		{
 			// false のとき
@@ -130,6 +135,10 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 			}
 		}
 		public ReactiveCommandSlim CheckedChangedToOn { get; }
+		/// <summary>
+		/// 使用用途欄のトグルスイッチON時の処理
+		/// 「手動」TextBox入力時
+		/// </summary>
 		private void OnCheckedChangedToOn()
 		{
 			// true のとき
@@ -142,77 +151,43 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 			}
 		}
 		public ReactiveCommandSlim RegistCodeNumber { get; }
+		/// <summary>
+		/// 開発番号登録処理
+		/// </summary>
 		private void OnRegistCodeNumber()
 		{
-			///--------------
-			// 開発番号の開発記号生成
-			string devTypeValue = IntegrRegisterModel.DevTypeValue;
-			string langTypeValue = IntegrRegisterModel.LangTypeValue;
-            if (devTypeValue == "" && langTypeValue == "") { return; }
-            string codeNumberClassificationString = _model.CodeNumberClassification(devTypeValue, langTypeValue);
-
-			// 開発番号の追番生成
-			int recordCount = IntegrRegisterModel.RecordCount;
-			string codeNumber = $"{codeNumberClassificationString}{(recordCount + 1).ToString("000000")}";
-			///--------------
-
-
-			// 開発番号・コードネーム
-			string developName	= string.Empty;
-			string codeName		= string.Empty;
-			if (DevelopName is not null) { developName = DevelopName.Value; }
-			if (CodeName is not null) { developName = CodeName.Value; }
-
+			// 開発番号
+			string developNumber = _model.GetDevelopmentNumber();
+			// 開発名称・コードネーム
+			string developName = _model.GetValue(DevelopName, string.Empty);
+			string codeName = _model.GetValue(CodeName, string.Empty);
 			// 使用用途
-			string useApplication		= string.Empty;
-			string useApplicationSub	= string.Empty;
-			if (UseAppSelectedValue is not null || UseAppSubSelectedValue is not null)
-			{
-				useApplication = _model.GetUseApplicationValue(UseAppSelectedValue.Value);
-				useApplicationSub = _model.GetUseApplicationValue(UseAppSubSelectedValue.Value);
-
-				useApplication = $"{useApplication}_{useApplicationSub}";
-			}
-			else if (UseApplicationManual is not null)
-			{
-				useApplication = UseApplicationManual.Value;
-			}
-
+			string useApplication = _model.GetUseApplication(UseAppSelectedValue, UseAppSubSelectedValue, UseApplicationManual);
 			// 参考・旧・新・継承番号
-			string referenceNumber		= string.Empty;
-			string oldNumber			= string.Empty;
-			string newNumber			= string.Empty;
-			string inheritenceNumber	= string.Empty;
-			if (ReferenceNumber is not null) { referenceNumber = ReferenceNumber.Value; }
-			if (OldNumber is not null) { oldNumber = OldNumber.Value; }
-			if (NewNumber is not null) { newNumber = NewNumber.Value; }
-			if (InheritenceNumber is not null) { inheritenceNumber = InheritenceNumber.Value; }
-
+			string referenceNumber = _model.GetValue(ReferenceNumber, string.Empty);
+			string oldNumber = _model.GetValue(OldNumber, string.Empty);
+			string newNumber = _model.GetValue(NewNumber, string.Empty);
+			string inheritenceNumber = _model.GetValue(InheritenceNumber, string.Empty);
 			// 説明・摘要
-			string explanation	= string.Empty;
-			string summary		= string.Empty;
-			if (Explanation is not null) { explanation = Explanation.Value; }
-			if (Summary is not null) { summary = Summary.Value; }
+			string explanation = _model.GetValue(Explanation, string.Empty);
+			string summary = _model.GetValue(Summary, string.Empty);
 
-			List<string> values = new List<string>()
-			{
-				codeNumberClassificationString,
+			string resultMessege = _model.RegistValues(
+				developNumber,
 				developName,
 				codeName,
-				DateTime.Now.ToString(),
 				useApplication,
-				referenceNumber, oldNumber, newNumber, inheritenceNumber,
-				explanation, summary
-			};
+				referenceNumber,
+				oldNumber,
+				newNumber,
+				inheritenceNumber,
+				explanation,
+				summary);
 
-			// 
-			if (!_mainWindowModel.RegistExecute(values))
-			{
-				string message = $"{_mainWindowModel.ResultMessage}\n{_mainWindowModel.ExceptionMessage}";
-				SnackBarMessageQueue.Enqueue(message);
-			}
-
-			int a = 0;
+			// スナックバーを生成（ディレイ時間は２秒）
+			SnackbarMessageQueue  snackbarMessageQueue = new SnackbarMessageQueue(TimeSpan.FromMilliseconds(2000));
+			snackbarMessageQueue.Enqueue(resultMessege);
+			StateSnackBarMessageQueue.Value = snackbarMessageQueue;
 		}
 
 

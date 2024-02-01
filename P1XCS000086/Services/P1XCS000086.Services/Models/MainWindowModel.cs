@@ -439,6 +439,12 @@ namespace P1XCS000086.Services.Models
 
 			return items;
 		}
+		/// <summary>
+		/// *****************************************************************************************************************
+		/// 削除予定
+		/// </summary>
+		/// <param name="values"></param>
+		/// <returns></returns>
 		public bool RegistExecute(List<string> values)
 		{
 			// カラム名のリストを生成

@@ -4,4 +4,8 @@
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="ReactiveProperty.Core" Version="9.3.4" />
+  </ItemGroup>
+
 </Project>
