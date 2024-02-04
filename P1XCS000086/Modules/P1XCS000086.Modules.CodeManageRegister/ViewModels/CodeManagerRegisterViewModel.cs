@@ -4,6 +4,8 @@ using Prism.Mvvm;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings;
 
+using P1XCS000086.Services.Interfaces.Models.CodeManageRegister;
+
 using System;
 using System.Reactive.Disposables;
 using System.Collections.Generic;
@@ -13,6 +15,7 @@ using System.Threading.Tasks;
 using Prism.Navigation;
 using System.Data;
 using Prism.Regions;
+using Reactive.Bindings.ObjectExtensions;
 
 namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 {
@@ -22,6 +25,13 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 		private CompositeDisposable _disposables;
 
 
+		// 
+		public DataTable GridDataTable
+		{
+			get => IIntegrRegisterModel.GridDataTable;
+		}
+
+
 		// ReactiveProperties
 		public ReactivePropertySlim<DataTable> DataItem { get; }
 
@@ -29,7 +39,7 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 		public CodeManagerRegisterViewModel()
 		{
 			// 
-			DataItem = new ReactivePropertySlim<DataTable>().AddTo(_disposables);
+			DataItem = new ReactivePropertySlim<DataTable>(GridDataTable).AddTo(_disposables);
 		}
 
 

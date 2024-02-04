@@ -28,17 +28,32 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManageRegister
 		/// <summary>
 		/// 開発種別の値のプロパティ
 		/// </summary>
-		public static string DevTypeValue { get; }
+		public static string DevTypeValue { get; set; }
 		
 		/// <summary>
 		/// 言語種別の値のプロパティ
 		/// </summary>
-		public static string LangTypeValue { get; }
-		
+		public static string LangTypeValue { get; set; }
+
+		/// <summary>
+		/// プロジェクトのディレクトリ
+		/// </summary>
+		public static string ProjectDirectryText { get; set; }
+
+		/// <summary>
+		/// 開発種別の選択アイテムのインデックス
+		/// </summary>
+		public static int DevItemSelectedIndex { get; set; }
+
+		/// <summary>
+		/// 開発種別が選択されているか
+		/// </summary>
+		public static bool IsDevItemSelected { get; set; } = false;
+
 		/// <summary>
 		/// 取得レコード数のプロパティ
 		/// </summary>
-		public static int RecordCount { get; }
+		public static int RecordCount { get; set; }
 		
 		/// <summary>
 		/// 登録ビューの可視性
@@ -48,26 +63,13 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManageRegister
 		/// <summary>
 		/// CodeManageRegisterのメインビュー用
 		/// </summary>
-		public static DataTable GridDataTable { get; }
+		public static DataTable GridDataTable { get; set; }
 
 
 
 		// ****************************************************************************
 		// Methods
 		// ****************************************************************************
-
-		/// <summary>
-		/// 取得した開発種別・言語種別をプロパティに設定
-		/// </summary>
-		/// <param name="developmentValue">開発種別</param>
-		/// <param name="languageValue">言語種別</param>
-		public void RegistDevLangValues(string developmentValue, string languageValue);
-		
-		/// <summary>
-		/// 取得したレコード数をプロパティに設定
-		/// </summary>
-		/// <param name="recordCount">レコード数</param>
-		public void RegistRecordCount(int recordCount);
 
 		/// <summary>
 		/// Visibilityを変更する
@@ -80,11 +82,5 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManageRegister
 		/// </summary>
 		/// <returns></returns>
 		public int GetVisibility();
-
-		/// <summary>
-		/// データテーブルの値をプロパティにセット
-		/// </summary>
-		/// <param name="dt"></param>
-		public void SetDataTable(DataTable dt);
 	}
 }

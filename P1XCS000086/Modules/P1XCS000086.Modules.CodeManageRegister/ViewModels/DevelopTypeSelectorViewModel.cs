@@ -35,6 +35,8 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 		private IMySqlConnectionString _connStr;
 		private ISqlSelect _select;
 		private ISqlInsert _insert;
+		// 
+		private string _projectDirectry = string.Empty;
 
 
 
@@ -68,6 +70,8 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 			_select = select;
 			_insert = insert;
 
+
+			// 
 			_model.SetModelBuiltin(_select, _connStr);
 
 
@@ -95,46 +99,57 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 
 		// 
 		public ReactiveCommand LanguageTypeComboChange { get; }
+		/// <summary>
+		/// 
+		/// </summary>
 		private void OnLanguageTypeComboChange()
 		{
 			// Language文字列ComboBoxから取得（Like検索用）
 			string selectedValue = LanguageSelectedValue.Value;
 
-
+			// 
 			DevelopmentItemCollection.Value = _model.DevelopmentComboBoxItemSetting(selectedValue);
 
 			// DataGrid用のDataTableを取得
 			DataTable dt = _model.CodeManagerDataGridItemSetting(selectedValue);
-			_integrModel.SetDataTable(dt);
+			IIntegrRegisterModel.GridDataTable = dt;
 
 			// プロジェクトのディレクトリを取得
-			string directryPath = _mainWindowModel.GetProjectDirectry(selectedValue);
-			ProjectDirectryText = $"対象ディレクトリ ： {directryPath}";
+			string directryPath = _model.GetProjectDirectry(selectedValue);
+			_projectDirectry = directryPath;
+			IIntegrRegisterModel.ProjectDirectryText = $"対象ディレクトリ ： {directryPath}";
 
-			RowsCount = dt.Rows.Count;
+			// レコード数を取得
+			IIntegrRegisterModel.RecordCount = dt.Rows.Count;
 
-			DevItemSelectedIndex = -1;
+			// 
+			IIntegrRegisterModel.DevItemSelectedIndex = -1;
 
 			// GroupBoxのVisibilityを変更（非表示）
-			GroupBoxVisibility = Visibility.Collapsed;
+			_integrModel.ChangeVisibility((int)Visibility.Collapsed);
 		}
+
 		public ReactiveCommand DevelopmentTypeComboChange { get; }
+		/// <summary>
+		/// 
+		/// </summary>
 		private void OnDevelopmentTypeComboChange()
 		{
 			// 初回起動時または言語種別ComboBox変更時
-			if (DevItemSelectedIndex == -1 || _isDevItemSelected == false)
+			if (IIntegrRegisterModel.DevItemSelectedIndex == -1 || IIntegrRegisterModel.IsDevItemSelected == false)
 			{
-				_isDevItemSelected = true;
+				// 
+				IIntegrRegisterModel.IsDevItemSelected = true;
 
 				return;
 			}
-			DataTable dt = _mainWindowModel.CodeManagerDataGridItemSetting(DevelopmentSelectedValue.Value, LanguageSelectedValue.Value);
-			DataGridItems = dt;
+			DataTable dt = _model.CodeManagerDataGridItemSetting(DevelopmentSelectedValue.Value, LanguageSelectedValue.Value);
+			IIntegrRegisterModel.GridDataTable = dt;
 
-			RowsCount = dt.Rows.Count;
+			IIntegrRegisterModel.RecordCount = dt.Rows.Count;
 
 			// GroupBoxのVisibilityを変更（表示）
-			GroupBoxVisibility = Visibility.Visible;
+			_integrModel.ChangeVisibility((int)Visibility.Visible);
 		}
 
 
@@ -143,31 +158,12 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 		// Public Methods
 		// ****************************************************************************
 
-		// 破棄
+		/// <summary>
+		/// 破棄
+		/// </summary>
 		public void Destroy()
 		{
 			_disposables.Dispose();
-		}
-
-
-
-		// ****************************************************************************
-		// Private Methods
-		// ****************************************************************************
-
-		private string GetProjectDirectry(string languageType)
-		{
-			string queryCommand = @$"SELECT language_directry
-									 FROM project_language_directry
-									 WHERE language_type=
-									 (
-										SELECT language_type_code
-										FROM manager_language_type
-										WHERE language_type='{languageType}'
-									 );";
-			string directryPath = GetSelectItem("language_directry", queryCommand);
-
-			return directryPath;
 		}
 	}
 }

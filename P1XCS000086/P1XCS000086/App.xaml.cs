@@ -50,9 +50,11 @@ namespace P1XCS000086
 			containerRegistry.RegisterSingleton<ICodeManagerRegisterModel, CodeManagerRegisterModel>();
 			containerRegistry.RegisterSingleton<IDevelopNumberRegisterModel, DevelopNumberRegisterModel>();
 			containerRegistry.RegisterSingleton<IDevelopTypeSelectorModel, DevelopTypeSelectorModel>();
+			containerRegistry.RegisterSingleton<IIntegrRegisterModel, IntegrRegisterModel>();
 
 			// 
 			containerRegistry.RegisterSingleton<ISqlInsert, SqlInsert>();
+			containerRegistry.RegisterSingleton<ISqlSelect, SqlSelect>();
 			containerRegistry.RegisterSingleton<IJsonConnectionStrings, JsonConnectionStrings>();
 
 		}

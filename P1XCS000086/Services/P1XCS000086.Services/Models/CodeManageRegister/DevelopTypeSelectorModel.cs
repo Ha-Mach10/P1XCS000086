@@ -55,6 +55,26 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 			_select.SetConnectionString(_connStr);
 		}
 
+		/// <summary>
+		/// 指定言語のプロジェクトフォルダ名をデータベースから取得
+		/// </summary>
+		/// <param name="languageType">言語種別名</param>
+		/// <returns>プロジェクトのディレクトリ</returns>
+		public string GetProjectDirectry(string languageType)
+		{
+			string query = @$"SELECT language_directry
+							  FROM project_language_directry
+							  WHERE language_type=
+							  (
+								SELECT language_type_code
+								FROM manager_language_type
+								WHERE language_type='{languageType}'
+							  );";
+
+			string directryPath = _select.GetJustOneSelectedItem("language_directry", query);
+
+			return directryPath;
+		}
 
 		/// <summary>
 		/// 開発名称一覧をテーブルからリストで取得
@@ -100,7 +120,7 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 		/// <summary>
 		/// 「言語種別」にて変更した言語種別から対象の言語で作成された開発番号のテーブルを取得
 		/// </summary>
-		/// <param name="languageType"></param>
+		/// <param name="languageType">言語種別</param>
 		/// <returns>開発番号テーブル</returns>
 		public DataTable CodeManagerDataGridItemSetting(string languageType)
 		{
@@ -112,6 +132,35 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 			// クエリを再生成
 			queryCommand = $"SELECT * FROM manager_codes WHERE develop_number LIKE '%{typeCode}%';";
 			DataTable dt = _select.Select(queryCommand);
+			dt = CodeManagerColumnHeaderTrancelate(dt);
+
+			return dt;
+		}
+
+		/// <summary>
+		/// 「言語種別」にて変更した言語種別から対象の言語で作成された号番を取得
+		/// </summary>
+		/// <param name="developType">開発種別</param>
+		/// <param name="languageType">言語種別</param>
+		/// <returns>開発番号テーブル</returns>
+		public DataTable CodeManagerDataGridItemSetting(string developType, string languageType)
+		{
+			// クエリを作成
+			string query = @$"SELECT *
+							  FROM manager_codes
+							  WHERE develop_number
+							  LIKE
+							  (
+								SELECT CONCAT('%', d.develop_type_code, l.language_type_code, '%')
+								FROM manager_language_type AS l
+								JOIN manager_develop_type AS d
+								ON l.script_type = d.script_type
+								WHERE l.language_type='{languageType}' AND d.develop_type='{developType}'
+							  );";
+
+			// クエリからDataTableを取得
+			DataTable dt = _select.Select(query);
+
 			dt = CodeManagerColumnHeaderTrancelate(dt);
 
 			return dt;

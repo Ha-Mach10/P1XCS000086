@@ -9,6 +9,7 @@ using System.Data;
 using P1XCS000086.Services.Interfaces.Models.CodeManageRegister;
 
 using Visibility = P1XCS000086.Services.Interfaces.Models.CodeManageRegister.IIntegrRegisterModel.Visibility;
+using System.Globalization;
 
 
 namespace P1XCS000086.Services.Models.CodeManageRegister
@@ -28,19 +29,34 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 		// ****************************************************************************
 
 		/// <summary>
-		/// 開発種別の値のプロパティ
+		/// 開発種別の値
 		/// </summary>
-		public static string DevTypeValue { get; private set; } = string.Empty;
+		public static string DevTypeValue { get; set; } = string.Empty;
 
 		/// <summary>
-		/// 言語種別の値のプロパティ
+		/// 言語種別の値
 		/// </summary>
-		public static string LangTypeValue { get; private set; } = string.Empty;
+		public static string LangTypeValue { get; set; } = string.Empty;
 
 		/// <summary>
-		/// 取得レコード数のプロパティ
+		/// プロジェクトのディレクトリ
 		/// </summary>
-		public static int RecordCount { get; private set; } = 0;
+		public static string ProjectDirectryText { get; set; } = string.Empty;
+
+		/// <summary>
+		/// 開発種別の選択アイテムのインデックス
+		/// </summary>
+		public static int DevItemSelectedIndex { get; set; } = 0;
+
+		/// <summary>
+		/// 開発種別が選択されているか
+		/// </summary>
+		public static bool IsDevItemSelected { get; set; } = false;
+
+		/// <summary>
+		/// 取得レコード数
+		/// </summary>
+		public static int RecordCount { get; set; } = 0;
 
 		/// <summary>
 		/// 登録ビューの可視性
@@ -50,33 +66,13 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 		/// <summary>
 		/// CodeManageRegisterのメインビュー用
 		/// </summary>
-		public static DataTable GridDataTable { get; private set; } = new();
+		public static DataTable GridDataTable { get; set; };
 
 
 
 		// ****************************************************************************
 		// Public Methods
 		// ****************************************************************************
-
-		/// <summary>
-		/// 取得した開発種別・言語種別をプロパティに設定
-		/// </summary>
-		/// <param name="developmentValue">開発種別</param>
-		/// <param name="languageValue">言語種別</param>
-		public void RegistDevLangValues(string developmentValue, string languageValue)
-		{
-			DevTypeValue = developmentValue;
-			LangTypeValue = languageValue;
-		}
-
-		/// <summary>
-		/// 取得したレコード数をプロパティに設定
-		/// </summary>
-		/// <param name="recordCount">レコード数</param>
-		public void RegistRecordCount(int recordCount)
-		{
-			RecordCount = recordCount;
-		}
 
 		/// <summary>
 		/// Visibilityを変更する
@@ -112,15 +108,6 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 		{
 			int visibility = (int)DevelopNumberContentControlVisibility;
 			return visibility;
-		}
-
-		/// <summary>
-		/// データテーブルの値をプロパティにセット
-		/// </summary>
-		/// <param name="dt"></param>
-		public void SetDataTable(DataTable dt)
-		{
-			GridDataTable = dt;
 		}
 	}
 }

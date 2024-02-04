@@ -8,7 +8,7 @@
 	xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:prism="http://prismlibrary.com/"
-	d:DesignHeight="300"
+	d:DesignHeight="200"
 	d:DesignWidth="300"
 	prism:ViewModelLocator.AutoWireViewModel="True"
 	mc:Ignorable="d">
@@ -62,14 +62,10 @@
 					CornerRadius="5">
 					<VirtualizingStackPanel Orientation="Horizontal">
 						<TextBlock Text="レコード数 ：" />
-						<TextBlock Text="{Binding RowsCount, Mode=OneWay}" />
+						<TextBlock Text="{Binding RecordCountt}" />
 					</VirtualizingStackPanel>
 				</Border>
 			</VirtualizingStackPanel>
 		</GroupBox>
-		<TextBlock
-			HorizontalAlignment="Center"
-			VerticalAlignment="Center"
-			Text="{Binding Message}" />
 	</Grid>
 </UserControl>
