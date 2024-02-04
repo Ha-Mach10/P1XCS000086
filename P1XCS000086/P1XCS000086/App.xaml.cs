@@ -12,10 +12,10 @@ using Prism.Modularity;
 using System.Windows;
 using P1XCS000086.Services.Objects;
 using P1XCS000086.Services.Sql.MySql;
-using P1XCS000086.Services.Interfaces.Models;
 using P1XCS000086.Services.Models;
 using P1XCS000086.Services.Models.CodeManageRegister;
 using P1XCS000086.Services.Interfaces.Sql;
+using P1XCS000086.Services.Interfaces.Models.CodeManageRegister;
 
 namespace P1XCS000086
 {

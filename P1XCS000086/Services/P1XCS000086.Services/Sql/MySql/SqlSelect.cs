@@ -12,12 +12,22 @@ namespace P1XCS000086.Services.Sql.MySql
 {
     public class SqlSelect : ISqlSelect
 	{
-		private string _conStr;
+		// ****************************************************************************
+		// Fields
+		// ****************************************************************************
+		
+		private string _connStr;
 		private string _command;
 
-		public SqlSelect(string conStr)
+
+
+		// ****************************************************************************
+		// Constructors
+		// ****************************************************************************
+
+		public SqlSelect(string connStr)
 		{
-			_conStr = conStr;
+			_connStr = connStr;
 		}
 		public SqlSelect(string conStr, string command) : this(conStr)
 		{
@@ -25,19 +35,28 @@ namespace P1XCS000086.Services.Sql.MySql
 		}
 
 
+
+		// ****************************************************************************
+		// Public Methods
+		// ****************************************************************************
+
+		/// <summary>
+		/// SELECTクエリを実行する
+		/// </summary>
+		/// <returns>SELECTされたDataTable</returns>
 		public DataTable Select()
 		{
 			DataTable dt = new DataTable();
 
 			try
 			{
-				using (MySqlConnection conn = new MySqlConnection(_conStr))
+				using (MySqlConnection conn = new MySqlConnection(_connStr))
 				{
 					// コネクションを開く
 					conn.Open();
 
 					// アダプターを生成
-					using (MySqlDataAdapter adapter = new MySqlDataAdapter(_command, _conStr))
+					using (MySqlDataAdapter adapter = new MySqlDataAdapter(_command, _connStr))
 					{
 						adapter.Fill(dt);
 					}
@@ -50,19 +69,25 @@ namespace P1XCS000086.Services.Sql.MySql
 
 			return dt;
 		}
+
+		/// <summary>
+		/// SELECTクエリを実行する
+		/// </summary>
+		/// <param name="command">クエリ文</param>
+		/// <returns>SELECTされたDataTable</returns>
 		public DataTable Select(string command)
 		{
 			DataTable dt = new DataTable();
 
 			try
 			{
-				using (MySqlConnection conn = new MySqlConnection(_conStr))
+				using (MySqlConnection conn = new MySqlConnection(_connStr))
 				{
 					// コネクションを開く
 					conn.Open();
 
 					// アダプターを生成
-					using (MySqlDataAdapter adapter = new MySqlDataAdapter(command, _conStr))
+					using (MySqlDataAdapter adapter = new MySqlDataAdapter(command, _connStr))
 					{
 						adapter.Fill(dt);
 					}
@@ -75,13 +100,20 @@ namespace P1XCS000086.Services.Sql.MySql
 
 			return dt;
 		}
+
+		/// <summary>
+		/// SELECTクエリを実行する
+		/// </summary>
+		/// <param name="whereColumn"></param>
+		/// <param name="whereValue"></param>
+		/// <returns>SELECTされたDataTable</returns>
 		public DataTable Select(string whereColumn, string whereValue)
 		{
 			DataTable dt = new DataTable();
 
 			try
 			{
-				using (MySqlConnection conn = new MySqlConnection(_conStr))
+				using (MySqlConnection conn = new MySqlConnection(_connStr))
 				{
 					conn.Open();
 
@@ -112,13 +144,20 @@ namespace P1XCS000086.Services.Sql.MySql
 
 			return dt;
 		}
+
+		/// <summary>
+		/// SELECTクエリを実行する
+		/// </summary>
+		/// <param name="whereColumns"></param>
+		/// <param name="whereValues"></param>
+		/// <returns>SELECTされたDataTable</returns>
 		public DataTable Select(List<string> whereColumns, List<string> whereValues)
 		{
 			DataTable dt = new DataTable();
 
 			try
 			{
-				using (MySqlConnection conn = new MySqlConnection(_conStr))
+				using (MySqlConnection conn = new MySqlConnection(_connStr))
 				{
 					conn.Open();
 
@@ -155,6 +194,72 @@ namespace P1XCS000086.Services.Sql.MySql
 			}
 
 			return dt;
+		}
+
+		/// <summary>
+		/// 接続文字列を内部変数へ登録
+		/// </summary>
+		/// <param name="connStr">IMySqlConnectionStringインターフェース</param>
+		public void SetConnectionString(IMySqlConnectionString sqlConnStr)
+		{
+			// 
+			if (! sqlConnStr.IsGetConnectionString(out string connStr)) { return; }
+			// 
+			_connStr = connStr;
+		}
+
+		/// <summary>
+		/// クエリを実行し、取得した列からただ１つの項目を返す
+		/// </summary>
+		/// <param name="connectionString">接続文字列生成用インターフェース</param>
+		/// <param name="columnName">カラム名</param>
+		/// <param name="query">クエリ</param>
+		/// <returns>取得されたただひとつの値</returns>
+		public string GetJustOneSelectedItem(string columnName, string query)
+		{
+			// SELECTを実行
+			DataTable dt = Select(query);
+
+			// LINQで「dt」から指定のカラムのEnumerableRowCollection<DataRow>を取得
+			var rowItmes = dt.AsEnumerable().Select(x => x[columnName]).ToList();
+
+			// もし「rowItems」の項目数が１未満のとき、"Empty"を返す
+			if (rowItmes.Count < 1) { return "Empty"; }
+
+			// 取得したコレクションから、LINQで最初の項目を取得
+			string item = rowItmes.First().ToString();
+
+			return item;
+		}
+
+		/// <summary>
+		/// クエリを実行し、取得した列をリストへ格納
+		/// </summary>
+		/// <param name="command">クエリ</param>
+		/// <returns>リスト化された値</returns>
+		public List<string> SelectedColumnToList(string columnName, string query)
+		{
+			// 接続文字列が空の場合、「Non Items」の文字列のみ格納したリストを返す
+			if (_connStr == string.Empty)
+			{
+				return new List<string>() { "Non Items" };
+			}
+
+			// SELECTクエリ実行用のクラスをインターフェース経由で生成
+			ISqlSelect selectExecute = new SqlSelect(_connStr, query);
+			DataTable dt = selectExecute.Select();
+
+			// 戻り値用リストを生成
+			List<string> items = new List<string>();
+
+			// LINQで「dt」から指定のカラムのEnumerableRowCollection<DataRow>を取得し、foreachでリストへ格納
+			var rowItems = dt.AsEnumerable().Select(x => x[columnName]).ToList();
+			foreach (var rowItem in rowItems)
+			{
+				items.Add(rowItem.ToString());
+			}
+
+			return items;
 		}
 	}
 }

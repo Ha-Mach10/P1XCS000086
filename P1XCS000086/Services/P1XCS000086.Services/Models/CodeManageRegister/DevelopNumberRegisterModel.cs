@@ -1,4 +1,4 @@
-﻿using P1XCS000086.Services.Interfaces.Models;
+﻿using P1XCS000086.Services.Interfaces.Models.CodeManageRegister;
 using P1XCS000086.Services.Interfaces.Sql;
 using P1XCS000086.Services.Sql.MySql;
 
@@ -14,19 +14,32 @@ using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace P1XCS000086.Services.Models.CodeManageRegister
 {
-	public class DevelopNumberRegisterModel : IDevelopNumberRegisterModel
+    public class DevelopNumberRegisterModel : IDevelopNumberRegisterModel
 	{
-		// 
+		// ****************************************************************************
+		// Fields
+		// ****************************************************************************
+
 		private IMySqlConnectionString _connStr;
 		private ISqlSelect _select;
 		private ISqlInsert _insert;
 
+
+
+		// ****************************************************************************
+		// Constructor
+		// ****************************************************************************
 
 		public DevelopNumberRegisterModel()
 		{
 			
 		}
 
+
+
+		// ****************************************************************************
+		// Public Methods
+		// ****************************************************************************
 
 		/// <summary>
 		/// ViewModelへ注入されたインターフェースをセット
@@ -40,13 +53,15 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 			_connStr = connStr;
 			_select = select;
 			_insert = insert;
+
+			// SqlSelectクラス内のフィールド変数「_connStr」へ接続文字列をセットする
+			_select.SetConnectionString(_connStr);
 		}
+
 		/// <summary>
 		/// 開発番号を返す
 		/// </summary>
-		/// <returns>
-		/// 
-		/// </returns>
+		/// <returns>開発番号</returns>
 		public string GetDevelopmentNumber()
 		{
 			// 開発番号の開発記号生成
@@ -63,13 +78,14 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 
 			return developNumber;
 		}
+
 		/// <summary>
 		/// ReactivePropertySlim<T>から値を取得する
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
+		/// <typeparam name="T">任意の型</typeparam>
 		/// <param name="sourcePropertiy">値を取得するReactivePropertySlim<T></param>
 		/// <param name="substutituteValue">ReactivePropertySlimがnullの場合に代わりとなる値</param>
-		/// <returns></returns>
+		/// <returns>Tの値</returns>
 		public T GetValue<T>(ReactivePropertySlim<T> sourcePropertiy, T substutituteValue)
 		{
 			// ReactivePropertySlim<T>.Valueがnullでない場合
@@ -86,14 +102,12 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 		/// <summary>
 		/// 使用用途の取得
 		/// </summary>
-		/// <param name="useAppSelectedValue"></param>
-		/// <param name="useAppSubSelectedValue"></param>
-		/// <param name="useApplicationManual"></param>
-		/// <returns></returns>
-		public string GetUseApplication(
-			ReactivePropertySlim<string> useAppSelectedValue,
-			ReactivePropertySlim<string> useAppSubSelectedValue,
-			ReactivePropertySlim<string> useApplicationManual)
+		/// <param name="useAppSelectedValue">自動使用用途</param>
+		/// <param name="useAppSubSelectedValue">自動副使用用途</param>
+		/// <param name="useApplicationManual">手動使用用途</param>
+		/// <returns>使用用途</returns>
+		public string GetUseApplication
+			(ReactivePropertySlim<string> useAppSelectedValue, ReactivePropertySlim<string> useAppSubSelectedValue, ReactivePropertySlim<string> useApplicationManual)
 		{
 			string useApplication = string.Empty;
 
@@ -113,30 +127,22 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 
 			return useApplication;
 		}
+
 		/// <summary>
-		/// 
+		/// 開発番号をデータベースに登録
 		/// </summary>
-		/// <param name="developNumber"></param>
-		/// <param name="developName"></param>
-		/// <param name="codeName"></param>
-		/// <param name="useApplication"></param>
-		/// <param name="referenceNumber"></param>
-		/// <param name="oldNumber"></param>
-		/// <param name="newNumber"></param>
-		/// <param name="inheritenceNumber"></param>
-		/// <param name="explanation"></param>
-		/// <param name="summary"></param>
-		public string RegistValues(
-			string developNumber,
-			string developName,
-			string codeName,
-			string useApplication,
-			string referenceNumber,
-			string oldNumber,
-			string newNumber,
-			string inheritenceNumber,
-			string explanation,
-			string summary)
+		/// <param name="developNumber">開発番号</param>
+		/// <param name="developName">開発名称</param>
+		/// <param name="codeName">コードネーム</param>
+		/// <param name="useApplication">使用用途</param>
+		/// <param name="referenceNumber">参照番号</param>
+		/// <param name="oldNumber">旧番号</param>
+		/// <param name="newNumber">新番号</param>
+		/// <param name="inheritenceNumber">継承番号</param>
+		/// <param name="explanation">説明</param>
+		/// <param name="summary">摘要</param>
+		public string RegistValues
+			(string developNumber, string developName, string codeName, string useApplication, string referenceNumber, string oldNumber, string newNumber, string inheritenceNumber, string explanation, string summary)
 		{
 			// 日付を取得
 			string date = DateTime.Now.ToString();
@@ -144,17 +150,7 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 			// Insert用の値リストを生成
 			List<string> values = new List<string>
 			{
-				developNumber,
-				developName,
-				codeName,
-				date,
-				useApplication,
-				referenceNumber,
-				oldNumber,
-				newNumber,
-				inheritenceNumber,
-				explanation,
-				summary
+				developNumber, developName, codeName, date, useApplication, referenceNumber, oldNumber, newNumber, inheritenceNumber, explanation, summary
 			};
 
 			if (!RegisterDevelopmentNumber(values, out string resultMessege))
@@ -165,7 +161,6 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 
 			return string.Empty;
 		}
-
 
 		/// <summary>
 		/// 日本語名で与えられた開発種別・言語種別をマスタからコードで取得
@@ -184,48 +179,28 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 									 ON l.script_type = d.script_type
 									 WHERE l.language_type='{languageType}' AND d.develop_type='{developType}';";
 			string columnName = "CONCAT(d.develop_type_code, l.language_type_code)";
-			string classificationString = GetSelectItem(columnName, queryCommand);
+			string classificationString = _select.GetJustOneSelectedItem(columnName, queryCommand);
 
 			return classificationString;
 		}
+
+
+
+		// ****************************************************************************
+		// Private Methods
+		// ****************************************************************************
+
 		/// <summary>
 		/// 日本語名で与えられた使用用途をマスタから英語名で取得
 		/// </summary>
 		/// <param name="selectedValue">使用用途欄から入力された値</param>
-		/// <returns></returns>
+		/// <returns>使用用途（英語）</returns>
 		private string GetUseApplicationValue(string selectedValue)
 		{
 			string queryCommand = $"SELECT use_name_en FROM manager_use_application WHERE use_name_jp='{selectedValue}';";
-			string getValue = GetSelectItem(selectedValue, queryCommand);
+			string getValue = _select.GetJustOneSelectedItem(selectedValue, queryCommand);
 
 			return getValue;
-		}
-		/// <summary>
-		/// クエリを実行し、取得した列からただ１つの項目を返す
-		/// ※取得される項目がただ１つのみになるようクエリを作成すること
-		/// </summary>
-		/// <param name="columnName"></param>
-		/// <param name="queryCommand"></param>
-		/// <returns></returns>
-		private string GetSelectItem(string columnName, string queryCommand)
-		{
-			// 接続文字列を取得
-			if (!_connStr.IsGetConnectionString(out string connStr)) { return string.Empty; }
-
-			// SELECTクエリ実行用のクラスをインターフェース経由で生成
-			ISqlSelect selectExecute = new SqlSelect(connStr, queryCommand);
-			DataTable dt = selectExecute.Select();
-
-			// LINQで「dt」から指定のカラムのEnumerableRowCollection<DataRow>を取得
-			var rowItmes = dt.AsEnumerable().Select(x => x[columnName]).ToList();
-
-			// もし「rowItems」の項目数が１未満のとき、"Empty"を返す
-			if (rowItmes.Count < 1) { return "Empty"; }
-
-			// 取得したコレクションから、LINQで最初の項目を取得
-			string item = rowItmes.First().ToString();
-
-			return item;
 		}
 
 		/// <summary>

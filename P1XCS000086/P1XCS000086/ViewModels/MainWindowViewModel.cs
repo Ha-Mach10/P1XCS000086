@@ -350,6 +350,10 @@ namespace P1XCS000086.ViewModels
 		}
 
 		public ReactiveCommand LanguageTypeComboChange { get; }
+		/// <summary>
+		/// ****************************************************************************************************************
+		/// 不要
+		/// </summary>
 		private void OnLanguageTypeComboChange()
 		{
 			// Language文字列ComboBoxから取得（Like検索用）
@@ -377,6 +381,10 @@ namespace P1XCS000086.ViewModels
 			GroupBoxVisibility = Visibility.Collapsed;
 		}
 		public ReactiveCommand DevelopmentTypeComboChange { get; }
+		/// <summary>
+		/// ****************************************************************************************************************
+		/// 不要
+		/// </summary>
 		private void OnDevelopmentTypeComboChange()
 		{
 			// 初回起動時または言語種別ComboBox変更時

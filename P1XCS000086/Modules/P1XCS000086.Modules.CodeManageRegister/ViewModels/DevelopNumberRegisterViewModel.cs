@@ -23,16 +23,20 @@ using P1XCS000086.Services.Interfaces;
 using P1XCS000086.Services.Sql.MySql;
 using P1XCS000086.Services.IO;
 using P1XCS000086.Services.Objects;
-using P1XCS000086.Services.Interfaces.Models;
 using P1XCS000086.Services.Interfaces.Sql;
 using P1XCS000086.Services.Models.CodeManageRegister;
 using System.Windows.Navigation;
+using P1XCS000086.Services.Interfaces.Models.CodeManageRegister;
 
 
 namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 {
-	public class DevelopNumberRegisterViewModel : BindableBase, IDestructible
+    public class DevelopNumberRegisterViewModel : BindableBase, IDestructible
 	{
+		// ****************************************************************************
+		// Fields
+		// ****************************************************************************
+
 		// 破棄用
 		private CompositeDisposable _disposables;
 		// インジェクションされたモデル用
@@ -41,6 +45,11 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 		private ISqlSelect _select;
 		private ISqlInsert _insert;
 
+
+
+		// ****************************************************************************
+		// Reactive Properties
+		// ****************************************************************************
 
 		// 
 		public ReactivePropertySlim<string> DevelopName { get; }
@@ -67,6 +76,11 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 		public ReactivePropertySlim<SnackbarMessageQueue> StateSnackBarMessageQueue { get; }
 
 
+
+		// ****************************************************************************
+		// Constructor
+		// ****************************************************************************
+
 		public DevelopNumberRegisterViewModel(IDevelopNumberRegisterModel model, ISqlSelect select, ISqlInsert insert, IMySqlConnectionString connStr)
 		{
 			// インジェクションされたモデルインターフェース
@@ -75,12 +89,15 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 			_select = select;
 			_insert = insert;
 
+
 			// インジェクションされたインターフェースをモデルにセット
 			_model.SetModelBuiltin(_select, _insert, _connStr);
+
 
 			// 初期値設定用変数
 			string initStr = string.Empty;
 			var stateMessageQueue = new SnackbarMessageQueue(TimeSpan.FromMilliseconds(2000));
+
 
 			// 初期値設定
 			DevelopName				= new ReactivePropertySlim<string>(initStr).AddTo(_disposables);
@@ -117,7 +134,11 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 		}
 
 
-		// 
+
+		// ****************************************************************************
+		// Command Event
+		// ****************************************************************************
+
 		public ReactiveCommandSlim CheckedChangedToOff { get; }
 		/// <summary>
 		/// 使用用途欄のトグルスイッチOFF時の処理
@@ -134,6 +155,7 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 				UseAppTextVisibility.Value = Visibility.Visible;
 			}
 		}
+
 		public ReactiveCommandSlim CheckedChangedToOn { get; }
 		/// <summary>
 		/// 使用用途欄のトグルスイッチON時の処理
@@ -150,6 +172,7 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 				UseAppTextVisibility.Value = Visibility.Collapsed;
 			}
 		}
+
 		public ReactiveCommandSlim RegistCodeNumber { get; }
 		/// <summary>
 		/// 開発番号登録処理
@@ -191,10 +214,15 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 		}
 
 
+
+		// ****************************************************************************
+		// Public Methods
+		// ****************************************************************************
+
 		// 破棄
 		public void Destroy()
 		{
-			_disposables?.Dispose();
+			_disposables.Dispose();
 		}
 	}
 }
