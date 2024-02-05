@@ -5,6 +5,7 @@
 	xmlns:core="clr-namespace:P1XCS000086.Core;assembly=P1XCS000086.Core"
 	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 	xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+	xmlns:mahIcon="http://metro.mahapps.com/winfx/xaml/iconpacks"
 	xmlns:mdMetro="http://materialdesigninxaml.net/winfx/xaml/themes"
 	xmlns:prism="http://prismlibrary.com/"
 	Title="{Binding Title}"
@@ -37,8 +38,56 @@
 		<TabControl Grid.Row="1" SelectedIndex="{Binding SelectedTabIndex.Value}">
 			<TabItem Style="{StaticResource MahApps.Styles.TabItem}">
 				<TabItem.Header>
-					<TextBlock Text="台帳"/>
+					<HeaderedContentControl>
+						<TextBlock Margin="8,0,8,0" Text="台帳管理" />
+					</HeaderedContentControl>
 				</TabItem.Header>
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="200" />
+						<ColumnDefinition />
+					</Grid.ColumnDefinitions>
+					<VirtualizingStackPanel Orientation="Horizontal">
+						<VirtualizingStackPanel>
+							<GroupBox Padding="0,8,0,8">
+								<GroupBox.Header>
+									<TextBlock FontSize="12" Text="台帳" />
+								</GroupBox.Header>
+								<StackPanel>
+									<Button Margin="8,0,8,0" Content="ビューア" />
+									<Button Margin="8,8,8,0" Content="追加" />
+									<Button Margin="8,8,8,0" Content="編集" />
+								</StackPanel>
+							</GroupBox>
+							<Button
+								Height="30"
+								Margin="8,8,8,0"
+								Padding="16,0,16,0"
+								Content="マスタ" />
+						</VirtualizingStackPanel>
+						<ToggleButton
+							x:Name="ExpandToggle"
+							Height="{Binding Path=ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type StackPanel}}}"
+							Padding="1"
+							VerticalAlignment="Stretch"
+							Background="Gainsboro"
+							IsChecked="true">
+							<ToggleButton.Style>
+								<Style BasedOn="{StaticResource MahApps.Styles.Button.Flat}" TargetType="{x:Type ToggleButton}">
+									<Style.Triggers>
+										<Trigger Property="IsChecked" Value="True">
+											<Setter Property="Content" Value="{mahIcon:RadixIcons Kind=ChevronLeft}" />
+										</Trigger>
+										<Trigger Property="IsChecked" Value="False">
+											<Setter Property="Content" Value="{mahIcon:RadixIcons Kind=ChevronRight}" />
+										</Trigger>
+									</Style.Triggers>
+								</Style>
+							</ToggleButton.Style>
+						</ToggleButton>
+					</VirtualizingStackPanel>
+					<ItemsControl Grid.Column="1" prism:RegionManager.RegionName="" />
+				</Grid>
 			</TabItem>
 			<TabItem Style="{StaticResource MahApps.Styles.TabItem}">
 				<TabItem.Header>

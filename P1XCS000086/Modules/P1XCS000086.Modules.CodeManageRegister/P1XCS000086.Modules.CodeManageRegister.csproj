@@ -11,6 +11,7 @@
     <PackageReference Include="ReactiveProperty.WPF" Version="9.3.4" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\P1XCS000086.Core\P1XCS000086.Core.csproj" />
     <ProjectReference Include="..\..\Services\P1XCS000086.Services.Interfaces\P1XCS000086.Services.Interfaces.csproj" />
     <ProjectReference Include="..\..\Services\P1XCS000086.Services\P1XCS000086.Services.csproj" />
   </ItemGroup>
