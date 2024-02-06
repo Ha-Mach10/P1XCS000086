@@ -49,6 +49,8 @@ namespace P1XCS000086.ViewModels
 
 		private IRegionManager _regionManager;
 		private IMainWindowModel _mainWindowModel;
+		private IJsonConnectionStrings _jsonConnectionStrings;
+		private IJsonExtention _jsonExtention;
 		private CompositeDisposable disposables = new CompositeDisposable();
 
 
@@ -185,13 +187,14 @@ namespace P1XCS000086.ViewModels
 		/// 
 		/// </summary>
 		/// <param name="regionManager"></param>
-		public MainWindowViewModel(IRegionManager regionManager)
+		public MainWindowViewModel(IRegionManager regionManager, IMainWindowModel model, IJsonExtention jsonExtention, IJsonConnectionStrings jsonConnString)
 		{
 			_regionManager = regionManager;
 
 			// MainWindowModelをインターフェース(IMainWindowModel)から生成
-			IMainWindowModel mainWindowModel = new MainWindowModel();
-			_mainWindowModel = mainWindowModel;
+			_mainWindowModel = model;
+			_jsonConnectionStrings = jsonConnString;
+			_jsonExtention = jsonExtention;
 
 
 			// -----------------------------------------------------------------------------------------------------
@@ -244,8 +247,8 @@ namespace P1XCS000086.ViewModels
 
 
 			// JSONファイルが存在していない場合
-			IJsonExtention jsonExtention = new JsonExtention();
-			IJsonConnectionStrings jsonConnString = mainWindowModel.JsonDeserialize();
+			// IJsonExtention jsonExtention = new JsonExtention();
+			// IJsonConnectionStrings jsonConnString = mainWindowModel.JsonDeserialize();
             if (jsonExtention.PathCheckAndGenerate() && jsonConnString is not null)
 			{
 				// Properties SQL Connection

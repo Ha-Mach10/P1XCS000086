@@ -44,26 +44,45 @@
 				</TabItem.Header>
 				<Grid>
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="200" />
+						<ColumnDefinition Width="Auto"/>
 						<ColumnDefinition />
 					</Grid.ColumnDefinitions>
 					<VirtualizingStackPanel Orientation="Horizontal">
 						<VirtualizingStackPanel>
-							<GroupBox Padding="0,8,0,8">
-								<GroupBox.Header>
-									<TextBlock FontSize="12" Text="台帳" />
-								</GroupBox.Header>
-								<StackPanel>
-									<Button Margin="8,0,8,0" Content="ビューア" />
-									<Button Margin="8,8,8,0" Content="追加" />
-									<Button Margin="8,8,8,0" Content="編集" />
-								</StackPanel>
-							</GroupBox>
-							<Button
-								Height="30"
-								Margin="8,8,8,0"
-								Padding="16,0,16,0"
-								Content="マスタ" />
+							<TextBlock Margin="4,8,0,8" Text="台帳操作" />
+							<Button Height="30" Margin="8,0,8,0">
+								<Button.Content>
+									<WrapPanel Orientation="Horizontal">
+										<mahIcon:PackIconMaterial Kind="TableSearch" Margin="16,0,8,0" />
+										<TextBlock Text="ビューア" Margin="0,0,16,0" />
+									</WrapPanel>
+								</Button.Content>
+							</Button>
+							<Button Height="30" Margin="8,8,8,0">
+								<Button.Content>
+									<WrapPanel Orientation="Horizontal">
+										<mahIcon:PackIconCoolicons Kind="AddRow" Margin="16,0,8,0" />
+										<TextBlock Text="追加" Margin="0,0,16,0" />
+									</WrapPanel>
+								</Button.Content>
+							</Button>
+							<Button Height="30" Margin="8,8,8,0">
+								<Button.Content>
+									<WrapPanel Orientation="Horizontal">
+										<mahIcon:PackIconMaterial Kind="TableEdit" Margin="16,0,8,0" />
+										<TextBlock Text="編集" Margin="0,0,16,0" />
+									</WrapPanel>
+								</Button.Content>
+							</Button>
+							<TextBlock Margin="4,8,0,8" Text="マスタ" />
+							<Button Height="30" Margin="8,0,8,0" >
+								<Button.Content>
+									<WrapPanel Orientation="Horizontal">
+										<mahIcon:PackIconMaterial Kind="DatabaseOutline" Margin="16,0,8,0"/>
+										<TextBlock Text="マスタ" Margin="0,0,16,0" />
+									</WrapPanel>
+								</Button.Content>
+							</Button>
 						</VirtualizingStackPanel>
 						<ToggleButton
 							x:Name="ExpandToggle"

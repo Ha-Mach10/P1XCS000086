@@ -36,7 +36,11 @@ namespace P1XCS000086
 			// 初期
 			containerRegistry.RegisterSingleton<IMessageService, MessageService>();
 
-			// Sqls
+			// JSONs
+			containerRegistry.RegisterSingleton<IJsonExtention, IJsonExtention>();
+			containerRegistry.RegisterSingleton<IJsonConnectionStrings, JsonConnectionStrings>();
+
+			// SQLs
 			// # MySql
 			containerRegistry.RegisterSingleton<IMySqlConnectionString, SqlConnectionString>();
 			containerRegistry.RegisterSingleton<ISqlSelect, SqlSelect>();
@@ -46,6 +50,8 @@ namespace P1XCS000086
 
 
 			// Models
+			// # MainWindow
+			containerRegistry.RegisterSingleton<IMainWindowModel, MainWindowModel>();
 			// # CodeManageRegister
 			containerRegistry.RegisterSingleton<ICodeManagerRegisterModel, CodeManagerRegisterModel>();
 			containerRegistry.RegisterSingleton<IDevelopNumberRegisterModel, DevelopNumberRegisterModel>();
