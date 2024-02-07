@@ -16,6 +16,9 @@ using P1XCS000086.Services.Models;
 using P1XCS000086.Services.Models.CodeManageRegister;
 using P1XCS000086.Services.Interfaces.Sql;
 using P1XCS000086.Services.Interfaces.Models.CodeManageRegister;
+using P1XCS000086.Services.Interfaces.Models;
+using P1XCS000086.Services.Interfaces.IO;
+using P1XCS000086.Services.Interfaces.Objects;
 
 namespace P1XCS000086
 {
@@ -43,6 +46,7 @@ namespace P1XCS000086
 			// SQLs
 			// # MySql
 			containerRegistry.RegisterSingleton<IMySqlConnectionString, SqlConnectionString>();
+			containerRegistry.RegisterSingleton<ISqlConnectionTest, SqlConnectionTest>();
 			containerRegistry.RegisterSingleton<ISqlSelect, SqlSelect>();
 			containerRegistry.RegisterSingleton<ISqlInsert, SqlInsert>();
 			containerRegistry.RegisterSingleton<ISqlShowTables, SqlShowTables>();

@@ -17,7 +17,6 @@ using System.Reflection.Emit;
 using P1XCS000086.Services;
 using P1XCS000086.Services.Models;
 using P1XCS000086.Services.IO;
-using P1XCS000086.Services.Interfaces;
 using P1XCS000086.Services.Objects;
 
 using Prism.Mvvm;
@@ -34,11 +33,15 @@ using Org.BouncyCastle.Bcpg.OpenPgp;
 using P1XCS000086.Services.Sql.MySql;
 using P1XCS000086.Services.Domains;
 using System.Linq;
+using P1XCS000086.Services.Interfaces.Models;
+using P1XCS000086.Services.Interfaces.IO;
+using P1XCS000086.Services.Interfaces.Objects;
+using P1XCS000086.Services.Interfaces.Sql;
 
 
 namespace P1XCS000086.ViewModels
 {
-	public class MainWindowViewModel : BindableBase, IDestructible, INotifyPropertyChanged
+    public class MainWindowViewModel : BindableBase, IDestructible, INotifyPropertyChanged
 	{
 		private string _title = "Prism Application";
 		public string Title
@@ -48,9 +51,10 @@ namespace P1XCS000086.ViewModels
 		}
 
 		private IRegionManager _regionManager;
-		private IMainWindowModel _mainWindowModel;
-		private IJsonConnectionStrings _jsonConnectionStrings;
+		private IMainWindowModel _model;
+		private IJsonConnectionStrings _jsonConnStr;
 		private IJsonExtention _jsonExtention;
+		private IMySqlConnectionString _sqlConnStr;
 		private CompositeDisposable disposables = new CompositeDisposable();
 
 
@@ -187,15 +191,20 @@ namespace P1XCS000086.ViewModels
 		/// 
 		/// </summary>
 		/// <param name="regionManager"></param>
-		public MainWindowViewModel(IRegionManager regionManager, IMainWindowModel model, IJsonExtention jsonExtention, IJsonConnectionStrings jsonConnString)
+		public MainWindowViewModel(IRegionManager regionManager, IMainWindowModel model, IJsonExtention jsonExtention, IJsonConnectionStrings jsonConnStr, IMySqlConnectionString sqlConnStr)
 		{
 			_regionManager = regionManager;
 
 			// MainWindowModelをインターフェース(IMainWindowModel)から生成
-			_mainWindowModel = model;
-			_jsonConnectionStrings = jsonConnString;
+			_model = model;
+			_jsonConnStr = jsonConnStr;
 			_jsonExtention = jsonExtention;
+			_sqlConnStr = sqlConnStr;
 
+			// インジェクションされたモデルを注入
+			_model.InjectModels(_jsonConnStr, _jsonExtention);
+			_model.JsonDeserialize();
+			
 
 			// -----------------------------------------------------------------------------------------------------
 			// Properties Initialize

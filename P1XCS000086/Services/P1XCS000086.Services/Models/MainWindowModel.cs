@@ -1,5 +1,4 @@
-﻿using P1XCS000086.Services.Interfaces;
-using P1XCS000086.Services.IO;
+﻿using P1XCS000086.Services.IO;
 using P1XCS000086.Services.Objects;
 using P1XCS000086.Services.Sql.MySql;
 
@@ -18,12 +17,25 @@ using MySqlX.XDevAPI.Relational;
 using MySqlX.XDevAPI;
 using System.IO;
 using P1XCS000086.Services.Interfaces.Sql;
+using P1XCS000086.Services.Interfaces.Models;
+using P1XCS000086.Services.Interfaces.IO;
+using P1XCS000086.Services.Interfaces.Objects;
 
 
 namespace P1XCS000086.Services.Models
 {
     public class MainWindowModel : IMainWindowModel
 	{
+		// ****************************************************************************
+		// Fields
+		// ****************************************************************************
+
+		private IJsonConnectionStrings _jsonConnStr;
+		private IJsonExtention _jsonExtention;
+		private IMySqlConnectionString _sqlConnStr;
+
+
+
 		// Properies 
 		public string Server { get; set; }
 		public string User {  get; set; }
@@ -37,9 +49,33 @@ namespace P1XCS000086.Services.Models
 		public string ExceptionMessage { get; private set; }
 
 
+
+		// ****************************************************************************
+		// Constructor
+		// ****************************************************************************
+
 		public MainWindowModel()
 		{
 
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="jsonConnStr">JSON接続文字列生成</param>
+		/// <param name="jsonExtention">JSONオブジェクト</param>
+		public void InjectModels(IJsonConnectionStrings jsonConnStr, IJsonExtention jsonExtention, IMySqlConnectionString sqlConnStr)
+		{
+			_jsonConnStr = jsonConnStr;
+			_jsonExtention = jsonExtention;
+			_sqlConnStr = sqlConnStr;
+		}
+		public void SetConnectionString()
+		{
+			string jsonSqlFilePath = _jsonExtention.JsonSqlFilePath;
+			_jsonExtention.PathCheckAndGenerate();
+			_jsonConnStr = _jsonExtention.DeserializeJson<JsonConnectionStrings>(jsonSqlFilePath);
+			
 		}
 
 
@@ -549,6 +585,9 @@ namespace P1XCS000086.Services.Models
 			jsonExtention.SerializeJson(connStrings, jsonFilePath, false);
 		}
 		/// <summary>
+		/// *****************************************************************************************************************
+		/// 削除予定
+		/// *****************************************************************************************************************
 		/// SQLの接続テスト用メソッド
 		/// </summary>
 		/// <returns>接続の成功/失敗</returns>

@@ -5,17 +5,52 @@ using System.IO;
 using System.Text;
 
 using Newtonsoft.Json;
-
-using P1XCS000086.Services.Interfaces;
+using P1XCS000086.Services.Interfaces.IO;
 
 namespace P1XCS000086.Services.IO
 {
-	public class JsonExtention : IJsonExtention
+    public class JsonExtention : IJsonExtention
 	{
-		// Static readonly fields
-		public static readonly string JsonFolderPath = "settings";
-		public static readonly string JsonFilePath = "settings/SqlConnectionString.json";
+		// ****************************************************************************
+		// Fields
+		// ****************************************************************************
 
+		private static readonly string _jsonFolderPath = "settings";
+		private static readonly string _jsonSqlFilePath = "settings/SqlConnectionString.json";
+
+
+
+		// ****************************************************************************
+		// Properties
+		// ****************************************************************************
+
+		/// <summary>
+		/// JSONフォルダパス
+		/// </summary>
+		public string JsonFolderPath { get; private set; }
+
+		/// <summary>
+		/// SQL接続文字列用JSONファイルパス
+		/// </summary>
+		public string JsonSqlFilePath { get; private set; }
+
+
+
+		// ****************************************************************************
+		// Constructor
+		// ****************************************************************************
+
+		public JsonExtention()
+		{
+			JsonFolderPath = _jsonFolderPath;
+			JsonSqlFilePath = _jsonSqlFilePath;
+		}
+
+
+
+		// ****************************************************************************
+		// Public Methods
+		// ****************************************************************************
 
 		/// <summary>
 		/// フォルダ及びファイルの存在チェック。存在しなければ生成する。
@@ -32,9 +67,9 @@ namespace P1XCS000086.Services.IO
 				Directory.CreateDirectory(JsonFolderPath);
 			}
 			// JSONファイルの存在をチェックし、存在しなければ生成
-			if (!File.Exists(JsonFilePath))
+			if (!File.Exists(JsonSqlFilePath))
 			{
-				File.Create(JsonFilePath);
+				File.Create(JsonSqlFilePath);
 				isExists = false;
 			}
 
@@ -44,10 +79,10 @@ namespace P1XCS000086.Services.IO
 		/// <summary>
 		/// シリアライズ（直列化）
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="obj"></param>
-		/// <param name="path"></param>
-		/// <param name="append"></param>
+		/// <typeparam name="T">任意の型</typeparam>
+		/// <param name="obj">JSON化するオブジェクト</param>
+		/// <param name="path">JSONファイルパス</param>
+		/// <param name="append">追記するか否か</param>
 		public async void SerializeJson<T>(T obj, string path, bool append)
 		{
 			try
@@ -65,11 +100,11 @@ namespace P1XCS000086.Services.IO
 		}
 
 		/// <summary>
-		/// デシリアライズ（直列化複合）
+		/// デシリアライズ（直列化復号）
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="path"></param>
-		/// <returns></returns>
+		/// <typeparam name="T">任意の型</typeparam>
+		/// <param name="path">JSONファイルパス</param>
+		/// <returns>元の型</returns>
 		public T DeserializeJson<T>(string path)
 		{
 			try
