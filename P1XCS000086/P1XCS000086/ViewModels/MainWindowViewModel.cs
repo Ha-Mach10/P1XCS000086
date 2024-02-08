@@ -202,8 +202,8 @@ namespace P1XCS000086.ViewModels
 			_sqlConnStr = sqlConnStr;
 
 			// インジェクションされたモデルを注入
-			_model.InjectModels(_jsonConnStr, _jsonExtention);
-			_model.JsonDeserialize();
+			// JSONファイルをチェックし、存在すれば、SQL接続文字列を設定
+			_model.InjectModels(_jsonConnStr, _jsonExtention, _sqlConnStr);
 			
 
 			// -----------------------------------------------------------------------------------------------------

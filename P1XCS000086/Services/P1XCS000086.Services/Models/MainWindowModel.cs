@@ -60,7 +60,7 @@ namespace P1XCS000086.Services.Models
 		}
 
 		/// <summary>
-		/// 
+		/// DIされたオブジェクトをModelに注入
 		/// </summary>
 		/// <param name="jsonConnStr">JSON接続文字列生成</param>
 		/// <param name="jsonExtention">JSONオブジェクト</param>
@@ -70,12 +70,18 @@ namespace P1XCS000086.Services.Models
 			_jsonExtention = jsonExtention;
 			_sqlConnStr = sqlConnStr;
 		}
+		/// <summary>
+		/// JSONファイルに設定された接続文字列情報をSQL接続文字列として復号
+		/// </summary>
 		public void SetConnectionString()
 		{
 			string jsonSqlFilePath = _jsonExtention.JsonSqlFilePath;
+			// JSONファイルの存在チェック
 			_jsonExtention.PathCheckAndGenerate();
+			// JSONファイルを復号
 			_jsonConnStr = _jsonExtention.DeserializeJson<JsonConnectionStrings>(jsonSqlFilePath);
-			
+			// 接続文字列情報をコピー
+			_sqlConnStr.GenelateConnectionString(_jsonConnStr.Server, _jsonConnStr.User, _jsonConnStr.DatabaseName, _jsonConnStr.Password, _sqlConnStr.PersistSecurityInfo);
 		}
 
 
