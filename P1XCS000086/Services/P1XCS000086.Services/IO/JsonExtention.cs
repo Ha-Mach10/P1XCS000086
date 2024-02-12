@@ -17,6 +17,7 @@ namespace P1XCS000086.Services.IO
 
 		private static readonly string _jsonFolderPath = "settings";
 		private static readonly string _jsonSqlFilePath = "settings/SqlConnectionString.json";
+		private static readonly string _jsonSqlDatabaseFilePath = "settings/SqlDatabaseName.json";
 
 
 
@@ -34,6 +35,11 @@ namespace P1XCS000086.Services.IO
 		/// </summary>
 		public string JsonSqlFilePath { get; private set; }
 
+		/// <summary>
+		/// SQLデータベース名用JSONファイルパス
+		/// </summary>
+		public string JsonSqlDatabaseFilePath { get; private set; }
+
 
 
 		// ****************************************************************************
@@ -44,6 +50,7 @@ namespace P1XCS000086.Services.IO
 		{
 			JsonFolderPath = _jsonFolderPath;
 			JsonSqlFilePath = _jsonSqlFilePath;
+			JsonSqlDatabaseFilePath = _jsonSqlDatabaseFilePath;
 		}
 
 
@@ -58,6 +65,13 @@ namespace P1XCS000086.Services.IO
 		/// <returns>ファイルが存在すれば：true、存在しなければ：false</returns>
 		public bool PathCheckAndGenerate()
 		{
+			// ファイルチェック用のリストを生成
+			List<string> paths = new List<string>()
+			{
+				_jsonSqlFilePath,
+				_jsonSqlDatabaseFilePath
+			};
+
 			// 戻り値用
 			bool isExists = true;
 
@@ -67,10 +81,13 @@ namespace P1XCS000086.Services.IO
 				Directory.CreateDirectory(JsonFolderPath);
 			}
 			// JSONファイルの存在をチェックし、存在しなければ生成
-			if (!File.Exists(JsonSqlFilePath))
+			foreach (string path in paths)
 			{
-				File.Create(JsonSqlFilePath);
-				isExists = false;
+				if (!File.Exists(path))
+				{
+					File.Create(path);
+					isExists = false;
+				}
 			}
 
 			return isExists;

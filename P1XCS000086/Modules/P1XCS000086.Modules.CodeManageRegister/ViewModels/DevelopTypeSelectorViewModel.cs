@@ -89,6 +89,13 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 			LanguageTypeComboChange.Subscribe(() => OnLanguageTypeComboChange()).AddTo(_disposables);
 			DevelopmentTypeComboChange = new ReactiveCommand();
 			DevelopmentTypeComboChange.Subscribe(() => OnDevelopmentTypeComboChange()).AddTo(_disposables);
+
+
+			// 接続文字列が登録されている時、ステートメント内に入る
+			if (_connStr.IsGetConnectionString(out string sqlConnStr))
+			{
+
+			}
 		}
 
 

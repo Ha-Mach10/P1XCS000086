@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Text;
 using P1XCS000086.Services.Interfaces.Objects;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace P1XCS000086.Services.Objects
 {
@@ -64,6 +66,10 @@ namespace P1XCS000086.Services.Objects
 			{
 				return true;
 			}
+
+			var aa = Server.Split('+');
+			var regex = Regex.Matches(aa.ToString(), @"a");
+			int r = regex.Count;
 
 			return false;
 		}

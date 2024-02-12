@@ -15,4 +15,8 @@
     <ProjectReference Include="..\P1XCS000086.Services.Interfaces\P1XCS000086.Services.Interfaces.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Statics\" />
+  </ItemGroup>
+
 </Project>

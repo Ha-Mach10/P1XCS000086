@@ -75,11 +75,12 @@ namespace P1XCS000086.Services.Models
 		/// </summary>
 		public void SetConnectionString()
 		{
-			string jsonSqlFilePath = _jsonExtention.JsonSqlFilePath;
+			List<string> jsonSqlFilePaths = _jsonExtention.JsonSqlFilePaths;
 			// JSONファイルの存在チェック
 			_jsonExtention.PathCheckAndGenerate();
-			// JSONファイルを復号
-			_jsonConnStr = _jsonExtention.DeserializeJson<JsonConnectionStrings>(jsonSqlFilePath);
+
+			// JSONファイルからSQL接続文字列を復号
+			_jsonConnStr = _jsonExtention.DeserializeJson<JsonConnectionStrings>(jsonSqlFilePaths[0]);
 			// 接続文字列情報をコピー
 			_sqlConnStr.GenelateConnectionString(_jsonConnStr.Server, _jsonConnStr.User, _jsonConnStr.DatabaseName, _jsonConnStr.Password, _sqlConnStr.PersistSecurityInfo);
 		}

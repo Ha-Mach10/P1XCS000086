@@ -64,9 +64,9 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 		public static Visibility DevelopNumberContentControlVisibility { get; private set; } = Visibility.Visible;
 
 		/// <summary>
-		/// CodeManageRegisterのメインビュー用
+		/// CodeManageRegisterのメインビュー用DataTable
 		/// </summary>
-		public static DataTable GridDataTable { get; set; };
+		public static DataTable GridDataTable { get; set; }
 
 
 

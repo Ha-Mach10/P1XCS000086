@@ -30,27 +30,27 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <summary>
 		/// サーバ名
 		/// </summary>
-		public string Server { get; private set; }
+		public string Server { get; private set; } = string.Empty;
 
 		/// <summary>
 		/// ユーザー名
 		/// </summary>
-		public string User {  get; private set; }
+		public string User {  get; private set; } = string.Empty;
 
 		/// <summary>
 		/// データベース名
 		/// </summary>
-		public string Database {  get; private set; }
+		public string Database {  get; private set; } = string.Empty;
 
 		/// <summary>
 		/// パスワード
 		/// </summary>
-		public string Password {  get; private set; }
+		public string Password {  get; private set; } = string.Empty;
 
 		/// <summary>
 		/// セキュリティ情報の保持
 		/// </summary>
-		public bool PersistSecurityInfo { get; private set; }
+		public bool PersistSecurityInfo { get; private set; } = false;
 
 
 

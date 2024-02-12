@@ -11,6 +11,7 @@ using Prism.Ioc;
 using Prism.Modularity;
 using System.Windows;
 using P1XCS000086.Services.Objects;
+using P1XCS000086.Services.IO;
 using P1XCS000086.Services.Sql.MySql;
 using P1XCS000086.Services.Models;
 using P1XCS000086.Services.Models.CodeManageRegister;
@@ -40,10 +41,13 @@ namespace P1XCS000086
 			containerRegistry.RegisterSingleton<IMessageService, MessageService>();
 
 			// JSONs
-			containerRegistry.RegisterSingleton<IJsonExtention, IJsonExtention>();
+			containerRegistry.RegisterSingleton<IJsonExtention, JsonExtention>();
 			containerRegistry.RegisterSingleton<IJsonConnectionStrings, JsonConnectionStrings>();
+			containerRegistry.RegisterSingleton<IJsonSqlDatabaseName, JsonSqlDatabaseName>();
+			containerRegistry.RegisterSingleton<IJsonSqlDatabaseNames, JsonSqlDatabaseNames>();
 
 			// SQLs
+			containerRegistry.RegisterSingleton<ISqlDatabaseStrings, SqlDatabaseStrings>();
 			// # MySql
 			containerRegistry.RegisterSingleton<IMySqlConnectionString, SqlConnectionString>();
 			containerRegistry.RegisterSingleton<ISqlConnectionTest, SqlConnectionTest>();
@@ -61,12 +65,6 @@ namespace P1XCS000086
 			containerRegistry.RegisterSingleton<IDevelopNumberRegisterModel, DevelopNumberRegisterModel>();
 			containerRegistry.RegisterSingleton<IDevelopTypeSelectorModel, DevelopTypeSelectorModel>();
 			containerRegistry.RegisterSingleton<IIntegrRegisterModel, IntegrRegisterModel>();
-
-			// 
-			containerRegistry.RegisterSingleton<ISqlInsert, SqlInsert>();
-			containerRegistry.RegisterSingleton<ISqlSelect, SqlSelect>();
-			containerRegistry.RegisterSingleton<IJsonConnectionStrings, JsonConnectionStrings>();
-
 		}
 		// モジュールカタログの設定
 		protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)

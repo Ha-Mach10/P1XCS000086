@@ -4,13 +4,14 @@ using P1XCS000086.Services.Sql.MySql;
 
 using Reactive.Bindings;
 
+using DbExtensions;
+
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace P1XCS000086.Services.Models.CodeManageRegister
 {
@@ -173,6 +174,10 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 		public string CodeNumberClassification(string developType, string languageType)
 		{
 			// クエリを作成
+			string query = SQL.SELECT("CONCAT(d.develop_type_code, l.language_type_code)")
+							  .FROM("manager_language_type AS l")
+							  .JOIN("manager_develop_type AS d ON l.script_type = d.script_type")
+							  .WHERE($"l.language_type='{languageType}' AND d.develop_type='{developType}';");
 			string queryCommand = @$"SELECT CONCAT(d.develop_type_code, l.language_type_code)
 									 FROM manager_language_type AS l
 									 JOIN manager_develop_type AS d

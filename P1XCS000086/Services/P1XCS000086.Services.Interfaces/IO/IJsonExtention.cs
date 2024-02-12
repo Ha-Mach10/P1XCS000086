@@ -20,6 +20,11 @@ namespace P1XCS000086.Services.Interfaces.IO
 		/// </summary>
 		public string JsonSqlFilePath { get; }
 
+		/// <summary>
+		/// SQLデータベース名用JSONファイルパス
+		/// </summary>
+		public string JsonSqlDatabaseFilePath { get; }
+
 
 
 		// ****************************************************************************

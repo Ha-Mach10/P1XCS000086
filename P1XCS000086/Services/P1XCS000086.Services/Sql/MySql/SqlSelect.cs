@@ -25,6 +25,10 @@ namespace P1XCS000086.Services.Sql.MySql
 		// Constructors
 		// ****************************************************************************
 
+		public SqlSelect()
+		{
+
+		}
 		public SqlSelect(string connStr)
 		{
 			_connStr = connStr;
@@ -46,28 +50,7 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <returns>SELECTされたDataTable</returns>
 		public DataTable Select()
 		{
-			DataTable dt = new DataTable();
-
-			try
-			{
-				using (MySqlConnection conn = new MySqlConnection(_connStr))
-				{
-					// コネクションを開く
-					conn.Open();
-
-					// アダプターを生成
-					using (MySqlDataAdapter adapter = new MySqlDataAdapter(_command, _connStr))
-					{
-						adapter.Fill(dt);
-					}
-				}
-			}
-			catch(MySqlException ex)
-			{
-				Debug.WriteLine(ex.Message);
-			}
-
-			return dt;
+			return SelectExecute(_command, _connStr);
 		}
 
 		/// <summary>
@@ -77,30 +60,10 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <returns>SELECTされたDataTable</returns>
 		public DataTable Select(string command)
 		{
-			DataTable dt = new DataTable();
-
-			try
-			{
-				using (MySqlConnection conn = new MySqlConnection(_connStr))
-				{
-					// コネクションを開く
-					conn.Open();
-
-					// アダプターを生成
-					using (MySqlDataAdapter adapter = new MySqlDataAdapter(command, _connStr))
-					{
-						adapter.Fill(dt);
-					}
-				}
-			}
-			catch (MySqlException ex)
-			{
-				Debug.WriteLine(ex.Message);
-			}
-
-			return dt;
+			return SelectExecute(command, _connStr);
 		}
 
+		/*
 		/// <summary>
 		/// SELECTクエリを実行する
 		/// </summary>
@@ -195,6 +158,13 @@ namespace P1XCS000086.Services.Sql.MySql
 
 			return dt;
 		}
+		*/
+
+
+
+		// ****************************************************************************
+		// Public Methods
+		// ****************************************************************************
 
 		/// <summary>
 		/// 接続文字列を内部変数へ登録
@@ -260,6 +230,38 @@ namespace P1XCS000086.Services.Sql.MySql
 			}
 
 			return items;
+		}
+
+
+		// ****************************************************************************
+		// Private Methods
+		// ****************************************************************************
+
+		/// <summary>
+		/// データベースのテーブルをDataTableへ格納して返す
+		/// </summary>
+		/// <param name="query">クエリ</param>
+		/// <param name="connStr">接続文字列</param>
+		/// <returns>データベースのテーブル</returns>
+		private DataTable SelectExecute(string query, string connStr)
+		{
+			DataTable dt = new DataTable();
+
+			try
+			{
+				using (MySqlConnection conn = new MySqlConnection(connStr))
+				using (MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn))
+				{
+					// queryでselectした
+					adapter.Fill(dt);
+				}
+			}
+			catch (MySqlException ex)
+			{
+				Debug.Print(ex.ToString());
+			}
+
+			return dt;
 		}
 	}
 }

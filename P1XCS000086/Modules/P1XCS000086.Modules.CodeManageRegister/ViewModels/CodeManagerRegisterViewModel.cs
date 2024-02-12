@@ -21,20 +21,36 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 {
 	public class CodeManagerRegisterViewModel : BindableBase, IDestructible
 	{
+		// ****************************************************************************
+		// Fields
+		// ****************************************************************************
+
 		// オブジェクト破棄用
 		private CompositeDisposable _disposables;
 
 
-		// 
+		// ****************************************************************************
+		// Properties
+		// ****************************************************************************
+
 		public DataTable GridDataTable
 		{
 			get => IIntegrRegisterModel.GridDataTable;
 		}
 
 
-		// ReactiveProperties
+
+		// ****************************************************************************
+		// Reactive Properties
+		// ****************************************************************************
+
 		public ReactivePropertySlim<DataTable> DataItem { get; }
 
+
+
+		// ****************************************************************************
+		// Constructor
+		// ****************************************************************************
 
 		public CodeManagerRegisterViewModel()
 		{
@@ -43,7 +59,14 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 		}
 
 
-		// 破棄
+
+		// ****************************************************************************
+		// Public Methods
+		// ****************************************************************************
+
+		/// <summary>
+		/// 破棄
+		/// </summary>
 		public void Destroy()
 		{
 			_disposables?.Dispose();

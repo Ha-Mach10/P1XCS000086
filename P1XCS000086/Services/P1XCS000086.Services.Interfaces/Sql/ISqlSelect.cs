@@ -25,6 +25,7 @@ namespace P1XCS000086.Services.Interfaces.Sql
 		/// <returns>SELECTされたDataTable</returns>
 		public DataTable Select(string command);
 
+		/*
 		/// <summary>
 		/// SELECTクエリを実行する
 		/// </summary>
@@ -40,6 +41,7 @@ namespace P1XCS000086.Services.Interfaces.Sql
 		/// <param name="whereValues"></param>
 		/// <returns>SELECTされたDataTable</returns>
 		public DataTable Select(List<string> columns, List<string> whereValues);
+		*/
 
 		/// <summary>
 		/// 接続文字列を内部変数へ登録
