@@ -15,15 +15,9 @@ namespace P1XCS000086.Services.Interfaces.Sql
 		/// <summary>
 		/// SELECTクエリを実行する
 		/// </summary>
-		/// <returns>SELECTされたDataTable</returns>
-		public DataTable Select();
-
-		/// <summary>
-		/// SELECTクエリを実行する
-		/// </summary>
 		/// <param name="command">クエリ文</param>
 		/// <returns>SELECTされたDataTable</returns>
-		public DataTable Select(string command);
+		public DataTable Select(string command, List<string> columnNames, List<string> values);
 
 		/*
 		/// <summary>
@@ -48,6 +42,13 @@ namespace P1XCS000086.Services.Interfaces.Sql
 		/// </summary>
 		/// <param name="connStr">IMySqlConnectionStringインターフェース</param>
 		public void SetConnectionString(IMySqlConnectionString sqlConnStr);
+
+		/// <summary>
+		/// プレースホルダ用のカラム名と値のリストを登録
+		/// </summary>
+		/// <param name="columnNames">カラム名のリスト</param>
+		/// <param name="values">値のリスト</param>
+		public void SetColumnNamesAndValues(List<string> columnNames, List<string> values);
 
 		/// <summary>
 		/// クエリを実行し、取得した列からただ１つの項目を返す

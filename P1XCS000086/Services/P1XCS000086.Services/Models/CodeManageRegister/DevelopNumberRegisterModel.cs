@@ -174,10 +174,11 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 		public string CodeNumberClassification(string developType, string languageType)
 		{
 			// クエリを作成
-			string query = SQL.SELECT("CONCAT(d.develop_type_code, l.language_type_code)")
+			var query = SQL.SELECT("CONCAT(d.develop_type_code, l.language_type_code)")
 							  .FROM("manager_language_type AS l")
 							  .JOIN("manager_develop_type AS d ON l.script_type = d.script_type")
-							  .WHERE($"l.language_type='{languageType}' AND d.develop_type='{developType}';");
+							  .WHERE($"l.language_type='{languageType}' AND d.develop_type='{developType}';")
+							  .WHERE();
 			string queryCommand = @$"SELECT CONCAT(d.develop_type_code, l.language_type_code)
 									 FROM manager_language_type AS l
 									 JOIN manager_develop_type AS d

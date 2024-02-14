@@ -18,6 +18,9 @@ namespace P1XCS000086.Services.Sql.MySql
 		
 		private string _connStr;
 		private string _command;
+		private List<string> _columnNames;
+		private List<string> _values;
+		
 
 
 
@@ -47,20 +50,23 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <summary>
 		/// SELECTクエリを実行する
 		/// </summary>
+		/// <param name="command">クエリ文</param>
 		/// <returns>SELECTされたDataTable</returns>
-		public DataTable Select()
+		public DataTable Select(string command)
 		{
-			return SelectExecute(_command, _connStr);
+			return SelectExecute(command, _connStr);
 		}
 
 		/// <summary>
 		/// SELECTクエリを実行する
 		/// </summary>
 		/// <param name="command">クエリ文</param>
+		/// <param name="columnNames">カラム名のリスト</param>
+		/// <param name="values">値のリスト</param>
 		/// <returns>SELECTされたDataTable</returns>
-		public DataTable Select(string command)
+		public DataTable Select(string command, List<string> columnNames, List<string> values)
 		{
-			return SelectExecute(command, _connStr);
+			return SelectExecute(command, _connStr, columnNames, values);
 		}
 
 		/*
@@ -161,11 +167,6 @@ namespace P1XCS000086.Services.Sql.MySql
 		*/
 
 
-
-		// ****************************************************************************
-		// Public Methods
-		// ****************************************************************************
-
 		/// <summary>
 		/// 接続文字列を内部変数へ登録
 		/// </summary>
@@ -176,6 +177,17 @@ namespace P1XCS000086.Services.Sql.MySql
 			if (! sqlConnStr.IsGetConnectionString(out string connStr)) { return; }
 			// 
 			_connStr = connStr;
+		}
+
+		/// <summary>
+		/// プレースホルダ用のカラム名と値のリストを登録
+		/// </summary>
+		/// <param name="columnNames">カラム名のリスト</param>
+		/// <param name="values">値のリスト</param>
+		public void SetColumnNamesAndValues(List<string> columnNames, List<string> values)
+		{
+			_columnNames = columnNames;
+			_values = values;
 		}
 
 		/// <summary>
@@ -215,9 +227,7 @@ namespace P1XCS000086.Services.Sql.MySql
 				return new List<string>() { "Non Items" };
 			}
 
-			// SELECTクエリ実行用のクラスをインターフェース経由で生成
-			ISqlSelect selectExecute = new SqlSelect(_connStr, query);
-			DataTable dt = selectExecute.Select();
+			DataTable dt = Select(query);
 
 			// 戻り値用リストを生成
 			List<string> items = new List<string>();
@@ -250,10 +260,55 @@ namespace P1XCS000086.Services.Sql.MySql
 			try
 			{
 				using (MySqlConnection conn = new MySqlConnection(connStr))
-				using (MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn))
+				using (MySqlDataAdapter adapter = new MySqlDataAdapter(query, connStr))
 				{
 					// queryでselectした
 					adapter.Fill(dt);
+				}
+			}
+			catch (MySqlException ex)
+			{
+				Debug.Print(ex.ToString());
+			}
+
+			return dt;
+		}
+
+		/// <summary>
+		/// データベースのテーブルをDataTableへ格納して返す
+		/// </summary>
+		/// <param name="query">クエリ</param>
+		/// <param name="connStr">接続文字列</param>
+		/// <param name="columnNames"></param>
+		/// <param name="values"></param>
+		/// <returns>データベースのテーブル</returns>
+		private DataTable SelectExecute(string query, string connStr, List<string> columnNames, List<string> values)
+		{
+			DataTable dt = new DataTable();
+
+			try
+			{
+				using (MySqlConnection conn = new MySqlConnection(connStr))
+				using (MySqlCommand cmd = new MySqlCommand(query, conn))
+				{
+					conn.Open();
+
+					// パラメータを設定
+					int count = 0;
+					foreach (string columnName in columnNames)
+					{
+						// パラメータの追加
+						cmd.Parameters.Add(new MySqlParameter(columnName, values[count]));
+						count++;
+					}
+
+					using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+					{
+						// queryでselectした
+						adapter.Fill(dt);
+					}
+
+					conn.Close();
 				}
 			}
 			catch (MySqlException ex)
