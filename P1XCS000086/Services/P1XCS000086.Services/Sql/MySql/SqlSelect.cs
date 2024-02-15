@@ -213,6 +213,31 @@ namespace P1XCS000086.Services.Sql.MySql
 
 			return item;
 		}
+		/// <summary>
+		/// クエリを実行し、取得した列からただ１つの項目を返す
+		/// </summary>
+		/// <param name="connectionString">接続文字列生成用インターフェース</param>
+		/// <param name="columnName">カラム名</param>
+		/// <param name="query">クエリ</param>
+		/// <param name="columnNames">カラム名のリスト</param>
+		/// <param name="values">値のリスト</param>
+		/// <returns>取得されたただひとつの値</returns>
+		public string GetJustOneSelectedItem(string columnName, string query, List<string> columnNames, List<string> values)
+		{
+			// SELECTを実行
+			DataTable dt = Select(query, columnNames, values);
+
+			// LINQで「dt」から指定のカラムのEnumerableRowCollection<DataRow>を取得
+			var rowItmes = dt.AsEnumerable().Select(x => x[columnName]).ToList();
+
+			// もし「rowItems」の項目数が１未満のとき、"Empty"を返す
+			if (rowItmes.Count < 1) { return "Empty"; }
+
+			// 取得したコレクションから、LINQで最初の項目を取得
+			string item = rowItmes.First().ToString();
+
+			return item;
+		}
 
 		/// <summary>
 		/// クエリを実行し、取得した列をリストへ格納

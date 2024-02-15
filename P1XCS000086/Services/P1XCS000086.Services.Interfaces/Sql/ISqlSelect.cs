@@ -17,6 +17,15 @@ namespace P1XCS000086.Services.Interfaces.Sql
 		/// </summary>
 		/// <param name="command">クエリ文</param>
 		/// <returns>SELECTされたDataTable</returns>
+		public DataTable Select(string command);
+
+		/// <summary>
+		/// SELECTクエリを実行する
+		/// </summary>
+		/// <param name="command">クエリ文</param>
+		/// <param name="columnNames">カラム名のリスト</param>
+		/// <param name="values">値のリスト</param>
+		/// <returns>SELECTされたDataTable</returns>
 		public DataTable Select(string command, List<string> columnNames, List<string> values);
 
 		/*
@@ -58,6 +67,16 @@ namespace P1XCS000086.Services.Interfaces.Sql
 		/// <param name="query">クエリ</param>
 		/// <returns>取得されたただひとつの値</returns>
 		public string GetJustOneSelectedItem(string columnName, string query);
+		/// <summary>
+		/// クエリを実行し、取得した列からただ１つの項目を返す
+		/// </summary>
+		/// <param name="connectionString">接続文字列生成用インターフェース</param>
+		/// <param name="columnName">カラム名</param>
+		/// <param name="query">クエリ</param>
+		/// <param name="columnNames">カラム名のリスト</param>
+		/// <param name="values">値のリスト</param>
+		/// <returns>取得されたただひとつの値</returns>
+		public string GetJustOneSelectedItem(string columnName, string query, List<string> columnNames, List<string> values);
 
 		/// <summary>
 		/// クエリを実行し、取得した列をリストへ格納

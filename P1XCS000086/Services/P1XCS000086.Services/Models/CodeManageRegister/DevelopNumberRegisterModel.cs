@@ -173,19 +173,20 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 		/// </returns>
 		public string CodeNumberClassification(string developType, string languageType)
 		{
+			// 
+			List<string> columnsNames = new List<string>() { "l.language_type", "d.develop_type" };
+			List<string> values = new List<string> { languageType, developType };
+			
 			// クエリを作成
-			var query = SQL.SELECT("CONCAT(d.develop_type_code, l.language_type_code)")
-							  .FROM("manager_language_type AS l")
-							  .JOIN("manager_develop_type AS d ON l.script_type = d.script_type")
-							  .WHERE($"l.language_type='{languageType}' AND d.develop_type='{developType}';")
-							  .WHERE();
+			string columnName = "CONCAT(d.develop_type_code, l.language_type_code)";
 			string queryCommand = @$"SELECT CONCAT(d.develop_type_code, l.language_type_code)
 									 FROM manager_language_type AS l
 									 JOIN manager_develop_type AS d
 									 ON l.script_type = d.script_type
-									 WHERE l.language_type='{languageType}' AND d.develop_type='{developType}';";
-			string columnName = "CONCAT(d.develop_type_code, l.language_type_code)";
-			string classificationString = _select.GetJustOneSelectedItem(columnName, queryCommand);
+									 WHERE l.language_type=@l.language_type AND d.develop_type=@d.develop_type;";
+
+			string classificationString
+				= _select.GetJustOneSelectedItem(columnName, queryCommand, columnsNames, values);
 
 			return classificationString;
 		}
@@ -203,7 +204,14 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 		/// <returns>使用用途（英語）</returns>
 		private string GetUseApplicationValue(string selectedValue)
 		{
-			string queryCommand = $"SELECT use_name_en FROM manager_use_application WHERE use_name_jp='{selectedValue}';";
+			// パラメータクエリ用のリストを生成
+			List<string> columnNames = new List<string>() { "use_name_jp" };
+			List<string> values = new List<string>() { selectedValue };
+
+			// クエリ文字列を生成
+			string queryCommand = $"SELECT use_name_en FROM manager_use_application WHERE use_name_jp=@use_name_jp;";
+
+			// 値を取得する
 			string getValue = _select.GetJustOneSelectedItem(selectedValue, queryCommand);
 
 			return getValue;
