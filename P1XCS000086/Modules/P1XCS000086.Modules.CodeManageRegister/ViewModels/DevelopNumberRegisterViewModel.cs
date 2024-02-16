@@ -224,5 +224,15 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 		{
 			_disposables.Dispose();
 		}
+
+
+
+		// ****************************************************************************
+		// Private Methods
+		// ****************************************************************************
+		private void SetComboBoxItem()
+		{
+
+		}
 	}
 }

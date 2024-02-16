@@ -1,4 +1,7 @@
 ﻿using Newtonsoft.Json;
+
+using MySql.Data.MySqlClient;
+
 using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
@@ -13,8 +16,52 @@ namespace P1XCS000086.Services.Objects
 	public class JsonConnectionStrings : IJsonConnectionStrings
 	{
 		// ****************************************************************************
-		// Properties
+		// Fields
+		// 不要かも
 		// ****************************************************************************
+
+		private string _jsonConnectionString = string.Empty;
+
+
+
+		// ****************************************************************************
+		// Properties
+		// 不要かも
+		// ****************************************************************************
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public string JsonConnectionString
+		{
+			get => _jsonConnectionString;
+			set
+			{
+				GenerateConnectionString();
+			}
+		}
+
+
+		// ****************************************************************************
+		// Static Properties
+		// ****************************************************************************
+
+		/// <summary>
+		/// スキーマ名と接続文字列のペアのディクショナリ
+		/// </summary>
+		public static Dictionary<string, string> JsonConnectionStringItems { get; private set; } = new Dictionary<string, string>();
+
+
+
+		// ****************************************************************************
+		// Json Properties
+		// ****************************************************************************
+
+		/// <summary>
+		/// スキーマ名
+		/// </summary>
+		[JsonProperty("SchimaName")]
+		public string SchimaName {  get; set; }
 
 		/// <summary>
 		/// サーバ名
@@ -72,6 +119,41 @@ namespace P1XCS000086.Services.Objects
 			int r = regex.Count;
 
 			return false;
+		}
+
+		/// <summary>
+		/// 接続文字列の追加
+		/// </summary>
+		/// <param name="connectionString"></param>
+		public void AddConnectionString(string connectionString)
+		{
+			// スキーマ名と接続文字列のペアを追加
+			JsonConnectionStringItems.Add(SchimaName, connectionString);
+		}
+
+
+
+		// ****************************************************************************
+		// Private Methods
+		// 不要かも
+		// ****************************************************************************
+
+		private string GenerateConnectionString()
+		{
+			// プロパティが設定されている場合、値を返す
+			if (IsPropertiesExists())
+			{
+				MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder();
+				builder.Server = Server;
+				builder.UserID = User;
+				builder.Database = DatabaseName;
+				builder.Password = Password;
+				builder.PersistSecurityInfo = PersistSecurityInfo;
+
+				return builder.ConnectionString;
+			}
+
+			return string.Empty;
 		}
 	}
 }

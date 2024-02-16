@@ -7,8 +7,24 @@ namespace P1XCS000086.Services.Interfaces.Objects
     public interface IJsonConnectionStrings
     {
 		// ****************************************************************************
+		// Static Properties
+		// ****************************************************************************
+
+		/// <summary>
+		/// スキーマ名と接続文字列のペアのディクショナリ
+		/// </summary>
+		public static Dictionary<string, string> JsonConnectionStringItems { get; }
+
+
+
+		// ****************************************************************************
 		// Properties
 		// ****************************************************************************
+
+		/// <summary>
+		/// スキーマ名
+		/// </summary>
+		public string SchimaName { get; set; }
 
 		/// <summary>
 		/// サーバ名
@@ -46,5 +62,12 @@ namespace P1XCS000086.Services.Interfaces.Objects
 		/// </summary>
 		/// <returns>プロパティが全て設定されている場合 true。それ以外の場合 false。</returns>
 		public bool IsPropertiesExists();
-    }
+
+		/// <summary>
+		/// 接続文字列の追加
+		/// </summary>
+		/// <param name="connectionString"></param>
+		public void AddConnectionString(string connectionString);
+
+	}
 }
