@@ -33,6 +33,7 @@ namespace P1XCS000086.Services.Models
 		private IJsonConnectionStrings _jsonConnStr;
 		private IJsonExtention _jsonExtention;
 		private IMySqlConnectionString _sqlConnStr;
+		private IJsonConnectionItem _jsonConnStrings;
 
 
 
@@ -64,9 +65,10 @@ namespace P1XCS000086.Services.Models
 		/// </summary>
 		/// <param name="jsonConnStr">JSON接続文字列生成</param>
 		/// <param name="jsonExtention">JSONオブジェクト</param>
-		public void InjectModels(IJsonConnectionStrings jsonConnStr, IJsonExtention jsonExtention, IMySqlConnectionString sqlConnStr)
+		public void InjectModels(IJsonConnectionStrings jsonConnStr, IJsonExtention jsonExtention, IMySqlConnectionString sqlConnStr, IJsonConnectionItem jsonConnStrings)
 		{
 			_jsonConnStr = jsonConnStr;
+			_jsonConnStrings = jsonConnStrings;
 			_jsonExtention = jsonExtention;
 			_sqlConnStr = sqlConnStr;
 		}
@@ -75,6 +77,11 @@ namespace P1XCS000086.Services.Models
 		/// </summary>
 		public void SetConnectionString()
 		{
+			IJsonConnectionStrings jsonConnStrs = _jsonExtention<IJsonConnectionItem>(_jsonExtention)
+			foreach (var connection in _jsonExtention<IJsonConnectionStrings>(_jsonConnStr))
+			{
+
+			}
 			List<string> jsonSqlFilePaths = _jsonExtention.JsonSqlFilePaths;
 			// JSONファイルの存在チェック
 			_jsonExtention.PathCheckAndGenerate();

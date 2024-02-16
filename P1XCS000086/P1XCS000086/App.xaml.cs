@@ -43,6 +43,7 @@ namespace P1XCS000086
 			// JSONs
 			containerRegistry.RegisterSingleton<IJsonExtention, JsonExtention>();
 			containerRegistry.RegisterSingleton<IJsonConnectionStrings, JsonConnectionStrings>();
+			containerRegistry.RegisterSingleton<IJsonConnectionItem, JsonConnectionItem>();
 			containerRegistry.RegisterSingleton<IJsonSqlDatabaseName, JsonSqlDatabaseName>();
 			containerRegistry.RegisterSingleton<IJsonSqlDatabaseNames, JsonSqlDatabaseNames>();
 

@@ -53,6 +53,7 @@ namespace P1XCS000086.ViewModels
 		private IRegionManager _regionManager;
 		private IMainWindowModel _model;
 		private IJsonConnectionStrings _jsonConnStr;
+		private IJsonConnectionStrings _jsonConnectionStrings;
 		private IJsonExtention _jsonExtention;
 		private IMySqlConnectionString _sqlConnStr;
 		private CompositeDisposable disposables = new CompositeDisposable();
@@ -191,7 +192,7 @@ namespace P1XCS000086.ViewModels
 		/// 
 		/// </summary>
 		/// <param name="regionManager"></param>
-		public MainWindowViewModel(IRegionManager regionManager, IMainWindowModel model, IJsonExtention jsonExtention, IJsonConnectionStrings jsonConnStr, IMySqlConnectionString sqlConnStr)
+		public MainWindowViewModel(IRegionManager regionManager, IMainWindowModel model, IJsonExtention jsonExtention, IJsonConnectionStrings jsonConnStr, IMySqlConnectionString sqlConnStr, IJsonConnectionStrings jsonConnectionStrings)
 		{
 			_regionManager = regionManager;
 
@@ -203,7 +204,7 @@ namespace P1XCS000086.ViewModels
 
 			// インジェクションされたモデルを注入
 			// JSONファイルをチェックし、存在すれば、SQL接続文字列を設定
-			_model.InjectModels(_jsonConnStr, _jsonExtention, _sqlConnStr);
+			_model.InjectModels(_jsonConnStr, _jsonExtention, _sqlConnStr, _jsonConnectionStrings);
 			
 
 			// -----------------------------------------------------------------------------------------------------

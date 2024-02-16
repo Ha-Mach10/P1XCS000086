@@ -22,7 +22,7 @@ namespace P1XCS000086.Services.Interfaces.Models
 
 
         // Methods
-        public void InjectModels(IJsonConnectionStrings jsonConnStr, IJsonExtention jsonExtention, IMySqlConnectionString sqlConnStr);
+        public void InjectModels(IJsonConnectionStrings jsonConnStr, IJsonExtention jsonExtention, IMySqlConnectionString sqlConnStr, IJsonConnectionItem jsonConnStrings);
 
 		public void JsonSerialize(string server, string user, string database, string password, bool persistSecurityInfo);
         public List<string> LanguageComboBoxItemSetting();
