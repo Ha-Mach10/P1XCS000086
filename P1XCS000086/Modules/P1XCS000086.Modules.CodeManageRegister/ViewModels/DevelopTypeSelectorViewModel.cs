@@ -71,8 +71,8 @@ namespace P1XCS000086.Modules.CodeManageRegister.ViewModels
 			_insert = insert;
 
 
-			// 
-			_model.SetModelBuiltin(_select, _connStr);
+			// DIされたオブジェクトをModelに注入
+			_model.InjectModels(_select, _connStr);
 
 
 			// ReactivePropertyの初期値設定

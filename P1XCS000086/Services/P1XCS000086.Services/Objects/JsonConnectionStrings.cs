@@ -58,12 +58,6 @@ namespace P1XCS000086.Services.Objects
 		// ****************************************************************************
 
 		/// <summary>
-		/// スキーマ名
-		/// </summary>
-		[JsonProperty("SchimaName")]
-		public string SchimaName {  get; set; }
-
-		/// <summary>
 		/// サーバ名
 		/// </summary>
 		[JsonProperty("Server")]
@@ -124,11 +118,10 @@ namespace P1XCS000086.Services.Objects
 		/// <summary>
 		/// 接続文字列の追加
 		/// </summary>
-		/// <param name="connectionString"></param>
-		public void AddConnectionString(string connectionString)
+		public void AddConnectionString()
 		{
 			// スキーマ名と接続文字列のペアを追加
-			JsonConnectionStringItems.Add(SchimaName, connectionString);
+			JsonConnectionStringItems.Add(DatabaseName, GenerateConnectionString());
 		}
 
 

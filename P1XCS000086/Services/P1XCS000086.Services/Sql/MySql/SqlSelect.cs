@@ -193,7 +193,6 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <summary>
 		/// クエリを実行し、取得した列からただ１つの項目を返す
 		/// </summary>
-		/// <param name="connectionString">接続文字列生成用インターフェース</param>
 		/// <param name="columnName">カラム名</param>
 		/// <param name="query">クエリ</param>
 		/// <returns>取得されたただひとつの値</returns>
@@ -216,7 +215,6 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <summary>
 		/// クエリを実行し、取得した列からただ１つの項目を返す
 		/// </summary>
-		/// <param name="connectionString">接続文字列生成用インターフェース</param>
 		/// <param name="columnName">カラム名</param>
 		/// <param name="query">クエリ</param>
 		/// <param name="columnNames">カラム名のリスト</param>
@@ -242,7 +240,8 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <summary>
 		/// クエリを実行し、取得した列をリストへ格納
 		/// </summary>
-		/// <param name="command">クエリ</param>
+		/// <param name="columnName">カラム名</param>
+		/// <param name="query">クエリ</param>
 		/// <returns>リスト化された値</returns>
 		public List<string> SelectedColumnToList(string columnName, string query)
 		{
@@ -253,6 +252,36 @@ namespace P1XCS000086.Services.Sql.MySql
 			}
 
 			DataTable dt = Select(query);
+
+			// 戻り値用リストを生成
+			List<string> items = new List<string>();
+
+			// LINQで「dt」から指定のカラムのEnumerableRowCollection<DataRow>を取得し、foreachでリストへ格納
+			var rowItems = dt.AsEnumerable().Select(x => x[columnName]).ToList();
+			foreach (var rowItem in rowItems)
+			{
+				items.Add(rowItem.ToString());
+			}
+
+			return items;
+		}
+		/// <summary>
+		/// クエリを実行し、取得した列をリストへ格納
+		/// </summary>
+		/// <param name="columnName">カラム名</param>
+		/// <param name="query">クエリ</param>
+		/// <param name="columnNames">パラメータ用のカラム名リスト</param>
+		/// <param name="values">パラメータ用の値リスト</param>
+		/// <returns>リスト化された値</returns>
+		public List<string> SelectedColumnToList(string columnName, string query, List<string> columnNames, List<string> values)
+		{
+			// 接続文字列が空の場合、「Non Items」の文字列のみ格納したリストを返す
+			if (_connStr == string.Empty)
+			{
+				return new List<string>() { "Non Items" };
+			}
+
+			DataTable dt = Select(query, columnNames, values);
 
 			// 戻り値用リストを生成
 			List<string> items = new List<string>();

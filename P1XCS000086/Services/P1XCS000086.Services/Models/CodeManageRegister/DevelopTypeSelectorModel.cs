@@ -41,11 +41,11 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 		// ****************************************************************************
 
 		/// <summary>
-		/// ViewModelへ注入されたインターフェースをセット
+		/// DIされたオブジェクトをModelに注入
 		/// </summary>
 		/// <param name="select">ISqlSelectインターフェース</param>
 		/// <param name="connStr">IMySqlConnectionStringインターフェース</param>
-		public void SetModelBuiltin(ISqlSelect select, IMySqlConnectionString connStr)
+		public void InjectModels(ISqlSelect select, IMySqlConnectionString connStr)
 		{
 			// 
 			_connStr = connStr;
@@ -62,29 +62,48 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 		/// <returns>プロジェクトのディレクトリ</returns>
 		public string GetProjectDirectry(string languageType)
 		{
+			// パラメータクエリ用のリスト（カラム名称、言語種別）
+			List<string> columnNames = new List<string>() { "language_type" };
+			List<string> values = new List<string>() { languageType };
+
+			// クエリ文字列を生成
 			string query = @$"SELECT language_directry
 							  FROM project_language_directry
 							  WHERE language_type=
 							  (
 								SELECT language_type_code
 								FROM manager_language_type
-								WHERE language_type='{languageType}'
+								WHERE language_type=@language_type
 							  );";
 
-			string directryPath = _select.GetJustOneSelectedItem("language_directry", query);
+			// 
+			string directryPath = _select.GetJustOneSelectedItem("language_directry", query, columnNames, values);
 
 			return directryPath;
 		}
 
 		/// <summary>
-		/// 開発名称一覧をテーブルからリストで取得
+		/// 開発種別一覧をテーブルからリストで取得
 		/// </summary>
 		/// <param name="languageType">言語種別（日本語名）</param>
 		/// <returns>開発名称一覧</returns>
 		public List<string> DevelopmentComboBoxItemSetting(string languageType)
 		{
-			string query = $"SELECT develop_type FROM manager_develop_type WHERE script_type=(SELECT script_type FROM manager_language_type WHERE language_type='{languageType}');";
-			List<string> list = _select.SelectedColumnToList("develop_type", query);
+			// パラメータクエリ用のリスト（カラム名称、言語種別）
+			List<string> columnNames = new List<string>() { "language_type" };
+			List<string> values = new List<string>() { languageType };
+
+			// クエリ文字列を生成
+			string query = @$"SELECT develop_type
+							  FROM manager_develop_type
+							  WHERE script_type=
+							  (
+								  SELECT script_type
+								  FROM manager_language_type
+								  WHERE language_type=@language_type
+							  );";
+
+			List<string> list = _select.SelectedColumnToList("develop_type", query, columnNames, values);
 
 			return list;
 		}
@@ -124,10 +143,14 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 		/// <returns>開発番号テーブル</returns>
 		public DataTable CodeManagerDataGridItemSetting(string languageType)
 		{
+			// パラメータクエリ用のリスト（カラム名称、言語種別）
+			List<string> columnNames = new List<string>() { "language_type" };
+			List<string> values = new List<string>() { languageType };
+
 			// 号番検索用に「type_code」を「language_type」から取得
-			string queryCommand = $"SELECT language_type_code FROM manager_language_type WHERE language_type='{languageType}'";
+			string queryCommand = $"SELECT language_type_code FROM manager_language_type WHERE language_type=@language_type";
 			// 「type_code」を取得
-			string typeCode = _select.GetJustOneSelectedItem("language_type_code", queryCommand);
+			string typeCode = _select.GetJustOneSelectedItem("language_type_code", queryCommand, columnNames, values);
 
 			// クエリを再生成
 			queryCommand = $"SELECT * FROM manager_codes WHERE develop_number LIKE '%{typeCode}%';";
@@ -145,7 +168,11 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 		/// <returns>開発番号テーブル</returns>
 		public DataTable CodeManagerDataGridItemSetting(string developType, string languageType)
 		{
-			// クエリを作成
+			// パラメータクエリ用のリスト（カラム名称、言語種別）
+			List<string> columnNames = new List<string>() { "l.language_type", "d.develop_type" };
+			List<string> values = new List<string>() { languageType, developType };
+
+			// クエリ文字列を生成
 			string query = @$"SELECT *
 							  FROM manager_codes
 							  WHERE develop_number
@@ -155,11 +182,11 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 								FROM manager_language_type AS l
 								JOIN manager_develop_type AS d
 								ON l.script_type = d.script_type
-								WHERE l.language_type='{languageType}' AND d.develop_type='{developType}'
+								WHERE l.language_type=@l.language_type AND d.develop_type=@d.develop_type
 							  );";
 
 			// クエリからDataTableを取得
-			DataTable dt = _select.Select(query);
+			DataTable dt = _select.Select(query, columnNames, values);
 
 			dt = CodeManagerColumnHeaderTrancelate(dt);
 
@@ -179,7 +206,7 @@ namespace P1XCS000086.Services.Models.CodeManageRegister
 		/// <returns>ヘッダ変換後のDataTable</returns>
 		private DataTable CodeManagerColumnHeaderTrancelate(DataTable dataTable)
 		{
-			// 
+			// クエリ文字列を生成
 			string queryCommand = $"SELECT japanese FROM table_translator WHERE table_name='manager_codes' AND type='column';";
 			// カラムヘッダを日本語変換するためテーブルから取得
 			List<string> columnHeaders = _select.SelectedColumnToList("japanese", queryCommand);

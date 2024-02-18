@@ -34,6 +34,7 @@ namespace P1XCS000086.Services.Models
 		private IJsonExtention _jsonExtention;
 		private IMySqlConnectionString _sqlConnStr;
 		private IJsonConnectionItem _jsonConnStrings;
+		private ISqlSchemaNames _schemaNames;
 
 
 
@@ -60,36 +61,42 @@ namespace P1XCS000086.Services.Models
 
 		}
 
+
+
+		// ****************************************************************************
+		// Public Methods
+		// ****************************************************************************
+
 		/// <summary>
 		/// DIされたオブジェクトをModelに注入
 		/// </summary>
 		/// <param name="jsonConnStr">JSON接続文字列生成</param>
 		/// <param name="jsonExtention">JSONオブジェクト</param>
-		public void InjectModels(IJsonConnectionStrings jsonConnStr, IJsonExtention jsonExtention, IMySqlConnectionString sqlConnStr, IJsonConnectionItem jsonConnStrings)
+		/// <param name="sqlConnStr">接続文字列用オブジェクト</param>
+		/// <param name="jsonConnStrings">JSONファイル接続文字列用オブジェクト</param>
+		/// <param name="schemaNames">データベース名オブジェクト</param>
+		public void InjectModels(IJsonConnectionStrings jsonConnStr, IJsonExtention jsonExtention, IMySqlConnectionString sqlConnStr, IJsonConnectionItem jsonConnStrings, ISqlSchemaNames schemaNames)
 		{
 			_jsonConnStr = jsonConnStr;
 			_jsonConnStrings = jsonConnStrings;
 			_jsonExtention = jsonExtention;
 			_sqlConnStr = sqlConnStr;
+			_schemaNames = schemaNames;
 		}
+
 		/// <summary>
 		/// JSONファイルに設定された接続文字列情報をSQL接続文字列として復号
 		/// </summary>
 		public void SetConnectionString()
 		{
-			IJsonConnectionStrings jsonConnStrs = _jsonExtention<IJsonConnectionItem>(_jsonExtention)
-			foreach (var connection in _jsonExtention<IJsonConnectionStrings>(_jsonConnStr))
+			// 
+			_jsonConnStrings = _jsonExtention.DeserializeJson<JsonConnectionItem>(_jsonExtention.JsonSqlFilePath);
+			// IJsonConnectionStrings connection = _jsonConnStrings.ConnectionStrings.Where(x => x.DatabaseName == _schemaNames.Manager).First();
+
+			foreach (var connection in _jsonConnStrings.ConnectionStrings)
 			{
-
+				connection.AddConnectionString();
 			}
-			List<string> jsonSqlFilePaths = _jsonExtention.JsonSqlFilePaths;
-			// JSONファイルの存在チェック
-			_jsonExtention.PathCheckAndGenerate();
-
-			// JSONファイルからSQL接続文字列を復号
-			_jsonConnStr = _jsonExtention.DeserializeJson<JsonConnectionStrings>(jsonSqlFilePaths[0]);
-			// 接続文字列情報をコピー
-			_sqlConnStr.GenelateConnectionString(_jsonConnStr.Server, _jsonConnStr.User, _jsonConnStr.DatabaseName, _jsonConnStr.Password, _sqlConnStr.PersistSecurityInfo);
 		}
 
 
@@ -102,45 +109,6 @@ namespace P1XCS000086.Services.Models
 			string queryCommand = "SELECT language_type FROM manager_language_type;";
 			List<string> list = QueryExecuteToList("language_type", queryCommand);
 			return list;
-		}
-		/// <summary>
-		/// ***************************************************************************************************************************************
-		/// 削除予定
-		/// ***************************************************************************************************************************************
-		/// </summary>
-		/// <param name="languageType"></param>
-		/// <returns></returns>
-		public List<string> DevelopmentComboBoxItemSetting(string languageType)
-		{
-			string queryCommand = $"SELECT develop_type FROM manager_develop_type WHERE script_type=(SELECT script_type FROM manager_language_type WHERE language_type='{languageType}');";
-			List<string> list = QueryExecuteToList("develop_type", queryCommand);
-			return list;
-		}
-		/// <summary>
-		/// ***************************************************************************************************************************************
-		/// 削除予定
-		/// ***************************************************************************************************************************************
-		/// </summary>
-		/// <returns></returns>
-		public List<string> UseApplicationComboBoxItemSetting()
-		{
-			string queryCommand = $"SELECT use_name_jp FROM manager_use_application WHERE sign='1';";
-			List<string> items = QueryExecuteToList("use_name_jp", queryCommand);
-
-			return items;
-		}
-		/// <summary>
-		/// ***************************************************************************************************************************************
-		/// 削除予定
-		/// ***************************************************************************************************************************************
-		/// </summary>
-		/// <returns></returns>
-		public List<string> UseApplicationSubComboBoxItemSetting()
-		{
-			string queryCommand = $"SELECT use_name_jp FROM manager_use_application WHERE sign='2';";
-			List<string> items = QueryExecuteToList("use_name_jp", queryCommand);
-
-			return items;
 		}
 		public List<string> ViewUseApplicationComboBoxItemSetting()
 		{
@@ -303,34 +271,6 @@ namespace P1XCS000086.Services.Models
 			return dt;
 		}
 		/// <summary>
-		/// ****************************************************************************************************************
-		/// 削除予定
-		/// ****************************************************************************************************************
-		/// 
-		/// 「言語種別」にて変更した言語種別から対象の言語で作成された号番を取得
-		/// </summary>
-		/// <param name="languageType"></param>
-		/// <returns></returns>
-		public DataTable CodeManagerDataGridItemSetting(string languageType)
-		{
-			// SELECTクエリ実行用のオブジェクトを生成
-			ISqlSelect selectExecute = new SqlSelect(ConnectionString());
-
-			// 号番検索用に「type_code」を「language_type」から取得
-			string queryCommand = $"SELECT language_type_code FROM manager_language_type WHERE language_type='{languageType}'";
-			// 「type_code」を格納するためのDataTableを用意し、SELECTクエリを実行
-			DataTable typeCodeDt = selectExecute.Select(queryCommand);
-			// 「type_code」を取得
-			string typeCode = typeCodeDt.Rows[0][0].ToString();
-
-			// クエリを再生成
-			queryCommand = $"SELECT * FROM manager_codes WHERE develop_number LIKE '%{typeCode}%';";
-			DataTable dt = selectExecute.Select(queryCommand);
-			dt = CodeManagerColumnHeaderTrancelate(dt);
-
-			return dt;
-		}
-		/// <summary>
 		/// 「言語種別」にて変更した言語種別から対象の言語で作成された号番を取得
 		/// </summary>
 		/// <param name="developType"></param>
@@ -361,27 +301,7 @@ namespace P1XCS000086.Services.Models
 
 			return dt;
 		}
-		/// <summary>
-		/// ****************************************************************************************************************************
-		/// 削除予定
-		/// ****************************************************************************************************************************
-		/// DataGridへ表示するDataTableのヘッダ名（ColumnName）を日本語へ変換する
-		/// </summary>
-		/// <param name="dataTable">変換元のDataTable</param>
-		/// <returns>ヘッダ変換後のDataTable</returns>
-		public DataTable CodeManagerColumnHeaderTrancelate(DataTable dataTable)
-		{
-			string queryCommand = $"SELECT japanese FROM table_translator WHERE table_name='manager_codes' AND type='column';";
-			List<string> columnHeaders = QueryExecuteToList("japanese", queryCommand);
-			int count = 0;
-			foreach (string columnHeader in columnHeaders)
-			{
-				dataTable.Columns[count].ColumnName = columnHeader;
-				count++;
-			}
 
-			return dataTable;
-		}
 		public DataTable MasterTableData(string tableName)
 		{
 			string lastTableName = string.Empty;
@@ -403,63 +323,7 @@ namespace P1XCS000086.Services.Models
 
 			return dt;
 		}
-		/// <summary>
-		/// *****************************************************************************************************************
-		/// 削除予定
-		/// *****************************************************************************************************************
-		/// </summary>
-		/// <param name="selectedValue"></param>
-		/// <returns></returns>
-		public string RegistCodeNumberComboBoxItemSelect(string selectedValue)
-		{
-			string queryCommand = $"SELECT use_name_en FROM manager_use_application WHERE use_name_jp='{selectedValue}';";
-			string getValue = GetSelectItem(selectedValue, queryCommand);
 
-			return getValue;
-		}
-		/// <summary>
-		/// *****************************************************************************************************************
-		/// 削除予定
-		/// *****************************************************************************************************************
-		/// </summary>
-		/// <param name="developType"></param>
-		/// <param name="languageType"></param>
-		/// <returns></returns>
-		public string CodeNumberClassification(string developType, string languageType)
-		{
-			// クエリを作成
-			string queryCommand = @$"SELECT CONCAT(d.develop_type_code, l.language_type_code)
-									 FROM manager_language_type AS l
-									 JOIN manager_develop_type AS d
-									 ON l.script_type = d.script_type
-									 WHERE l.language_type='{languageType}' AND d.develop_type='{developType}';";
-			string columnName = "CONCAT(d.develop_type_code, l.language_type_code)";
-			string classificationString = GetSelectItem(columnName, queryCommand);
-
-			return classificationString;
-		}
-
-		/// <summary>
-		/// *****************************************************************************************************************
-		/// 削除予定
-		/// *****************************************************************************************************************
-		/// </summary>
-		/// <param name="languageType"></param>
-		/// <returns></returns>
-		public string GetProjectDirectry(string languageType)
-		{
-			string queryCommand = @$"SELECT language_directry
-									 FROM project_language_directry
-									 WHERE language_type=
-									 (
-										SELECT language_type_code
-										FROM manager_language_type
-										WHERE language_type='{languageType}'
-									 );";
-			string directryPath = GetSelectItem("language_directry", queryCommand);
-
-			return directryPath;
-		}
 		/// <summary>
 		/// クエリを実行し、取得した列からただ１つの項目を返す
 		/// ※取得される項目がただ１つのみになるようクエリを作成すること
@@ -486,88 +350,6 @@ namespace P1XCS000086.Services.Models
 			string item = rowItmes.First().ToString();
 
 			return item;
-		}
-		/// <summary>
-		/// *****************************************************************************************************************
-		/// 削除予定
-		/// *****************************************************************************************************************
-		/// クエリを実行し、取得した列をリストへ格納
-		/// ※取得される列は１列になるようクエリを作成すること
-		/// </summary>
-		/// <param name="command">クエリ</param>
-		/// <returns></returns>
-		private List<string> QueryExecuteToList(string columnName, string queryCommand)
-		{
-			// 接続文字列取得
-			string connStr = ConnectionString();
-
-			// 接続文字列が空の場合、「Non Items」の文字列のみ格納したリストを返す
-			if (connStr == string.Empty)
-			{
-				return new List<string>() { "Non Items" };
-			}
-
-			// SELECTクエリ実行用のクラスをインターフェース経由で生成
-			ISqlSelect selectExecute = new SqlSelect(connStr, queryCommand);
-			DataTable dt = selectExecute.Select();
-
-			// 戻り値用リストを生成
-			List<string> items = new List<string>();
-
-			// LINQで「dt」から指定のカラムのEnumerableRowCollection<DataRow>を取得し、foreachでリストへ格納
-			var rowItems = dt.AsEnumerable().Select(x => x[columnName]).ToList();
-			foreach (var rowItem in rowItems)
-			{
-				items.Add(rowItem.ToString());
-			}
-
-			return items;
-		}
-		/// <summary>
-		/// *****************************************************************************************************************
-		/// 削除予定
-		/// *****************************************************************************************************************
-		/// </summary>
-		/// <param name="values"></param>
-		/// <returns></returns>
-		public bool RegistExecute(List<string> values)
-		{
-			// カラム名のリストを生成
-			List<string> columns = new List<string>()
-			{
-				"develop_number",
-				"develop_name",
-				"code_name",
-				"create_date",
-				"use_applications",
-				"version",
-				"revision_date", "old_number", "new_number", "inheritence_number",
-				"explanation", "summary"
-			};
-
-			// INSERT用のカラム列を生成
-			string columnsStr = string.Join(", ", columns);
-			// パラメータクエリ用の値列を生成(SQLインジェクション対策)
-            string valueStr = $"@{string.Join(", @", columns)}";
-
-			// クエリ文字列を生成
-            string queryCommand = @$"INSERT INTO manager_codes({columnsStr}) VALUES({valueStr});";
-
-			// 接続文字列を生成
-			string connStr = ConnectionString();
-			ISqlInsert insertExecute = new SqlInsert(connStr);
-			// INSERTクエリを実行
-			bool result = insertExecute.Insert(queryCommand, columns, values);
-			
-			// 結果文字列または例外文字列に値がセットされている場合
-			if (insertExecute.ResultMessage != "" || insertExecute.ExceptionMessage != "")
-			{
-				// メッセージを取得
-				ResultMessage = insertExecute.ResultMessage;
-				ExceptionMessage = insertExecute.ExceptionMessage;
-			}
-
-			return result;
 		}
 
 

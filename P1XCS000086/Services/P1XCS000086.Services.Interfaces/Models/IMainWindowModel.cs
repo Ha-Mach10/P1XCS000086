@@ -21,8 +21,26 @@ namespace P1XCS000086.Services.Interfaces.Models
         public string ExceptionMessage { get; }
 
 
-        // Methods
-        public void InjectModels(IJsonConnectionStrings jsonConnStr, IJsonExtention jsonExtention, IMySqlConnectionString sqlConnStr, IJsonConnectionItem jsonConnStrings);
+		// ****************************************************************************
+		// Public Methods
+		// ****************************************************************************
+
+		/// <summary>
+		/// DIされたオブジェクトをModelに注入
+		/// </summary>
+		/// <param name="jsonConnStr">JSON接続文字列生成</param>
+		/// <param name="jsonExtention">JSONオブジェクト</param>
+		/// <param name="sqlConnStr">接続文字列用オブジェクト</param>
+		/// <param name="jsonConnStrings">JSONファイル接続文字列用オブジェクト</param>
+		/// <param name="schemaNames">データベース名オブジェクト</param>
+		public void InjectModels(IJsonConnectionStrings jsonConnStr, IJsonExtention jsonExtention, IMySqlConnectionString sqlConnStr, IJsonConnectionItem jsonConnStrings, ISqlSchemaNames schemaNames);
+
+        /// <summary>
+        /// JSONファイルに設定された接続文字列情報をSQL接続文字列として復号
+        /// </summary>
+        public void SetConnectionString();
+
+
 
 		public void JsonSerialize(string server, string user, string database, string password, bool persistSecurityInfo);
         public List<string> LanguageComboBoxItemSetting();

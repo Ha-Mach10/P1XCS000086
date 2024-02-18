@@ -1,17 +1,19 @@
 ﻿using MySql.Data.MySqlClient;
-using Org.BouncyCastle.Asn1.Cmp;
+
 using P1XCS000086.Services.Interfaces.Sql;
+
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 namespace P1XCS000086.Services.Sql.MySql
 {
-    public class SqlShowTables : ISqlShowTables
+	public class SqlShowSchemas : ISqlShowSchemas
 	{
 		// ****************************************************************************
 		// Fields
@@ -29,16 +31,15 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <summary>
 		/// コンストラクタ
 		/// </summary>
-		public SqlShowTables()
+		public SqlShowSchemas()
 		{
 
 		}
-
 		/// <summary>
 		/// コンストラクタ
 		/// </summary>
 		/// <param name="connStr">接続文字列</param>
-		public SqlShowTables(string connStr)
+		public SqlShowSchemas(string connStr)
 		{
 			_connStr = connStr;
 		}
@@ -50,37 +51,19 @@ namespace P1XCS000086.Services.Sql.MySql
 		// ****************************************************************************
 
 		/// <summary>
-		/// テーブル一覧を取得する
+		/// スキーマ名のリストを取得する
 		/// </summary>
-		/// <returns>テーブル一覧のリスト</returns>
-		public List<string> ShowTables()
+		/// <returns>スキーマ名のリスト</returns>
+		public List<string> ShowSchemas()
 		{
-			string command = "SHOW TABLES FROM manager;";
-			List<string> tables = GetShowTableItems(command);
-
-			return tables;
-		}
-		/// <summary>
-		/// テーブル一覧を取得する
-		/// </summary>
-		/// <param name="databaseName">テーブル名称</param>
-		/// <returns>テーブル一覧のリスト</returns>
-		public List<string> ShowTables(string databaseName)
-		{
-			// 接続文字列がnullの時nullを返す
-			if (_connStr is null) { return null; }
-
-			// 
-			string command = $"SHOW TABLES FROM {databaseName};";
-			List<string> tables = GetShowTableItems(command);
-
-			return tables;
+			// スキーマ名のリストを取得
+			return GetSchemas();
 		}
 
 		/// <summary>
 		/// 接続文字列のセット
 		/// </summary>
-		/// <param name="connStr"></param>
+		/// <param name="connStr">接続文字列</param>
 		public void SetConnectionString(string connStr)
 		{
 			_connStr = connStr;
@@ -92,33 +75,33 @@ namespace P1XCS000086.Services.Sql.MySql
 		// Private Methods
 		// ****************************************************************************
 
-		private List<string> GetShowTableItems(string command)
+		/// <summary>
+		/// スキーマ名をリストで取得
+		/// </summary>
+		/// <returns>スキーマ名のリスト</returns>
+		private List<string> GetSchemas()
 		{
-			List<string> tables = new List<string>();
+			DataTable dt = new DataTable();
 
 			try
 			{
 				using (MySqlConnection conn = new MySqlConnection(_connStr))
+				using (MySqlDataAdapter adapter = new MySqlDataAdapter("SHOW SCHEMAS;", conn))
 				{
-					// コネクションを開く
-					conn.Open();
-
-					// アダプターを生成
-					using (MySqlDataAdapter adapter = new MySqlDataAdapter(command, _connStr))
-					{
-						DataTable dt = new DataTable();
-						adapter.Fill(dt);
-
-						tables = dt.AsEnumerable().Select(x => x.ToString()).ToList();
-					}
+					adapter.Fill(dt);
 				}
 			}
-			catch (Exception ex)
+			catch (MySqlException ex)
 			{
-				return new List<string>() { "no data" };
+				Debug.Print(ex.Message);
+				return null;
 			}
 
-			return tables;
+			List<string> schemas = dt.AsEnumerable()
+									 .Select(x => x["Database"].ToString())
+									 .ToList();
+
+			return schemas;
 		}
-    }
+	}
 }

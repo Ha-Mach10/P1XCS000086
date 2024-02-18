@@ -53,9 +53,10 @@ namespace P1XCS000086.ViewModels
 		private IRegionManager _regionManager;
 		private IMainWindowModel _model;
 		private IJsonConnectionStrings _jsonConnStr;
-		private IJsonConnectionStrings _jsonConnectionStrings;
 		private IJsonExtention _jsonExtention;
 		private IMySqlConnectionString _sqlConnStr;
+		private IJsonConnectionItem _jsonConnectionItem;
+		private ISqlSchemaNames _schemaNames;
 		private CompositeDisposable disposables = new CompositeDisposable();
 
 
@@ -192,7 +193,14 @@ namespace P1XCS000086.ViewModels
 		/// 
 		/// </summary>
 		/// <param name="regionManager"></param>
-		public MainWindowViewModel(IRegionManager regionManager, IMainWindowModel model, IJsonExtention jsonExtention, IJsonConnectionStrings jsonConnStr, IMySqlConnectionString sqlConnStr, IJsonConnectionStrings jsonConnectionStrings)
+		public MainWindowViewModel(
+			IRegionManager regionManager,
+			IMainWindowModel model,
+			IJsonExtention jsonExtention,
+			IJsonConnectionStrings jsonConnStr,
+			IMySqlConnectionString sqlConnStr,
+			IJsonConnectionItem jsonConnectionItem,
+			ISqlSchemaNames schemaNames)
 		{
 			_regionManager = regionManager;
 
@@ -201,16 +209,20 @@ namespace P1XCS000086.ViewModels
 			_jsonConnStr = jsonConnStr;
 			_jsonExtention = jsonExtention;
 			_sqlConnStr = sqlConnStr;
+			_jsonConnectionItem = jsonConnectionItem;
+			_schemaNames = schemaNames;
 
 			// インジェクションされたモデルを注入
-			// JSONファイルをチェックし、存在すれば、SQL接続文字列を設定
-			_model.InjectModels(_jsonConnStr, _jsonExtention, _sqlConnStr, _jsonConnectionStrings);
-			
+			_model.InjectModels(_jsonConnStr, _jsonExtention, _sqlConnStr, _jsonConnectionItem, _schemaNames);
+
+			// JSONファイルから接続文字列を生成し、IJsonConnectionItemsのstaticなディクショナリへ登録
+			_model.SetConnectionString();
+
 
 			// -----------------------------------------------------------------------------------------------------
 			// Properties Initialize
 			// -----------------------------------------------------------------------------------------------------
-
+			/*
 			// タブの初期選択インデックスを設定
 			SelectedTabIndex = new ReactivePropertySlim<int>(0).AddTo(disposables);
 
@@ -346,6 +358,7 @@ namespace P1XCS000086.ViewModels
 			// 
 			TableSelectionChange = new ReactiveCommand();
 			TableSelectionChange.Subscribe(() => OnTableSelectionChange()).AddTo(disposables);
+			*/
 		}
 
 

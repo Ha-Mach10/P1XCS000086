@@ -30,21 +30,21 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManageRegister
 		// ****************************************************************************
 
 		/// <summary>
-		/// ViewModelへ注入されたインターフェースをセット
+		/// DIされたオブジェクトをModelに注入
 		/// </summary>
 		/// <param name="select">ISqlSelectインターフェース</param>
 		/// <param name="connStr">IMySqlConnectionStringインターフェース</param>
-		public void SetModelBuiltin(ISqlSelect select, IMySqlConnectionString connStr);
+		public void InjectModels(ISqlSelect select, IMySqlConnectionString connStr);
 
 		/// <summary>
 		/// 指定言語のプロジェクトフォルダ名をデータベースから取得
 		/// </summary>
 		/// <param name="languageType">言語種別名</param>
 		/// <returns>プロジェクトのディレクトリ</returns>
-		public string GetProjectDirectry(string languageType)
+		public string GetProjectDirectry(string languageType);
 
 		/// <summary>
-		/// 開発名称一覧をテーブルからリストで取得
+		/// 開発種別一覧をテーブルからリストで取得
 		/// </summary>
 		/// <param name="languageType">言語種別（日本語名）</param>
 		/// <returns>開発名称一覧</returns>
@@ -69,6 +69,6 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManageRegister
 		/// <param name="developType">開発種別</param>
 		/// <param name="languageType">言語種別</param>
 		/// <returns>開発番号テーブル</returns>
-		public DataTable CodeManagerDataGridItemSetting(string developType, string languageType)
+		public DataTable CodeManagerDataGridItemSetting(string developType, string languageType);
 	}
 }

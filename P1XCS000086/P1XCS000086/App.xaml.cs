@@ -49,12 +49,14 @@ namespace P1XCS000086
 
 			// SQLs
 			containerRegistry.RegisterSingleton<ISqlDatabaseStrings, SqlDatabaseStrings>();
+			containerRegistry.RegisterSingleton<ISqlSchemaNames, SqlSchemaNames>();
 			// # MySql
 			containerRegistry.RegisterSingleton<IMySqlConnectionString, SqlConnectionString>();
 			containerRegistry.RegisterSingleton<ISqlConnectionTest, SqlConnectionTest>();
 			containerRegistry.RegisterSingleton<ISqlSelect, SqlSelect>();
 			containerRegistry.RegisterSingleton<ISqlInsert, SqlInsert>();
 			containerRegistry.RegisterSingleton<ISqlShowTables, SqlShowTables>();
+			containerRegistry.RegisterSingleton<ISqlShowSchemas, SqlShowSchemas>();
 			// # SqlServer
 
 

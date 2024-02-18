@@ -22,11 +22,6 @@ namespace P1XCS000086.Services.Interfaces.Objects
 		// ****************************************************************************
 
 		/// <summary>
-		/// スキーマ名
-		/// </summary>
-		public string SchimaName { get; set; }
-
-		/// <summary>
 		/// サーバ名
 		/// </summary>
 		public string Server { get; set; }
@@ -66,8 +61,7 @@ namespace P1XCS000086.Services.Interfaces.Objects
 		/// <summary>
 		/// 接続文字列の追加
 		/// </summary>
-		/// <param name="connectionString"></param>
-		public void AddConnectionString(string connectionString);
+		public void AddConnectionString();
 
 	}
 }

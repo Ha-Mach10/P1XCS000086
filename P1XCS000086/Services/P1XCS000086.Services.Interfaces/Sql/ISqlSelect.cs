@@ -62,7 +62,6 @@ namespace P1XCS000086.Services.Interfaces.Sql
 		/// <summary>
 		/// クエリを実行し、取得した列からただ１つの項目を返す
 		/// </summary>
-		/// <param name="connectionString">接続文字列生成用インターフェース</param>
 		/// <param name="columnName">カラム名</param>
 		/// <param name="query">クエリ</param>
 		/// <returns>取得されたただひとつの値</returns>
@@ -70,7 +69,6 @@ namespace P1XCS000086.Services.Interfaces.Sql
 		/// <summary>
 		/// クエリを実行し、取得した列からただ１つの項目を返す
 		/// </summary>
-		/// <param name="connectionString">接続文字列生成用インターフェース</param>
 		/// <param name="columnName">カラム名</param>
 		/// <param name="query">クエリ</param>
 		/// <param name="columnNames">カラム名のリスト</param>
@@ -81,9 +79,18 @@ namespace P1XCS000086.Services.Interfaces.Sql
 		/// <summary>
 		/// クエリを実行し、取得した列をリストへ格納
 		/// </summary>
-		/// <param name="command">クエリ</param>
+		/// <param name="columnName">カラム名</param>
+		/// <param name="query">クエリ</param>
 		/// <returns>リスト化された値</returns>
 		public List<string> SelectedColumnToList(string columnName, string query);
-
+		/// <summary>
+		/// クエリを実行し、取得した列をリストへ格納
+		/// </summary>
+		/// <param name="columnName">カラム名</param>
+		/// <param name="query">クエリ</param>
+		/// <param name="columnNames">パラメータ用のカラム名リスト</param>
+		/// <param name="values">パラメータ用の値リスト</param>
+		/// <returns>リスト化された値</returns>
+		public List<string> SelectedColumnToList(string columnName, string query, List<string> columnNames, List<string> values);
 	}
 }
