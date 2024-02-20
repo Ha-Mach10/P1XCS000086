@@ -39,28 +39,5 @@ namespace P1XCS000086.Services.Interfaces.Models
         /// JSONファイルに設定された接続文字列情報をSQL接続文字列として復号
         /// </summary>
         public void SetConnectionString();
-
-
-
-		public void JsonSerialize(string server, string user, string database, string password, bool persistSecurityInfo);
-        public List<string> LanguageComboBoxItemSetting();
-        public List<string> DevelopmentComboBoxItemSetting(string scriptType);
-        public List<string> UseApplicationComboBoxItemSetting();
-        public List<string> UseApplicationSubComboBoxItemSetting();
-        public List<string> ViewUseApplicationComboBoxItemSetting();
-        public List<string> ShowTableItems();
-        public List<string> SearchTextUseApplicationComboBoxItemSetting(string developType, string languageType);
-        public List<string> GetInPutFieldColumns(string tableName);
-        public DataTable MasterTableData(string tableName);
-        public DataTable GetViewDataTable(string langValue = "", string useAppValue = "");
-        public DataTable CodeManagerDataGridItemSetting(string languageType);
-        public DataTable CodeManagerDataGridItemSetting(string developType, string languageType);
-        public string RegistCodeNumberComboBoxItemSelect(string selectedValue);
-        public string CodeNumberClassification(string developType, string languageType);
-        public string GetProjectDirectry(string languageType);
-        public bool RegistExecute(List<string> values);
-        public string ConnectionString();
-        public bool SqlConnection();
-        public IJsonConnectionStrings JsonDeserialize();
     }
 }
