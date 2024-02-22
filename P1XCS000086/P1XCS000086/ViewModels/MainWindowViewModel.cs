@@ -94,16 +94,30 @@ namespace P1XCS000086.ViewModels
 			// JSONファイルから接続文字列を生成し、IJsonConnectionItemsのstaticなディクショナリへ登録
 			_model.SetConnectionString();
 
-
+			// 
+			ShowCodeManager = new ReactiveCommandSlim<string>();
+			ShowCodeManager.Subscribe((args) => OnShowCodeManager(args)).AddTo(disposables);
 		}
 
 
 
 		// ****************************************************************************
-		// Public Methods
+		// Reactive Command
 		// ****************************************************************************
 
+		private ReactiveCommandSlim<string> ShowCodeManager { get; }
+		/// <summary>
+		/// コードマネージャーのビューを表示
+		/// </summary>
+		/// <param name="regionName">コマンドパラメータ</param>
+		public void OnShowCodeManager(string regionName)
+		{
 
+		}
+
+		// ****************************************************************************
+		// Public Methods
+		// ****************************************************************************
 
 		// 「IDestructible」の実装
 		public void Destroy()
