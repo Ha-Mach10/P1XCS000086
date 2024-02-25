@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 {
-	public class ViewAViewModel : BindableBase
+	public class CodeManageMasterHostViewModel : BindableBase
 	{
 		private string _message;
 		public string Message
@@ -17,7 +17,7 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 			set { SetProperty(ref _message, value); }
 		}
 
-		public ViewAViewModel()
+		public CodeManageMasterHostViewModel()
 		{
 			Message = "View A from your Prism Module";
 		}

@@ -4,6 +4,14 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="MahApps.Metro.IconPacks" Version="4.11.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
+    <PackageReference Include="MaterialDesignThemes.MahApps" Version="0.3.0" />
     <PackageReference Include="Prism.Wpf" Version="8.1.97" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\P1XCS000086.Core\P1XCS000086.Core.csproj" />
+    <ProjectReference Include="..\..\Services\P1XCS000086.Services.Interfaces\P1XCS000086.Services.Interfaces.csproj" />
+    <ProjectReference Include="..\..\Services\P1XCS000086.Services\P1XCS000086.Services.csproj" />
   </ItemGroup>
 </Project>

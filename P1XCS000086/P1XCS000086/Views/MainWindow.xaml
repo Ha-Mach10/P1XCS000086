@@ -44,10 +44,11 @@
 				</TabItem.Header>
 				<Grid>
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="111"/>
+						<ColumnDefinition Width="16.263"/>
 						<ColumnDefinition />
 					</Grid.ColumnDefinitions>
-					<VirtualizingStackPanel Orientation="Horizontal">
+					<VirtualizingStackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
 						<VirtualizingStackPanel>
 							<TextBlock Margin="4,8,0,8" Text="台帳操作" />
 							<Button Height="30" Margin="8,0,8,0">
@@ -105,7 +106,7 @@
 							</ToggleButton.Style>
 						</ToggleButton>
 					</VirtualizingStackPanel>
-					<ItemsControl Grid.Column="1" prism:RegionManager.RegionName="" />
+					<ItemsControl Grid.Column="1" prism:RegionManager.RegionName="" Grid.ColumnSpan="2" Margin="16,0,0,0" />
 				</Grid>
 			</TabItem>
 			<TabItem Style="{StaticResource MahApps.Styles.TabItem}">

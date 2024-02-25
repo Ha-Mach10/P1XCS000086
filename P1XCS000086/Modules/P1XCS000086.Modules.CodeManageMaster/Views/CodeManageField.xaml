@@ -1,0 +1,99 @@
+﻿<UserControl
+	x:Class="P1XCS000086.Modules.CodeManageMaster.Views.CodeManageField"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:local="clr-namespace:P1XCS000086.Modules.CodeManageMaster.Views"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:prism="http://prismlibrary.com/"
+	xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+	xmlns:mahIcon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+	d:DesignHeight="420"
+	d:DesignWidth="300"
+	prism:ViewModelLocator.AutoWireViewModel="True"
+	mc:Ignorable="d">
+
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Controls.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Colors.xaml" />
+
+				<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</UserControl.Resources>
+
+	<Grid>
+		<GroupBox>
+			<GroupBox.Header>
+				<TextBlock Text="データベース接続" />
+			</GroupBox.Header>
+			<VirtualizingStackPanel Margin="8">
+				<!-- Server Name -->
+				<TextBlock Text="サーバー名" />
+				<Grid Margin="0,8,0,8">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition />
+					</Grid.ColumnDefinitions>
+					<mahIcon:PackIconOcticons Kind="Server" VerticalAlignment="Center"/>
+					<TextBox Text="{}" Grid.Column="1" Margin="8,0,0,0" />
+				</Grid>
+
+				<!-- User Name -->
+				<TextBlock Text="ユーザー名" />
+				<Grid Margin="0,8,0,8">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition />
+					</Grid.ColumnDefinitions>
+					<mahIcon:PackIconMaterial Kind="Account" VerticalAlignment="Center"/>
+					<TextBox Text="{}" Grid.Column="1" Margin="8,0,0,0" />
+				</Grid>
+
+				<!-- Database Name -->
+				<TextBlock Text="データベース名" />
+				<Grid Margin="0,8,0,8">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition />
+					</Grid.ColumnDefinitions>
+					<mahIcon:PackIconMaterial Kind="Database" VerticalAlignment="Center"/>
+					<TextBox Text="{}" Grid.Column="1" Margin="8,0,0,0" />
+				</Grid>
+
+				<!-- Password -->
+				<TextBlock Text="パスワード" />
+				<Grid Margin="0,8,0,8">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition />
+					</Grid.ColumnDefinitions>
+					<mahIcon:PackIconFontAwesome Kind="KeySolid" VerticalAlignment="Center"/>
+					<TextBox Text="{}" Grid.Column="1" Margin="8,0,0,0" />
+				</Grid>
+
+				<!-- Persiste security info -->
+				<CheckBox Content="Persist security info" Foreground="White" Margin="0,8,0,0"/>
+				
+				<!-- Command Buttons -->
+				<Button Command="{Binding}" Margin="0,16,0,16">
+					<StackPanel Orientation="Horizontal">
+						<mahIcon:PackIconMaterial Kind="ContentSave"/>
+						<TextBlock Text="登録" Margin="8,0,0,0"/>
+					</StackPanel>
+				</Button>
+				<Button Command="{Binding}">
+					<StackPanel Orientation="Horizontal">
+						<mahIcon:PackIconMaterial Kind="Connection"/>
+						<TextBlock Text="接続テスト" Margin="8,0,0,0"/>
+					</StackPanel>
+				</Button>
+				
+				<!-- Notify Message -->
+				<md:Snackbar MessageQueue="{Binding}" Margin="0,16,0,0" />
+			</VirtualizingStackPanel>
+		</GroupBox>
+	</Grid>
+</UserControl>

@@ -18,9 +18,9 @@ namespace P1XCS000086.Modules.CodeManageMaster.Views
 	/// <summary>
 	/// Interaction logic for ViewA.xaml
 	/// </summary>
-	public partial class ViewA : UserControl
+	public partial class CodeManageMasterHost : UserControl
 	{
-		public ViewA()
+		public CodeManageMasterHost()
 		{
 			InitializeComponent();
 		}
