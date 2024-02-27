@@ -8,7 +8,7 @@ using P1XCS000086.Services.Interfaces.Models.CodeManageMaster;
 
 namespace P1XCS000086.Services.Models.CodeManageMaster
 {
-	public class IntegrEditorModel : IIntegrEditorModel
+	public class MasterEditorModel : IMasterEditorModel
 	{
 
 	}

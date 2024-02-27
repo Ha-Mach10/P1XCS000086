@@ -91,7 +91,6 @@ namespace P1XCS000086.Services.Models
 		{
 			// 
 			_jsonConnStrings = _jsonExtention.DeserializeJson<JsonConnectionItem>(_jsonExtention.JsonSqlFilePath);
-			// IJsonConnectionStrings connection = _jsonConnStrings.ConnectionStrings.Where(x => x.DatabaseName == _schemaNames.Manager).First();
 
 			foreach (var connection in _jsonConnStrings.ConnectionStrings)
 			{

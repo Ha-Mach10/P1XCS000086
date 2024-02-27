@@ -12,7 +12,14 @@ namespace P1XCS000086.Services
 {
 	public class MySqlStringBuilder : IMySqlStringBuilder
 	{
+		// ****************************************************************************
+		// Fields
+		// ****************************************************************************
+
+
+		// ****************************************************************************
 		// Properties
+		// ****************************************************************************
 		public string Server { get; set; }
 		public string User { get; set; }
 		public string Database {  get; set; }
@@ -22,12 +29,24 @@ namespace P1XCS000086.Services
 		public string ConnectionString { get; private set; }
 
 
-		// Methods
+
+		// ****************************************************************************
+		// Public Methods
+		// ****************************************************************************
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public string GetConnectionString()
 		{
 			return SetConnectionString();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public string SetConnectionString()
 		{
 			MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder();
