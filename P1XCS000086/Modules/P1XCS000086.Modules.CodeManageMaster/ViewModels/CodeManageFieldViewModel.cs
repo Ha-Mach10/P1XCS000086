@@ -64,6 +64,19 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 			// DIされたロジック群をモデルへ注入
 			_model.InjectModels(jsonConnStr);
 
+			// Properties Setting
+			Server				= new ReactivePropertySlim<string>(_model.Server).AddTo(_disposables);
+			User				= new ReactivePropertySlim<string>(_model.User).AddTo(_disposables);
+			Database			= new ReactivePropertySlim<string>(_model.Database).AddTo(_disposables);
+			Password			= new ReactivePropertySlim<string>(_model.Password).AddTo(_disposables);
+			PersistSecurityInfo = new ReactivePropertySlim<bool>(_model.PersistSecurityInfo).AddTo(_disposables);
+
+			// Commands
+			RegistConnString = new ReactiveCommandSlim();
+			RegistConnString.Subscribe(() => OnRegistConnString()).AddTo(_disposables);
+			ConnectionTest = new ReactiveCommandSlim();
+			ConnectionTest.Subscribe(() => OnConnectionTest()).AddTo(_disposables);
+
 			Message = "View A from your Prism Module";
 		}
 

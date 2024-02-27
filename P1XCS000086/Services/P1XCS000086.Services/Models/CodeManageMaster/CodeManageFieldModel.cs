@@ -109,9 +109,6 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 			Database = builder.Database;
 			Password = builder.Password;
 			PersistSecurityInfo = builder.PersistSecurityInfo;
-
-
-			return connStr;
 		}
 	}
 }
