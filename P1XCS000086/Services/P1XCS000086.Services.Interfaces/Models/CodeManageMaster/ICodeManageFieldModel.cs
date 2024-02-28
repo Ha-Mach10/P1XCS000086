@@ -1,4 +1,6 @@
-﻿using P1XCS000086.Services.Interfaces.Objects;
+﻿using P1XCS000086.Services.Interfaces.IO;
+using P1XCS000086.Services.Interfaces.Objects;
+using P1XCS000086.Services.Interfaces.Sql;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -36,6 +38,11 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManageMaster
 		/// </summary>
 		public bool PersistSecurityInfo { get; }
 
+		/// <summary>
+		/// 接続文字列の取得成否判定用
+		/// </summary>
+		public bool IsSetConnStr { get; }
+
 
 
 		// ****************************************************************************
@@ -45,7 +52,29 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManageMaster
 		/// <summary>
 		/// DIされたロジックモデル群を注入
 		/// </summary>
-		/// <param name="jsonConnStr"></param>
-		public void InjectModels(IJsonConnectionStrings jsonConnStr);
+		/// <param name="select">SELECTクエリ実行用</param>
+		/// <param name="showTables">SHOWTABLEクエリ実行用</param>
+		/// <param name="connectionTest">接続テスト用</param>
+		/// <param name="jsonExtention">JSON化用クラス</param>
+		/// <param name="jsonConnItem">JSON接続文字列リスト用</param>
+		/// <param name="jsonConnStr">JSON接続文字列</param>
+		public void InjectModels
+			(ISqlSelect select, ISqlShowTables showTables, ISqlConnectionTest connectionTest, IJsonExtention jsonExtention, IJsonConnectionItem jsonConnItem, IJsonConnectionStrings jsonConnStr);
+
+		/// <summary>
+		/// 接続文字列をJSONファイルへ追加
+		/// </summary>
+		/// <param name="server">サーバー名</param>
+		/// <param name="user">ユーザー名</param>
+		/// <param name="database">データベース名</param>
+		/// <param name="password">パスワード</param>
+		/// <param name="persistSecurityInfo">接続状態保持有無</param>
+		public void RegistConnectionString(string server, string user, string database, string password, bool persistSecurityInfo);
+
+		/// <summary>
+		/// データベースへの接続テスト
+		/// </summary>
+		/// <returns>接続成否のメッセージ</returns>
+		public string TestDatabaseConnection();
 	}
 }

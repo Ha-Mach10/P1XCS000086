@@ -94,13 +94,13 @@
 					IsChecked="{Binding PersistSecurityInfo.Value}" />
 
 				<!--  Command Buttons  -->
-				<Button Margin="0,16,0,16" Command="{Binding}">
+				<Button Margin="0,16,0,16" Command="{Binding RegistConnString}">
 					<StackPanel Orientation="Horizontal">
 						<mahIcon:PackIconMaterial Kind="ContentSave" />
 						<TextBlock Margin="8,0,0,0" Text="登録" />
 					</StackPanel>
 				</Button>
-				<Button Command="{Binding}">
+				<Button Command="{Binding ConnectionTest}">
 					<StackPanel Orientation="Horizontal">
 						<mahIcon:PackIconMaterial Kind="Connection" />
 						<TextBlock Margin="8,0,0,0" Text="接続テスト" />

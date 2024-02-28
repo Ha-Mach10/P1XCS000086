@@ -14,26 +14,24 @@ using Reactive.Bindings.Extensions;
 using MaterialDesignThemes.Wpf;
 using P1XCS000086.Services.Interfaces.Objects;
 using P1XCS000086.Services.Interfaces.Models.CodeManageMaster;
+using P1XCS000086.Services.Interfaces.Sql;
+using P1XCS000086.Services.Interfaces.IO;
 
 namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 {
 	public class CodeManageFieldViewModel : BindableBase, IDestructible
 	{
-		private string _message;
-		public string Message
-		{
-			get { return _message; }
-			set { SetProperty(ref _message, value); }
-		}
-
-
-
 		// ****************************************************************************
 		// Fields
 		// ****************************************************************************
 
 		private CompositeDisposable _disposables;
 		private ICodeManageFieldModel _model;
+		private ISqlSelect _select;
+		private ISqlShowTables _showTables;
+		private ISqlConnectionTest _connectionTest;
+		private IJsonExtention _jsonExtention;
+		private IJsonConnectionItem _jsonConnItem;
 		private IJsonConnectionStrings _jsonConnStr;
 
 
@@ -55,14 +53,20 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 		// Constructor
 		// ****************************************************************************
 
-		public CodeManageFieldViewModel(ICodeManageFieldModel model, IJsonConnectionStrings jsonConnStr)
+		public CodeManageFieldViewModel
+			(ICodeManageFieldModel model, ISqlSelect select, ISqlShowTables showTables, ISqlConnectionTest connectionTest, IJsonExtention jsonExtention, IJsonConnectionItem jsonConnItem, IJsonConnectionStrings jsonConnStr)
 		{
 			// 
 			_model = model;
+			_select = select;
+			_showTables = showTables;
+			_connectionTest = connectionTest;
+			_jsonExtention = jsonExtention;
+			_jsonConnItem = jsonConnItem;
 			_jsonConnStr = jsonConnStr;
 
 			// DIされたロジック群をモデルへ注入
-			_model.InjectModels(jsonConnStr);
+			_model.InjectModels(_select, _showTables, _connectionTest, _jsonExtention, _jsonConnItem, _jsonConnStr);
 
 			// Properties Setting
 			Server				= new ReactivePropertySlim<string>(_model.Server).AddTo(_disposables);
@@ -76,8 +80,6 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 			RegistConnString.Subscribe(() => OnRegistConnString()).AddTo(_disposables);
 			ConnectionTest = new ReactiveCommandSlim();
 			ConnectionTest.Subscribe(() => OnConnectionTest()).AddTo(_disposables);
-
-			Message = "View A from your Prism Module";
 		}
 
 
@@ -87,14 +89,25 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 		// ****************************************************************************
 
 		public ReactiveCommandSlim RegistConnString { get; }
+		
+		/// <summary>
+		/// 接続文字列の登録
+		/// </summary>
 		private void OnRegistConnString()
 		{
-
+			_model.RegistConnectionString(Server.Value, User.Value, Database.Value, Password.Value, PersistSecurityInfo.Value);
 		}
+
+
 		public ReactiveCommandSlim ConnectionTest { get; }
+		
+		/// <summary>
+		/// 接続テスト
+		/// </summary>
 		private void OnConnectionTest()
 		{
-
+			// 接続テスト
+			_model.TestDatabaseConnection();
 		}
 
 

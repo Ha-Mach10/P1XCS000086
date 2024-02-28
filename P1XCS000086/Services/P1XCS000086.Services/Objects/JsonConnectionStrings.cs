@@ -124,6 +124,30 @@ namespace P1XCS000086.Services.Objects
 			JsonConnectionStringItems.Add(DatabaseName, GenerateConnectionString());
 		}
 
+		/// <summary>
+		/// データベース名と接続文字列のディクショナリから接続文字列を取得
+		/// </summary>
+		/// <param name="schemaNameKey">目的のデータベース名</param>
+		/// <param name="result">取得可否</param>
+		/// <returns>接続文字列</returns>
+		public string PickConnectionString(string schemaNameKey, out bool result)
+		{
+			try
+			{
+				// データベース名から接続文字列を取得
+				string connStr = JsonConnectionStringItems.Where(x => x.Key == schemaNameKey).First().Value;
+				result = true;
+
+				return connStr;
+			}
+			catch (InvalidOperationException ex)
+			{
+				// 例外処理
+				result = false;
+				return string.Empty;
+			}
+		}
+
 
 
 		// ****************************************************************************
