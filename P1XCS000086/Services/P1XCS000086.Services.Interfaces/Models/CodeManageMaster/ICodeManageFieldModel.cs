@@ -74,7 +74,8 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManageMaster
 		/// <summary>
 		/// データベースへの接続テスト
 		/// </summary>
+		/// <param name="result">接続の成否</param>
 		/// <returns>接続成否のメッセージ</returns>
-		public string TestDatabaseConnection();
+		public string TestDatabaseConnection(out bool result);
 	}
 }

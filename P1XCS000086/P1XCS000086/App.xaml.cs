@@ -58,6 +58,8 @@ namespace P1XCS000086
 			containerRegistry.RegisterSingleton<ISqlConnectionTest, SqlConnectionTest>();
 			containerRegistry.RegisterSingleton<ISqlSelect, SqlSelect>();
 			containerRegistry.RegisterSingleton<ISqlInsert, SqlInsert>();
+			containerRegistry.RegisterSingleton<ISqlUpdate, SqlUpdate>();
+			containerRegistry.RegisterSingleton<ISqlDelete, SqlDelete>();
 			containerRegistry.RegisterSingleton<ISqlShowTables, SqlShowTables>();
 			containerRegistry.RegisterSingleton<ISqlShowSchemas, SqlShowSchemas>();
 			// # SqlServer

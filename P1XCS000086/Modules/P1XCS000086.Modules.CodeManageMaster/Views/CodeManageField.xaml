@@ -94,7 +94,10 @@
 					IsChecked="{Binding PersistSecurityInfo.Value}" />
 
 				<!--  Command Buttons  -->
-				<Button Margin="0,16,0,16" Command="{Binding RegistConnString}">
+				<Button
+					Margin="0,16,0,16"
+					Command="{Binding RegistConnString}"
+					Visibility="{Binding RegisterButtonVisibility.Value}">
 					<StackPanel Orientation="Horizontal">
 						<mahIcon:PackIconMaterial Kind="ContentSave" />
 						<TextBlock Margin="8,0,0,0" Text="登録" />
@@ -108,7 +111,7 @@
 				</Button>
 
 				<!--  Notify Message  -->
-				<md:Snackbar Margin="0,16,0,0" MessageQueue="{Binding}" />
+				<md:Snackbar Margin="0,16,0,0" MessageQueue="{Binding ConnSnackbarMessageQueue.Value}" />
 			</VirtualizingStackPanel>
 		</GroupBox>
 	</Grid>

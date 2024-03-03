@@ -9,20 +9,15 @@ namespace P1XCS000086.Modules.CodeManageRegister
 {
 	public class CodeManageRegisterModule : IModule
 	{
-		private readonly IRegionManager _regionManager;
-
-		public CodeManageRegisterModule(IRegionManager regionManager)
-		{
-			_regionManager = regionManager;
-		}
-
 		public void OnInitialized(IContainerProvider containerProvider)
 		{
+			var regionManager = containerProvider.Resolve<IRegionManager>();
+
 			// メインビュー
-			_regionManager.RegisterViewWithRegion(RegionNames.ContentRegion, typeof(CodeManagerRegister));
+			// _regionManager.RegisterViewWithRegion(RegionNames.ContentRegion, typeof(CodeManagerRegister));
 			// サブビュー
-			_regionManager.RegisterViewWithRegion("DevelopNumberRegisterRegion", typeof(DevelopNumberRegister));
-			_regionManager.RegisterViewWithRegion("DevelopTypeSelectorRegion", typeof(DevelopTypeSelector));
+			regionManager.RegisterViewWithRegion("DevelopNumberRegisterRegion", typeof(DevelopNumberRegister));
+			regionManager.RegisterViewWithRegion("DevelopTypeSelectorRegion", typeof(DevelopTypeSelector));
 		}
 
 		public void RegisterTypes(IContainerRegistry containerRegistry)

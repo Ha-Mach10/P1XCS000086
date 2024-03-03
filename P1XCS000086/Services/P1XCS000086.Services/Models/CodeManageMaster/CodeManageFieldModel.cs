@@ -145,6 +145,8 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 			}
             else
             {
+				// すでに同じKeyで追加されている接続文字列のペアを削除
+				_jsonConnStr.RemoveConnectionString(Database);
 				// 設定したプロパティをディクショナリへ追加
 				_jsonConnStr.AddConnectionString();
 				IsSetConnStr = false;
@@ -154,8 +156,9 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 		/// <summary>
 		/// データベースへの接続テスト
 		/// </summary>
+		/// <param name="result">接続の成否</param>
 		/// <returns>接続成否のメッセージ</returns>
-		public string TestDatabaseConnection()
+		public string TestDatabaseConnection(out bool result)
 		{
 			// 接続文字列の取得
 			string connStr = GetConnectionString();
@@ -163,10 +166,12 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 			// 接続テスト実行
 			if (_connectionTest.SqlConnection(connStr))
 			{
+				result = true;
 				return "接続成功";
 			}
 			else
 			{
+				result = false;
 				return "接続に失敗しました";
 			}
 		}

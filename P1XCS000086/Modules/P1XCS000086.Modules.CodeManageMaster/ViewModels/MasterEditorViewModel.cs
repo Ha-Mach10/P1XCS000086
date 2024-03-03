@@ -11,34 +11,100 @@ using Prism.Mvvm;
 
 using Reactive.Bindings.Extensions;
 using Prism.Navigation;
+using Reactive.Bindings;
+using System.Data;
+using P1XCS000086.Services.Interfaces.Sql;
+using P1XCS000086.Services.Interfaces.Models.CodeManageMaster;
+using P1XCS000086.Services.Interfaces.Objects;
 
 
 namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 {
 	public class MasterEditorViewModel : BindableBase, IDestructible
 	{
-		private string _message;
-		public string Message
-		{
-			get { return _message; }
-			set { SetProperty(ref _message, value); }
-		}
-
 		// ****************************************************************************
 		// Fields
 		// ****************************************************************************
 
 		private CompositeDisposable _disposable;
 
+		private IMasterEditorModel _model;
+		IJsonConnectionStrings _jsonConnStr;
+		private ISqlSelect _select;
+		private ISqlInsert _insert;
+		private ISqlUpdate _update;
+		private ISqlDelete _delete;
+		private ISqlShowTables _showTables;
+
+
+
+		// ****************************************************************************
+		// Properties
+		// ****************************************************************************
+
+		public ReactivePropertySlim<bool> IsEditChecked { get; }
+		public ReactivePropertySlim<bool> IsAddChecked { get; }
+		public ReactivePropertySlim<bool> IsDeleteChecked { get; }
 
 
 		// ****************************************************************************
 		// Constructor
 		// ****************************************************************************
 
-		public MasterEditorViewModel()
+		public MasterEditorViewModel
+			(IMasterEditorModel model, IJsonConnectionStrings jsonConnStr, ISqlSelect select, ISqlInsert insert, ISqlUpdate update, ISqlDelete dlete, ISqlShowTables showTables)
 		{
-			Message = "View A from your Prism Module";
+			_model = model;
+			_jsonConnStr = jsonConnStr;
+			_select = select;
+			_insert = insert;
+			_update = update;
+			_delete = dlete;
+			_showTables = showTables;
+
+			// DIされたモデル群をこのViewModelのModelへ注入
+			_model.InjectModels(_jsonConnStr, _select, _insert, _update, _delete, _showTables);
+
+			// Reactive Properties
+			IsEditChecked = new ReactivePropertySlim<bool>(true).AddTo(_disposable);
+			IsAddChecked = new ReactivePropertySlim<bool>(false).AddTo(_disposable);
+			IsDeleteChecked = new ReactivePropertySlim<bool>(false).AddTo(_disposable);
+
+
+			// Commands
+			RadioCheckedChanged = new ReactiveCommandSlim();
+			RadioCheckedChanged.Subscribe(() => OnRadioCheckedChanged()).AddTo(_disposable);
+			ApplyButtonClick = new ReactiveCommandSlim();
+			ApplyButtonClick.Subscribe(() => OnApplyButtonClick()).AddTo(_disposable);
+		}
+
+
+
+		// ****************************************************************************
+		// Reactive Command
+		// ****************************************************************************
+
+		public ReactiveCommandSlim RadioCheckedChanged { get; }
+		private void OnRadioCheckedChanged()
+		{
+			if (IsEditChecked.Value)
+			{
+
+			}
+			else if (IsAddChecked.Value)
+			{
+
+			}
+			else if (IsDeleteChecked.Value)
+			{
+
+			}
+		}
+
+		public ReactiveCommandSlim ApplyButtonClick { get; }
+		private void OnApplyButtonClick()
+		{
+
 		}
 
 
@@ -47,6 +113,7 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 		// Public Methods
 		// ****************************************************************************
 
+		// 破棄
 		public void Destroy()
 		{
 

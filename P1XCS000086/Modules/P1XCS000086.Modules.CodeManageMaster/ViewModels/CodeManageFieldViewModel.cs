@@ -16,6 +16,7 @@ using P1XCS000086.Services.Interfaces.Objects;
 using P1XCS000086.Services.Interfaces.Models.CodeManageMaster;
 using P1XCS000086.Services.Interfaces.Sql;
 using P1XCS000086.Services.Interfaces.IO;
+using System.Windows;
 
 namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 {
@@ -45,7 +46,8 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 		public ReactivePropertySlim<string> Database { get; }
 		public ReactivePropertySlim<string> Password { get; }
 		public ReactivePropertySlim<bool> PersistSecurityInfo { get; }
-		public ReactivePropertySlim<SnackbarMessageQueue> SnackBarMessageQueue { get; }
+		public ReactivePropertySlim<SnackbarMessageQueue> ConnSnackbarMessageQueue { get; }
+		public ReactivePropertySlim<Visibility> RegisterButtonVisibility { get; }
 
 
 
@@ -74,6 +76,13 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 			Database			= new ReactivePropertySlim<string>(_model.Database).AddTo(_disposables);
 			Password			= new ReactivePropertySlim<string>(_model.Password).AddTo(_disposables);
 			PersistSecurityInfo = new ReactivePropertySlim<bool>(_model.PersistSecurityInfo).AddTo(_disposables);
+
+			// Snackbarの表示時間を3秒に設定
+			SnackbarMessageQueue messageQueue = new SnackbarMessageQueue(new TimeSpan(0, 0, 3));
+			ConnSnackbarMessageQueue = new ReactivePropertySlim<SnackbarMessageQueue>(messageQueue).AddTo(_disposables);
+
+			// 登録ボタンのVisibilityの初期設定
+			RegisterButtonVisibility = new ReactivePropertySlim<Visibility>(Visibility.Collapsed).AddTo(_disposables);
 
 			// Commands
 			RegistConnString = new ReactiveCommandSlim();
@@ -107,7 +116,22 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 		private void OnConnectionTest()
 		{
 			// 接続テスト
-			_model.TestDatabaseConnection();
+			string message = _model.TestDatabaseConnection(out bool result);
+
+			// 接続の成否によって登録ボタンのVisibilityを変更する
+			if (result)
+			{
+				// 成功した場合
+				RegisterButtonVisibility.Value = Visibility.Visible;
+			}
+			else
+			{
+				// 失敗した場合
+				RegisterButtonVisibility.Value = Visibility.Collapsed;
+			}
+
+			// Snackbarを表示
+			ConnSnackbarMessageQueue.Value.Enqueue(message);
 		}
 
 

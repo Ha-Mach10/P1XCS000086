@@ -1,25 +1,20 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using P1XCS000086.Services.Interfaces.Sql;
+using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using MySql.Data;
-using MySql.Data.MySqlClient;
-using P1XCS000086.Services.Interfaces.Sql;
-
 namespace P1XCS000086.Services.Sql.MySql
 {
-    public class SqlInsert : ISqlInsert
+	public class SqlDelete : ISqlDelete
 	{
 		// ****************************************************************************
 		// Fields
 		// ****************************************************************************
 
 		private string _connStr;
-		private string _command;
 
 
 
@@ -27,8 +22,15 @@ namespace P1XCS000086.Services.Sql.MySql
 		// Properties
 		// ****************************************************************************
 
-		public string ResultMessage { get; private set; } = "データ更新に成功";
-		public string ExceptionMessage {  get; private set; } = string.Empty;
+		/// <summary>
+		/// 実行結果のメッセージ
+		/// </summary>
+		public string ResultMessage { get; private set; } = string.Empty;
+
+		/// <summary>
+		/// 例外発生時のメッセージ
+		/// </summary>
+		public string ExceptionMessage { get; private set; } = string.Empty;
 
 
 
@@ -36,15 +38,7 @@ namespace P1XCS000086.Services.Sql.MySql
 		// Constructor
 		// ****************************************************************************
 
-		public SqlInsert() { }
-		public SqlInsert(string connStr) : this()
-		{
-			_connStr = connStr;
-		}
-		public SqlInsert(string connStr, string command) : this(connStr)
-		{
-			_command = command;
-		}
+		public SqlDelete() { }
 
 
 
@@ -53,29 +47,43 @@ namespace P1XCS000086.Services.Sql.MySql
 		// ****************************************************************************
 
 		/// <summary>
-		/// INSERTクエリを実行
+		/// DELETEクエリを実行
 		/// </summary>
-		/// <param name="connStr">接続文字列</param>
 		/// <param name="command">実行するクエリ文</param>
-		/// <param name="columns">パラメータクエリ用カラム名のリスト</param>
+		/// <param name="columnNames">パラメータクエリ用カラム名のリスト</param>
 		/// <param name="values">パラメータクエリ用の値リスト</param>
-		/// <returns>クエリの成否</returns>
-		public bool Insert(string connStr, string command, List<string> columns, List<string> values)
+		/// <returns></returns>
+		public bool Delete(string command, List<string> columnNames, List<string> values)
 		{
-			bool result = ExecuteInsert(columns, values, command, connStr);
+			bool result = ExecuteDelete(columnNames, values, command, _connStr);
 			return result;
 		}
+
 		/// <summary>
-		/// INSERTクエリを実行
+		/// DELETEクエリを実行
 		/// </summary>
 		/// <param name="command">実行するクエリ文</param>
-		/// <param name="columns">パラメータクエリ用カラム名のリスト</param>
+		/// <param name="connStr">接続文字列</param>
+		/// <param name="columnNames">パラメータクエリ用カラム名のリスト</param>
 		/// <param name="values">パラメータクエリ用の値リスト</param>
-		/// <returns>クエリの成否</returns>
-		public bool Insert(string command, List<string> columns, List<string> values)
+		/// <returns></returns>
+		public bool Delete(string command, string connStr, List<string> columnNames, List<string> values)
 		{
-			bool result = ExecuteInsert(columns, values, command, _connStr);
+			bool result = ExecuteDelete(columnNames, values, command, connStr);
 			return result;
+		}
+
+		/// <summary>
+		/// 接続文字列を内部変数へセット
+		/// </summary>
+		/// <param name="sqlConnStr">接続文字列のオブジェクト</param>
+		public void SetConnectionString(IMySqlConnectionString sqlConnStr)
+		{
+			// 接続文字列が設定されている場合、内部変数へ値をセット
+			if (sqlConnStr.IsGetConnectionString(out string connStr))
+			{
+				_connStr = connStr;
+			}
 		}
 
 
@@ -85,14 +93,14 @@ namespace P1XCS000086.Services.Sql.MySql
 		// ****************************************************************************
 
 		/// <summary>
-		/// INSERTクエリの実行
+		/// DELETEクエリの実行
 		/// </summary>
 		/// <param name="columns">パラメータクエリ用カラム名のリスト</param>
 		/// <param name="values">パラメータクエリ用の値リスト</param>
 		/// <param name="command">クエリコマンド</param>
 		/// <param name="connStr">接続文字列</param>
 		/// <returns></returns>
-		private bool ExecuteInsert(List<string> columns, List<string> values, string command, string connStr = "")
+		private bool ExecuteDelete(List<string> columns, List<string> values, string command, string connStr = "")
 		{
 			// 
 			string connectionString = connStr;
@@ -146,16 +154,14 @@ namespace P1XCS000086.Services.Sql.MySql
 					}
 				}
 			}
-			// コネクションおよびコマンド生成時に例外が発生した場合
-			catch (MySqlException ex)
+			catch (Exception ex)
 			{
 				ExceptionMessage = $"発生した例外：{ex.Message}\n\n発生元：{ex.Source}";
 				return false;
 			}
 
 
-
-			// 挿入に成功
+			// 削除に成功
 			ResultMessage = "データ更新に成功";
 			ExceptionMessage = string.Empty;
 			return true;

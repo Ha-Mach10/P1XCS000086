@@ -170,7 +170,7 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <summary>
 		/// 接続文字列を内部変数へ登録
 		/// </summary>
-		/// <param name="connStr">IMySqlConnectionStringインターフェース</param>
+		/// <param name="sqlConnStr">IMySqlConnectionStringインターフェース</param>
 		public void SetConnectionString(IMySqlConnectionString sqlConnStr)
 		{
 			// 

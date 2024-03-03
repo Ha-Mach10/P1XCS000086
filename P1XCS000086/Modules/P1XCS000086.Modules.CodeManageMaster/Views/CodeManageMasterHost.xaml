@@ -28,20 +28,8 @@
 			<ColumnDefinition />
 		</Grid.ColumnDefinitions>
 		<VirtualizingStackPanel Orientation="Horizontal">
-			<TextBlock
-				HorizontalAlignment="Center"
-				VerticalAlignment="Center"
-				Text="{Binding Message}" />
-			<ContentControl prism:RegionManager.RegionName="{Binding}" />
-			<ContentControl prism:RegionManager.RegionName="{Binding}" />
-			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto" />
-					<RowDefinition />
-				</Grid.RowDefinitions>
-				<ContentControl prism:RegionManager.RegionName="{Binding}" />
-				<ContentControl prism:RegionManager.RegionName="{Binding}" />
-			</Grid>
+			<ContentControl prism:RegionManager.RegionName="CodeManagerField" />
+			<ContentControl prism:RegionManager.RegionName="MasterEditor" />
 		</VirtualizingStackPanel>
 		<DataGrid
 			Grid.Column="1"
@@ -49,7 +37,7 @@
 			CanUserDeleteRows="False"
 			CanUserResizeRows="False"
 			GridLinesVisibility="All"
-			ItemsSource="{Binding}"
+			ItemsSource="{Binding MasterDataTable}"
 			SelectionUnit="FullRow"
 			VerticalScrollBarVisibility="Auto"
 			VirtualizingPanel.IsVirtualizing="True"

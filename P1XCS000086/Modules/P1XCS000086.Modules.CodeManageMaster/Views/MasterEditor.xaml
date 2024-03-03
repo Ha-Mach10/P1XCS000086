@@ -4,10 +4,11 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:local="clr-namespace:P1XCS000086.Modules.CodeManageMaster.Views"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:prism="http://prismlibrary.com/"
-	xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
 	xmlns:mahIcon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+	xmlns:prism="http://prismlibrary.com/"
 	d:DesignHeight="420"
 	d:DesignWidth="300"
 	prism:ViewModelLocator.AutoWireViewModel="True"
@@ -22,8 +23,11 @@
 				<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml" />
 
 				<ResourceDictionary>
-					<Style x:Key="MyRadio" TargetType="RadioButton" BasedOn="{StaticResource MahApps.Styles.RadioButton}">
-						<Setter Property="Margin" Value="8,0,8,0"/>
+					<Style
+						x:Key="MyRadio"
+						BasedOn="{StaticResource MahApps.Styles.RadioButton}"
+						TargetType="RadioButton">
+						<Setter Property="Margin" Value="8,0,8,0" />
 					</Style>
 				</ResourceDictionary>
 			</ResourceDictionary.MergedDictionaries>
@@ -37,14 +41,41 @@
 			</GroupBox.Header>
 
 			<StackPanel>
-				<!-- Edit Type Selector -->
-				<StackPanel Orientation="Horizontal">
-					<RadioButton IsChecked="{Binding a}" Content="編集" Style="{StaticResource MyRadio}" />
-					<RadioButton IsChecked="{Binding b}" Content="追加" Style="{StaticResource MyRadio}" />
-					<RadioButton IsChecked="{Binding c}" Content="削除" Style="{StaticResource MyRadio}" />
+				<!--  Edit Type Selector  -->
+				<StackPanel Margin="0,8,0,8" Orientation="Horizontal">
+					<RadioButton
+						Content="編集"
+						IsChecked="{Binding IsEditChecked.Value}"
+						Style="{StaticResource MyRadio}">
+						<i:Interaction.Triggers>
+							<i:EventTrigger EventName="Checked">
+								<prism:InvokeCommandAction Command="{Binding RadioCheckedChanged}"/>
+							</i:EventTrigger>
+						</i:Interaction.Triggers>
+					</RadioButton>
+					<RadioButton
+						Content="追加"
+						IsChecked="{Binding IsAddChecked.Value}"
+						Style="{StaticResource MyRadio}">
+						<i:Interaction.Triggers>
+							<i:EventTrigger EventName="Checked">
+								<prism:InvokeCommandAction Command="{Binding RadioCheckedChanged}"/>
+							</i:EventTrigger>
+						</i:Interaction.Triggers>
+					</RadioButton>
+					<RadioButton
+						Content="削除"
+						IsChecked="{Binding IsDeleteChecked.Value}"
+						Style="{StaticResource MyRadio}">
+						<i:Interaction.Triggers>
+							<i:EventTrigger EventName="Checked">
+								<prism:InvokeCommandAction Command="{Binding RadioCheckedChanged}"/>
+							</i:EventTrigger>
+						</i:Interaction.Triggers>
+					</RadioButton>
 				</StackPanel>
 
-				<!-- Database Columns Selector -->
+				<!--  Database Columns Selector  -->
 				<ItemsControl ItemsSource="{Binding ColumnHeaders}">
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
@@ -57,8 +88,8 @@
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
-				
-				<!--  -->
+
+				<!--    -->
 				<ItemsControl ItemsSource="{Binding DatabaseFields}">
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
@@ -68,17 +99,17 @@
 					<ItemsControl.ItemTemplate>
 						<DataTemplate>
 							<StackPanel Orientation="Horizontal">
-								<TextBlock Text="{Binding ColumnName.Value}"/>
-								<TextBox Text="{Binding Fields.Value}" Width="100"/>
+								<TextBlock Text="{Binding ColumnName.Value}" />
+								<TextBox Width="100" Text="{Binding Fields.Value}" />
 							</StackPanel>
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
 
-				<Button Visibility="{Binding IsChecked}" Margin="8">
+				<Button Margin="8" Visibility="{Binding IsChecked}" Command="{Binding ApplyButtonClick}">
 					<StackPanel Orientation="Horizontal">
-						<mahIcon:PackIconFontAwesome Kind="CheckSolid"/>
-						<TextBlock Text="適用" Margin="8,0,0,0"/>
+						<mahIcon:PackIconFontAwesome Kind="CheckSolid" />
+						<TextBlock Margin="8,0,0,0" Text="適用" />
 					</StackPanel>
 				</Button>
 

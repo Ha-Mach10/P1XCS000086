@@ -62,13 +62,18 @@ namespace P1XCS000086.Services.Interfaces.Objects
 		/// 接続文字列の追加
 		/// </summary>
 		public void AddConnectionString();
+		/// <summary>
+		/// 接続文字列の削除
+		/// </summary>
+		/// <param name="schemaNameKey">削除するデータベース名</param>
+		public void RemoveConnectionString(string schemaNameKey);
 
 		/// <summary>
 		/// データベース名と接続文字列のディクショナリから接続文字列を取得
 		/// </summary>
 		/// <param name="schemaNameKey">目的のデータベース名</param>
 		/// <param name="result">取得可否</param>
-		/// <returns>接続文字列</returns>
+		/// <returns>接続文字列を返す。例外の場合は空文字列を返す。</returns>
 		public string PickConnectionString(string schemaNameKey, out bool result)
 	}
 }
