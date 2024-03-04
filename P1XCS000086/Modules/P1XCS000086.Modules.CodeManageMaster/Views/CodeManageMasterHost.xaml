@@ -6,6 +6,7 @@
 	xmlns:local="clr-namespace:P1XCS000086.Modules.CodeManageMaster.Views"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:prism="http://prismlibrary.com/"
+	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 	d:DesignHeight="300"
 	d:DesignWidth="300"
 	prism:ViewModelLocator.AutoWireViewModel="True"
@@ -37,11 +38,18 @@
 			CanUserDeleteRows="False"
 			CanUserResizeRows="False"
 			GridLinesVisibility="All"
-			ItemsSource="{Binding MasterDataTable}"
+			ItemsSource="{Binding MasterDataTable.Value}"
+			SelectedItem="{Binding SelectedRow.Value}"
 			SelectionUnit="FullRow"
 			VerticalScrollBarVisibility="Auto"
 			VirtualizingPanel.IsVirtualizing="True"
 			VirtualizingPanel.ScrollUnit="Pixel"
-			VirtualizingPanel.VirtualizationMode="Recycling" />
+			VirtualizingPanel.VirtualizationMode="Recycling">
+			<i:Interaction.Triggers>
+				<i:EventTrigger EventName="Selected">
+					<prism:InvokeCommandAction Command="{Binding DataGridSelected}"/>
+				</i:EventTrigger>
+			</i:Interaction.Triggers>
+		</DataGrid>
 	</Grid>
 </UserControl>

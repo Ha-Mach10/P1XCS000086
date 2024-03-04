@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reactive.Disposables;
+using P1XCS000086.Services.Interfaces.Models.CodeManageMaster;
 
 namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 {
@@ -23,6 +24,9 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 
 		private CompositeDisposable _disposable;
 
+		private ICodeManagerMasterHostModel _model;
+		private IIntegrMasterModel _integrModel;
+
 
 
 		// ****************************************************************************
@@ -30,6 +34,8 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 		// ****************************************************************************
 
 		public ReactivePropertySlim<DataTable> MasterDataTable { get; }
+		public ReactivePropertySlim<string> SelectedMasterTable { get; }
+		public ReactivePropertySlim<DataRow> SelectedRow { get; }
 
 
 
@@ -37,18 +43,36 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 		// Constructor
 		// ****************************************************************************
 
-		public CodeManageMasterHostViewModel()
+		public CodeManageMasterHostViewModel(ICodeManagerMasterHostModel model, IIntegrMasterModel integrModel)
 		{
+			_model = model;
+			_integrModel = integrModel;
+
+			// DIされたモデルを注入
+			_model.InjectModels(_integrModel);
+
+			// Properties
 			MasterDataTable = new ReactivePropertySlim<DataTable>().AddTo(_disposable);
+			SelectedMasterTable = new ReactivePropertySlim<string>(string.Empty).AddTo(_disposable);
+			SelectedRow = new ReactivePropertySlim<DataRow>().AddTo(_disposable);
+
+			// Reactive Commands
+			DataGridSelected = new ReactiveCommandSlim();
+			DataGridSelected.Subscribe(() => OnDataGridSelected()).AddTo(_disposable);
 		}
 
 
 
 		// ****************************************************************************
-		// Reactive Command
+		// Reactive Commands
 		// ****************************************************************************
 
-
+		public ReactiveCommandSlim DataGridSelected { get; }
+		private void OnDataGridSelected()
+		{
+			// 取得したDetaRowをセット
+			_integrModel.SetSelectedRow(SelectedRow.Value);
+		}
 
 
 
@@ -59,7 +83,7 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 		// 破棄
 		public void Destroy()
 		{
-
+			_disposable?.Dispose();
 		}
 	}
 }

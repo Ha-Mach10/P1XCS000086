@@ -17,6 +17,7 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 		// Fields
 		// ****************************************************************************
 
+		private IIntegrMasterModel _integrModel;
 		private IJsonConnectionStrings _connStr;
 		private ISqlSelect _select;
 		private ISqlInsert _insert;
@@ -41,14 +42,16 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 		/// <summary>
 		/// DIされたモデルを注入
 		/// </summary>
-		/// <param name="connStr"></param>
-		/// <param name="select"></param>
-		/// <param name="insert"></param>
-		/// <param name="update"></param>
-		/// <param name="delete"></param>
-		/// <param name="shwoTables"></param>
-		public void InjectModels(IJsonConnectionStrings connStr, ISqlSelect select, ISqlInsert insert, ISqlUpdate update, ISqlDelete delete, ISqlShowTables shwoTables)
+		/// <param name="integrModel">共通モデル</param>
+		/// <param name="connStr">接続文字列のモデル</param>
+		/// <param name="select">SELECTクエリ用モデル</param>
+		/// <param name="insert">INSERTクエリ用モデル</param>
+		/// <param name="update">UPDATEクエリ用モデル</param>
+		/// <param name="delete">DELETEクエリ用モデル</param>
+		/// <param name="shwoTables">SHOWTABLESクエリ用モデル</param>
+		public void InjectModels(IIntegrMasterModel integrModel, IJsonConnectionStrings connStr, ISqlSelect select, ISqlInsert insert, ISqlUpdate update, ISqlDelete delete, ISqlShowTables shwoTables)
 		{
+			_integrModel = integrModel;
 			_connStr = connStr;
 			_select = select;
 			_insert = insert;

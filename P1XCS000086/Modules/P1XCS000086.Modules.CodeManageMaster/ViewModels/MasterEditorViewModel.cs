@@ -29,7 +29,8 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 		private CompositeDisposable _disposable;
 
 		private IMasterEditorModel _model;
-		IJsonConnectionStrings _jsonConnStr;
+		private IIntegrMasterModel _integrModel;
+		private IJsonConnectionStrings _jsonConnStr;
 		private ISqlSelect _select;
 		private ISqlInsert _insert;
 		private ISqlUpdate _update;
@@ -52,9 +53,10 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 		// ****************************************************************************
 
 		public MasterEditorViewModel
-			(IMasterEditorModel model, IJsonConnectionStrings jsonConnStr, ISqlSelect select, ISqlInsert insert, ISqlUpdate update, ISqlDelete dlete, ISqlShowTables showTables)
+			(IMasterEditorModel model, IIntegrMasterModel integrModel, IJsonConnectionStrings jsonConnStr, ISqlSelect select, ISqlInsert insert, ISqlUpdate update, ISqlDelete dlete, ISqlShowTables showTables)
 		{
 			_model = model;
+			_integrModel = integrModel;
 			_jsonConnStr = jsonConnStr;
 			_select = select;
 			_insert = insert;
@@ -63,7 +65,7 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 			_showTables = showTables;
 
 			// DIされたモデル群をこのViewModelのModelへ注入
-			_model.InjectModels(_jsonConnStr, _select, _insert, _update, _delete, _showTables);
+			_model.InjectModels(_integrModel, _jsonConnStr, _select, _insert, _update, _delete, _showTables);
 
 			// Reactive Properties
 			IsEditChecked = new ReactivePropertySlim<bool>(true).AddTo(_disposable);
