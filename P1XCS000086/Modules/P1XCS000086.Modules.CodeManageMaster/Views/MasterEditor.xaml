@@ -76,18 +76,18 @@
 				</StackPanel>
 
 				<!--  Database Columns Selector  -->
-				<ItemsControl ItemsSource="{Binding ColumnHeaders}">
-					<ItemsControl.ItemsPanel>
+				<ListBox ItemsSource="{Binding ColumnHeaders}" SelectedValue="{Binding SelectedTableName.Value}">
+					<ListBox.ItemsPanel>
 						<ItemsPanelTemplate>
 							<VirtualizingStackPanel />
 						</ItemsPanelTemplate>
-					</ItemsControl.ItemsPanel>
-					<ItemsControl.ItemTemplate>
+					</ListBox.ItemsPanel>
+					<ListBox.ItemTemplate>
 						<DataTemplate>
 							<TextBlock Text="{Binding SelectColumn}" />
 						</DataTemplate>
-					</ItemsControl.ItemTemplate>
-				</ItemsControl>
+					</ListBox.ItemTemplate>
+				</ListBox>
 
 				<!--    -->
 				<ItemsControl ItemsSource="{Binding DatabaseFields}">

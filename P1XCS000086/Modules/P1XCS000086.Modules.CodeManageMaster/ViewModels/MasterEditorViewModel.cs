@@ -47,6 +47,8 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 		public ReactivePropertySlim<bool> IsEditChecked { get; }
 		public ReactivePropertySlim<bool> IsAddChecked { get; }
 		public ReactivePropertySlim<bool> IsDeleteChecked { get; }
+		public ReactivePropertySlim<List<string>> TableItems { get; }
+		public ReactivePropertySlim<string> SelectedTableName { get; }
 
 
 		// ****************************************************************************
@@ -72,6 +74,8 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 			IsEditChecked = new ReactivePropertySlim<bool>(true).AddTo(_disposable);
 			IsAddChecked = new ReactivePropertySlim<bool>(false).AddTo(_disposable);
 			IsDeleteChecked = new ReactivePropertySlim<bool>(false).AddTo(_disposable);
+			TableItems = new ReactivePropertySlim<List<string>>()
+			SelectedTableName = new ReactivePropertySlim<string>(string.Empty).AddTo(_disposable);
 
 
 			// Commands
