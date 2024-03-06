@@ -23,6 +23,8 @@ using P1XCS000086.Services.Interfaces.IO;
 using P1XCS000086.Services.Interfaces.Objects;
 using P1XCS000086.Services.Interfaces.Models.CodeManageMaster;
 using P1XCS000086.Modules.CodeManageMaster.Views;
+using P1XCS000086.Services.Interfaces.Models.CodeManageMaster.Domains;
+using P1XCS000086.Services.Models.CodeManageMaster.Domains;
 
 namespace P1XCS000086
 {
@@ -68,11 +70,17 @@ namespace P1XCS000086
 			// Models
 			// # MainWindow
 			containerRegistry.RegisterSingleton<IMainWindowModel, MainWindowModel>();
+
+
 			// # CodeManageMaster
 			containerRegistry.RegisterSingleton<ICodeManageFieldModel, CodeManageFieldModel>();
 			containerRegistry.RegisterSingleton<ICodeManagerMasterHostModel, CodeManagerMasterHostModel>();
 			containerRegistry.RegisterSingleton<IMasterEditorModel, MasterEditorModel>();
 			containerRegistry.RegisterSingleton<IIntegrMasterModel, IntegrMasterModel>();
+			// ## Domains
+			containerRegistry.RegisterSingleton<ITableField, TableField>();
+
+
 			// # CodeManageRegister
 			containerRegistry.RegisterSingleton<ICodeManagerRegisterModel, CodeManagerRegisterModel>();
 			containerRegistry.RegisterSingleton<IDevelopNumberRegisterModel, DevelopNumberRegisterModel>();

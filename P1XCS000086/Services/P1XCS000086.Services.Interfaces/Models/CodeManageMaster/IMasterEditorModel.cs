@@ -1,4 +1,5 @@
-﻿using P1XCS000086.Services.Interfaces.Objects;
+﻿using P1XCS000086.Services.Interfaces.Models.CodeManageMaster.Domains;
+using P1XCS000086.Services.Interfaces.Objects;
 using P1XCS000086.Services.Interfaces.Sql;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManageMaster
 		/// DIされたモデルを注入
 		/// </summary>
 		/// <param name="integrModel">共通モデル</param>
+		/// <param name="tableField">データベースフィールド編集用モデル</param>
 		/// <param name="connStr">接続文字列のモデル</param>
 		/// <param name="select">SELECTクエリ用モデル</param>
 		/// <param name="insert">INSERTクエリ用モデル</param>

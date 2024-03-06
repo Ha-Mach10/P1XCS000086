@@ -33,8 +33,8 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 		// Properties
 		// ****************************************************************************
 
+		public ReactivePropertySlim<string> SelectedTableName { get; }
 		public ReactivePropertySlim<DataTable> MasterDataTable { get; }
-		public ReactivePropertySlim<string> SelectedMasterTable { get; }
 		public ReactivePropertySlim<DataRow> SelectedRow { get; }
 
 
@@ -52,8 +52,8 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 			_model.InjectModels(_integrModel);
 
 			// Properties
+			SelectedTableName = new ReactivePropertySlim<string>(string.Empty).AddTo(_disposable);
 			MasterDataTable = new ReactivePropertySlim<DataTable>().AddTo(_disposable);
-			SelectedMasterTable = new ReactivePropertySlim<string>(string.Empty).AddTo(_disposable);
 			SelectedRow = new ReactivePropertySlim<DataRow>().AddTo(_disposable);
 
 			// Reactive Commands

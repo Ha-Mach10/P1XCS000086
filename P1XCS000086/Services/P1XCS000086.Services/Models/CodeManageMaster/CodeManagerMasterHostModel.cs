@@ -14,7 +14,8 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 		// Fields
 		// ****************************************************************************
 
-		public IIntegrMasterModel _integrModel;
+		private IIntegrMasterModel _integrModel;
+
 
 
 
@@ -23,7 +24,6 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 		// ****************************************************************************
 
 		public CodeManagerMasterHostModel() { }
-
 
 
 

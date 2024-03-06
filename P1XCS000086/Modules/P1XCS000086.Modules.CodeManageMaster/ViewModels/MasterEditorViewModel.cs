@@ -16,6 +16,7 @@ using System.Data;
 using P1XCS000086.Services.Interfaces.Sql;
 using P1XCS000086.Services.Interfaces.Models.CodeManageMaster;
 using P1XCS000086.Services.Interfaces.Objects;
+using P1XCS000086.Services.Interfaces.Models.CodeManageMaster.Domains;
 
 
 namespace P1XCS000086.Modules.CodeManageMaster.ViewModels

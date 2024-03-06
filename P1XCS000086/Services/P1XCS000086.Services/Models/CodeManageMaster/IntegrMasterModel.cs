@@ -15,8 +15,17 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 		// Properties
 		// ****************************************************************************
 
+		/// <summary>
+		/// 選択されたテーブル名
+		/// </summary>
+		public string SelectedTableName { get; private set; }
+		/// <summary>
+		/// 表示されるDataTable
+		/// </summary>
 		public DataTable DataTable { get; private set; }
-		public string SelectedMasterTable { get; private set; }
+		/// <summary>
+		/// 選択行
+		/// </summary>
 		public DataRow SelectedRow { get; private set; }
 
 
@@ -24,6 +33,15 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 		// ****************************************************************************
 		// Public Methods
 		// ****************************************************************************
+
+		/// <summary>
+		/// 選択されたテーブル名をセット
+		/// </summary>
+		/// <param name="selectedTableName">選択されたテーブル名</param>
+		public void SetSelectedTableName(string selectedTableName)
+		{
+			SelectedTableName = selectedTableName;
+		}
 
 		/// <summary>
 		/// 選択されたDataRowをセット

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using P1XCS000086.Services.Interfaces.Models.CodeManageMaster;
+using P1XCS000086.Services.Interfaces.Models.CodeManageMaster.Domains;
 using P1XCS000086.Services.Interfaces.Objects;
 using P1XCS000086.Services.Interfaces.Sql;
 
@@ -18,6 +19,7 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 		// ****************************************************************************
 
 		private IIntegrMasterModel _integrModel;
+		private ITableField _tableField;
 		private IJsonConnectionStrings _connStr;
 		private ISqlSelect _select;
 		private ISqlInsert _insert;
@@ -43,6 +45,7 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 		/// DIされたモデルを注入
 		/// </summary>
 		/// <param name="integrModel">共通モデル</param>
+		/// <param name="tableField">データベースフィールド編集用モデル</param>
 		/// <param name="connStr">接続文字列のモデル</param>
 		/// <param name="select">SELECTクエリ用モデル</param>
 		/// <param name="insert">INSERTクエリ用モデル</param>

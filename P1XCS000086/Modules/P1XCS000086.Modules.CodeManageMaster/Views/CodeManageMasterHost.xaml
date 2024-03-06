@@ -3,10 +3,10 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 	xmlns:local="clr-namespace:P1XCS000086.Modules.CodeManageMaster.Views"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:prism="http://prismlibrary.com/"
-	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 	d:DesignHeight="300"
 	d:DesignWidth="300"
 	prism:ViewModelLocator.AutoWireViewModel="True"
@@ -32,24 +32,35 @@
 			<ContentControl prism:RegionManager.RegionName="CodeManagerField" />
 			<ContentControl prism:RegionManager.RegionName="MasterEditor" />
 		</VirtualizingStackPanel>
-		<DataGrid
-			Grid.Column="1"
-			CanUserAddRows="False"
-			CanUserDeleteRows="False"
-			CanUserResizeRows="False"
-			GridLinesVisibility="All"
-			ItemsSource="{Binding MasterDataTable.Value}"
-			SelectedItem="{Binding SelectedRow.Value}"
-			SelectionUnit="FullRow"
-			VerticalScrollBarVisibility="Auto"
-			VirtualizingPanel.IsVirtualizing="True"
-			VirtualizingPanel.ScrollUnit="Pixel"
-			VirtualizingPanel.VirtualizationMode="Recycling">
-			<i:Interaction.Triggers>
-				<i:EventTrigger EventName="Selected">
-					<prism:InvokeCommandAction Command="{Binding DataGridSelected}"/>
-				</i:EventTrigger>
-			</i:Interaction.Triggers>
-		</DataGrid>
+		<Grid Grid.Column="1">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition />
+			</Grid.RowDefinitions>
+
+			<StackPanel Orientation="Horizontal">
+				<TextBlock Text="選択テーブル" Foreground="White" />
+				<TextBlock Text="{Binding }" />
+			</StackPanel>
+			<DataGrid
+				Grid.Row="1"
+				CanUserAddRows="False"
+				CanUserDeleteRows="False"
+				CanUserResizeRows="False"
+				GridLinesVisibility="All"
+				ItemsSource="{Binding MasterDataTable.Value}"
+				SelectedItem="{Binding SelectedRow.Value}"
+				SelectionUnit="FullRow"
+				VerticalScrollBarVisibility="Auto"
+				VirtualizingPanel.IsVirtualizing="True"
+				VirtualizingPanel.ScrollUnit="Pixel"
+				VirtualizingPanel.VirtualizationMode="Recycling">
+				<i:Interaction.Triggers>
+					<i:EventTrigger EventName="Selected">
+						<prism:InvokeCommandAction Command="{Binding DataGridSelected}" />
+					</i:EventTrigger>
+				</i:Interaction.Triggers>
+			</DataGrid>
+		</Grid>
 	</Grid>
 </UserControl>
