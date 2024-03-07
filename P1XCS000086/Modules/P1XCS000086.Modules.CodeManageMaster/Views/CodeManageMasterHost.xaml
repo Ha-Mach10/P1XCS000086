@@ -38,9 +38,11 @@
 				<RowDefinition />
 			</Grid.RowDefinitions>
 
-			<StackPanel Orientation="Horizontal">
-				<TextBlock Text="選択テーブル" Foreground="White" />
-				<TextBlock Text="{Binding }" />
+			<StackPanel Orientation="Horizontal" Margin="8">
+				<TextBlock Text="テーブル名" Foreground="White" VerticalAlignment="Center" />
+				<Border BorderThickness="1" BorderBrush="White" Width="200" Height="30" Margin="8,0,0,0" CornerRadius="5">
+					<TextBlock Text="{Binding SelectedTableName}" />
+				</Border>
 			</StackPanel>
 			<DataGrid
 				Grid.Row="1"

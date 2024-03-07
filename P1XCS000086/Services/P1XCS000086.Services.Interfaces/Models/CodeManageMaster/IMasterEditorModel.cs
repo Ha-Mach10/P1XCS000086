@@ -10,6 +10,17 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManageMaster
 	public interface IMasterEditorModel
 	{
 		// ****************************************************************************
+		// Constructor
+		// ****************************************************************************
+
+		/// <summary>
+		/// テーブル名のリスト
+		/// </summary>
+		public List<string> TableNames { get; }
+
+
+
+		// ****************************************************************************
 		// Public Methods
 		// ****************************************************************************
 
@@ -25,5 +36,11 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManageMaster
 		/// <param name="delete">DELETEクエリ用モデル</param>
 		/// <param name="shwoTables">SHOWTABLESクエリ用モデル</param>
 		public void InjectModels(IIntegrMasterModel integrModel, IJsonConnectionStrings connStr, ISqlSelect select, ISqlInsert insert, ISqlUpdate update, ISqlDelete delete, ISqlShowTables shwoTables);
+
+		/// <summary>
+		/// テーブル名のリスト一覧を返却
+		/// </summary>
+		/// <returns>テーブル名のリスト一覧</returns>
+		public List<string> SetTableNames();
 	}
 }

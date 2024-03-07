@@ -63,7 +63,7 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <summary>
 		/// テーブル一覧を取得する
 		/// </summary>
-		/// <param name="databaseName">テーブル名称</param>
+		/// <param name="databaseName">データベース名称</param>
 		/// <returns>テーブル一覧のリスト</returns>
 		public List<string> ShowTables(string databaseName)
 		{

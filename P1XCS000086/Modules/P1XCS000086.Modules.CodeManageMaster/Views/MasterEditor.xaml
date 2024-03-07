@@ -76,18 +76,13 @@
 				</StackPanel>
 
 				<!--  Database Columns Selector  -->
-				<ListBox ItemsSource="{Binding ColumnHeaders}" SelectedValue="{Binding SelectedTableName.Value}">
-					<ListBox.ItemsPanel>
-						<ItemsPanelTemplate>
-							<VirtualizingStackPanel />
-						</ItemsPanelTemplate>
-					</ListBox.ItemsPanel>
-					<ListBox.ItemTemplate>
-						<DataTemplate>
-							<TextBlock Text="{Binding SelectColumn}" />
-						</DataTemplate>
-					</ListBox.ItemTemplate>
-				</ListBox>
+				<ListView ItemsSource="{Binding ColumnHeaders.Value}" SelectedValue="{Binding SelectedTableName.Value}">
+					<i:Interaction.Triggers>
+						<i:EventTrigger EventName="SelectionChanged">
+							<prism:InvokeCommandAction Command="{Binding ListViewSelectionChanged}"/>
+						</i:EventTrigger>
+					</i:Interaction.Triggers>
+				</ListView>
 
 				<!--    -->
 				<ItemsControl ItemsSource="{Binding DatabaseFields}">

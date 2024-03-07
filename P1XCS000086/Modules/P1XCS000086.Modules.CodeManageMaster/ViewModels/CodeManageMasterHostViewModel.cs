@@ -52,7 +52,7 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 			_model.InjectModels(_integrModel);
 
 			// Properties
-			SelectedTableName = new ReactivePropertySlim<string>(string.Empty).AddTo(_disposable);
+			SelectedTableName = new ReactivePropertySlim<string>(_integrModel.SelectedTableName).AddTo(_disposable);
 			MasterDataTable = new ReactivePropertySlim<DataTable>().AddTo(_disposable);
 			SelectedRow = new ReactivePropertySlim<DataRow>().AddTo(_disposable);
 

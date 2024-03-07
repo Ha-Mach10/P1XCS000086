@@ -33,6 +33,20 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 		// Constructor
 		// ****************************************************************************
 
+		/// <summary>
+		/// テーブル名のリスト
+		/// </summary>
+		public List<string> TableNames
+		{
+			get => SetTableNames();
+		}
+
+
+
+		// ****************************************************************************
+		// Constructor
+		// ****************************************************************************
+
 		public MasterEditorModel() { }
 
 
@@ -52,7 +66,7 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 		/// <param name="update">UPDATEクエリ用モデル</param>
 		/// <param name="delete">DELETEクエリ用モデル</param>
 		/// <param name="shwoTables">SHOWTABLESクエリ用モデル</param>
-		public void InjectModels(IIntegrMasterModel integrModel, IJsonConnectionStrings connStr, ISqlSelect select, ISqlInsert insert, ISqlUpdate update, ISqlDelete delete, ISqlShowTables shwoTables)
+		public void InjectModels(IIntegrMasterModel integrModel, IJsonConnectionStrings connStr, ISqlSelect select, ISqlInsert insert, ISqlUpdate update, ISqlDelete delete, ISqlShowTables showTables)
 		{
 			_integrModel = integrModel;
 			_connStr = connStr;
@@ -60,9 +74,24 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 			_insert = insert;
 			_update = update;
 			_delete = delete;
-			_showTables = shwoTables;
+			_showTables = showTables;
 		}
 
+		/// <summary>
+		/// テーブル名のリスト一覧を返却
+		/// </summary>
+		/// <returns>テーブル名のリスト一覧</returns>
+		public List<string> SetTableNames()
+		{
+			string databaseName = "manager";
+			string connStr = _connStr.PickConnectionString(databaseName, out bool result);
 
+			if (result)
+			{
+				return _showTables.ShowTables(databaseName);
+			}
+
+			return new List<string>() { "None" };
+		}
 	}
 }
