@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +10,7 @@ using P1XCS000086.Services.Interfaces.Models.CodeManageMaster;
 using P1XCS000086.Services.Interfaces.Models.CodeManageMaster.Domains;
 using P1XCS000086.Services.Interfaces.Objects;
 using P1XCS000086.Services.Interfaces.Sql;
+using P1XCS000086.Services.Models.CodeManageMaster.Domains;
 
 namespace P1XCS000086.Services.Models.CodeManageMaster
 {
@@ -19,7 +21,6 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 		// ****************************************************************************
 
 		private IIntegrMasterModel _integrModel;
-		private ITableField _tableField;
 		private IJsonConnectionStrings _connStr;
 		private ISqlSelect _select;
 		private ISqlInsert _insert;
@@ -92,6 +93,42 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 			}
 
 			return new List<string>() { "None" };
+		}
+
+		/// <summary>
+		/// 選択されたデータベースの各カラム入力用フィールド
+		/// </summary>
+		/// <param name="databaseName">データベース名</param>
+		/// <returns>入力用フィールドオブジェクト</returns>
+		public List<ITableField> GetTableFields(string databaseName)
+		{
+			List<string> columnNames = _showTables.ShowTables(databaseName);
+
+			string query = $"SELECT japanese FROM table_translator WHERE table_name = '{databaseName}' AND type = 'column';";
+			List<string> columnNamesJp = _select.SelectedColumnToList("japanese", query);
+
+			List<ITableField> tableFields = GenerateTableFields(columnNames, columnNamesJp).ToList();
+			return tableFields;
+		}
+
+
+
+		// ****************************************************************************
+		// Private Methods
+		// ****************************************************************************
+
+		private IEnumerable<ITableField> GenerateTableFields(List<string> columnNames, List<string> columnNamesJp)
+		{
+			int count = 0;
+			foreach (string columnName in columnNames)
+			{
+				ITableField tableField = new TableField(columnName);
+				tableField.SetColumnName(columnNamesJp[count]);
+
+				count++;
+
+				yield return tableField;
+			}
 		}
 	}
 }

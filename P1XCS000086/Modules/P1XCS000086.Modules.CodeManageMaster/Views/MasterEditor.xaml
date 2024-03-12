@@ -95,7 +95,7 @@
 						<DataTemplate>
 							<StackPanel Orientation="Horizontal">
 								<TextBlock Text="{Binding ColumnName.Value}" />
-								<TextBox Width="100" Text="{Binding Fields.Value}" />
+								<TextBox Width="100" Text="{Binding Value.Value}" />
 							</StackPanel>
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>

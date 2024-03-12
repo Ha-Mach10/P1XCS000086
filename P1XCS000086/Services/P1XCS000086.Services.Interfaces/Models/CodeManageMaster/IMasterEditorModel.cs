@@ -42,5 +42,12 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManageMaster
 		/// </summary>
 		/// <returns>テーブル名のリスト一覧</returns>
 		public List<string> SetTableNames();
+
+		/// <summary>
+		/// 選択されたデータベースの各カラム入力用フィールド
+		/// </summary>
+		/// <param name="databaseName">データベース名</param>
+		/// <returns>入力用フィールドオブジェクト</returns>
+		public List<ITableField> GetTableFields(string databaseName);
 	}
 }

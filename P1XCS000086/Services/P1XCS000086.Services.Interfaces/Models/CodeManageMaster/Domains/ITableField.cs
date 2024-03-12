@@ -11,6 +11,11 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManageMaster.Domains
 		// ****************************************************************************
 
 		/// <summary>
+		/// オブジェクトの名前
+		/// </summary>
+		public string Name { get; }
+
+		/// <summary>
 		/// カラム名
 		/// </summary>
 		public string ColumnName { get; }

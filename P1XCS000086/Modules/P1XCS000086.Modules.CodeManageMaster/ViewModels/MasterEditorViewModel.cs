@@ -54,9 +54,13 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 		/// </summary>
 		public ReactivePropertySlim<string> SelectedTableName { get; }
 		/// <summary>
+		/// 
+		/// </summary>
+		public ReactivePropertySlim<DataRow> Rows { get; }
+		/// <summary>
 		///テーブル編集用の入力フィールド
 		/// </summary>
-		public ReactivePropertySlim<ITableField> Fields { get; }
+		public ReactivePropertySlim<List<ITableField>> DatabaseFields { get; }
 
 
 		// ****************************************************************************
@@ -84,7 +88,7 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 			IsDeleteChecked		= new ReactivePropertySlim<bool>(false).AddTo(_disposable);
 			TableItems			= new ReactivePropertySlim<List<string>>(_model.TableNames).AddTo(_disposable);
 			SelectedTableName	= new ReactivePropertySlim<string>(string.Empty).AddTo(_disposable);
-			Fields				= new ReactivePropertySlim<ITableField>().AddTo(_disposable);
+			DatabaseFields		= new ReactivePropertySlim<List<ITableField>>().AddTo(_disposable);
 
 
 			// Commands
@@ -107,6 +111,22 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 		public ReactiveCommandSlim RadioCheckedChanged { get; }
 		private void OnRadioCheckedChanged()
 		{
+			
+		}
+
+		public ReactiveCommandSlim ListViewSelectionChanged { get; }
+		private void OnListViewSelectionChanged()
+		{
+			if (SelectedTableName.Value is not null)
+			{
+				_integrModel.SetSelectedTableName(SelectedTableName.Value);
+				DatabaseFields.Value = _model.GetTableFields(SelectedTableName.Value);
+			}
+		}
+
+		public ReactiveCommandSlim ApplyButtonClick { get; }
+		private void OnApplyButtonClick()
+		{
 			if (IsEditChecked.Value)
 			{
 
@@ -121,18 +141,6 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 			}
 		}
 
-		public ReactiveCommandSlim ListViewSelectionChanged { get; }
-		private void OnListViewSelectionChanged()
-		{
-			_integrModel.SetSelectedTableName(SelectedTableName.Value);
-		}
-
-		public ReactiveCommandSlim ApplyButtonClick { get; }
-		private void OnApplyButtonClick()
-		{
-
-		}
-
 
 
 		// ****************************************************************************
@@ -142,7 +150,7 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 		// 破棄
 		public void Destroy()
 		{
-
+			_disposable.Dispose();
 		}
 	}
 }

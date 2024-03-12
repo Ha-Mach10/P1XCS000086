@@ -1,22 +1,16 @@
-﻿using P1XCS000086.Services.Interfaces.Models.CodeManageMaster.Domains;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace P1XCS000086.Services.Models.CodeManageMaster.Domains
+namespace P1XCS000086.Modules.CodeManageMaster.Domains
 {
-	public class TableField : ITableField
+	public class TableField
 	{
 		// ****************************************************************************
 		// Properties
 		// ****************************************************************************
-
-		/// <summary>
-		/// オブジェクトの名前
-		/// </summary>
-		public string Name { get; private set; }
 
 		/// <summary>
 		/// カラム名
@@ -37,10 +31,6 @@ namespace P1XCS000086.Services.Models.CodeManageMaster.Domains
 		public TableField()
 		{
 
-		}
-		public TableField(string name)
-		{
-			Name = name;
 		}
 
 
