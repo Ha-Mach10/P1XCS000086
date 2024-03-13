@@ -3,11 +3,11 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 	xmlns:local="clr-namespace:P1XCS000086.Modules.CodeManageMaster.Views"
 	xmlns:mahIcon="http://metro.mahapps.com/winfx/xaml/iconpacks"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
-	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 	xmlns:prism="http://prismlibrary.com/"
 	d:DesignHeight="420"
 	d:DesignWidth="300"
@@ -49,7 +49,7 @@
 						Style="{StaticResource MyRadio}">
 						<i:Interaction.Triggers>
 							<i:EventTrigger EventName="Checked">
-								<prism:InvokeCommandAction Command="{Binding RadioCheckedChanged}"/>
+								<prism:InvokeCommandAction Command="{Binding RadioCheckedChanged}" />
 							</i:EventTrigger>
 						</i:Interaction.Triggers>
 					</RadioButton>
@@ -59,7 +59,7 @@
 						Style="{StaticResource MyRadio}">
 						<i:Interaction.Triggers>
 							<i:EventTrigger EventName="Checked">
-								<prism:InvokeCommandAction Command="{Binding RadioCheckedChanged}"/>
+								<prism:InvokeCommandAction Command="{Binding RadioCheckedChanged}" />
 							</i:EventTrigger>
 						</i:Interaction.Triggers>
 					</RadioButton>
@@ -69,7 +69,7 @@
 						Style="{StaticResource MyRadio}">
 						<i:Interaction.Triggers>
 							<i:EventTrigger EventName="Checked">
-								<prism:InvokeCommandAction Command="{Binding RadioCheckedChanged}"/>
+								<prism:InvokeCommandAction Command="{Binding RadioCheckedChanged}" />
 							</i:EventTrigger>
 						</i:Interaction.Triggers>
 					</RadioButton>
@@ -79,7 +79,7 @@
 				<ListView ItemsSource="{Binding ColumnHeaders.Value}" SelectedValue="{Binding SelectedTableName.Value}">
 					<i:Interaction.Triggers>
 						<i:EventTrigger EventName="SelectionChanged">
-							<prism:InvokeCommandAction Command="{Binding ListViewSelectionChanged}"/>
+							<prism:InvokeCommandAction Command="{Binding ListViewSelectionChanged}" />
 						</i:EventTrigger>
 					</i:Interaction.Triggers>
 				</ListView>
@@ -101,7 +101,10 @@
 					</ItemsControl.ItemTemplate>
 				</ItemsControl>
 
-				<Button Margin="8" Visibility="{Binding IsChecked}" Command="{Binding ApplyButtonClick}">
+				<Button
+					Margin="8"
+					Command="{Binding ApplyButtonClick}"
+					Visibility="{Binding IsChecked}">
 					<StackPanel Orientation="Horizontal">
 						<mahIcon:PackIconFontAwesome Kind="CheckSolid" />
 						<TextBlock Margin="8,0,0,0" Text="適用" />

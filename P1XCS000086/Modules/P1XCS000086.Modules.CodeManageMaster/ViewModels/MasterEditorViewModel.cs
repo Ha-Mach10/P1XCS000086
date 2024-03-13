@@ -42,7 +42,7 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 
 
 		// ****************************************************************************
-		// Properties
+		// Properties 移植済み
 		// ****************************************************************************
 
 		public ReactivePropertySlim<bool> IsEditChecked { get; }

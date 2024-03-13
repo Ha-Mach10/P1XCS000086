@@ -45,13 +45,13 @@
 				<Grid>
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="111"/>
-						<ColumnDefinition Width="16.263"/>
+						<ColumnDefinition Width="Auto"/>
 						<ColumnDefinition />
 					</Grid.ColumnDefinitions>
 					<VirtualizingStackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
 						<VirtualizingStackPanel>
 							<TextBlock Margin="4,8,0,8" Text="台帳操作" />
-							<Button Height="30" Margin="8,0,8,0">
+							<Button Height="30" Margin="8,0,8,0" Command="{Binding CodeManagerTransition}" CommandParameter="CodeManageViewer">
 								<Button.Content>
 									<WrapPanel Orientation="Horizontal">
 										<mahIcon:PackIconMaterial Kind="TableSearch" Margin="16,0,8,0" />
@@ -59,7 +59,7 @@
 									</WrapPanel>
 								</Button.Content>
 							</Button>
-							<Button Height="30" Margin="8,8,8,0">
+							<Button Height="30" Margin="8,8,8,0" Command="{Binding CodeManagerTransition}" CommandParameter="CodeManageRegister">
 								<Button.Content>
 									<WrapPanel Orientation="Horizontal">
 										<mahIcon:PackIconCoolicons Kind="AddRow" Margin="16,0,8,0" />
@@ -67,7 +67,7 @@
 									</WrapPanel>
 								</Button.Content>
 							</Button>
-							<Button Height="30" Margin="8,8,8,0">
+							<Button Height="30" Margin="8,8,8,0" Command="{Binding CodeManagerTransition}" CommandParameter="CodeManageEditor">
 								<Button.Content>
 									<WrapPanel Orientation="Horizontal">
 										<mahIcon:PackIconMaterial Kind="TableEdit" Margin="16,0,8,0" />
@@ -76,7 +76,7 @@
 								</Button.Content>
 							</Button>
 							<TextBlock Margin="4,8,0,8" Text="マスタ" />
-							<Button Height="30" Margin="8,0,8,0" >
+							<Button Height="30" Margin="8,0,8,0" Command="{Binding CodeManagerTransition}" CommandParameter="CodeManageMaster" >
 								<Button.Content>
 									<WrapPanel Orientation="Horizontal">
 										<mahIcon:PackIconMaterial Kind="DatabaseOutline" Margin="16,0,8,0"/>
@@ -106,7 +106,7 @@
 							</ToggleButton.Style>
 						</ToggleButton>
 					</VirtualizingStackPanel>
-					<ItemsControl Grid.Column="1" prism:RegionManager.RegionName="" Grid.ColumnSpan="2" Margin="16,0,0,0" />
+					<ContentControl prism:RegionManager.RegionName="{x:Static core:RegionNames.ContentRegion}" Grid.Column="2" Margin="16,0,0,0" />
 				</Grid>
 			</TabItem>
 			<TabItem Style="{StaticResource MahApps.Styles.TabItem}">
@@ -488,7 +488,7 @@
 				</Grid>
 			</TabItem>
 		</TabControl>
-		<ContentControl prism:RegionManager.RegionName="{x:Static core:RegionNames.ContentRegion}" />
+		<!--ContentControl prism:RegionManager.RegionName="{x:Static core:RegionNames.ContentRegion}"/-->
 
 		<StatusBar Grid.Row="2">
 			<StatusBarItem Content="CodeManager" />

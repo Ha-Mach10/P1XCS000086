@@ -37,6 +37,7 @@ using P1XCS000086.Services.Interfaces.Models;
 using P1XCS000086.Services.Interfaces.IO;
 using P1XCS000086.Services.Interfaces.Objects;
 using P1XCS000086.Services.Interfaces.Sql;
+using P1XCS000086.Core;
 
 
 namespace P1XCS000086.ViewModels
@@ -55,6 +56,7 @@ namespace P1XCS000086.ViewModels
 		// ****************************************************************************
 
 		private IMainWindowModel _model;
+		private IRegionManager _regionManager;
 		private IJsonConnectionStrings _jsonConnStr;
 		private IJsonExtention _jsonExtention;
 		private IMySqlConnectionString _sqlConnStr;
@@ -74,6 +76,7 @@ namespace P1XCS000086.ViewModels
 		/// <param name="regionManager"></param>
 		public MainWindowViewModel(
 			IMainWindowModel model,
+			IRegionManager regionManager,
 			IJsonExtention jsonExtention,
 			IJsonConnectionStrings jsonConnStr,
 			IMySqlConnectionString sqlConnStr,
@@ -82,6 +85,7 @@ namespace P1XCS000086.ViewModels
 		{
 			// MainWindowModelをインターフェース(IMainWindowModel)から生成
 			_model = model;
+			_regionManager = regionManager;
 			_jsonConnStr = jsonConnStr;
 			_jsonExtention = jsonExtention;
 			_sqlConnStr = sqlConnStr;
@@ -95,8 +99,8 @@ namespace P1XCS000086.ViewModels
 			_model.SetConnectionString();
 
 			// 
-			ShowCodeManager = new ReactiveCommandSlim<string>();
-			ShowCodeManager.Subscribe((args) => OnShowCodeManager(args)).AddTo(disposables);
+			CodeManageTransition = new ReactiveCommandSlim<string>();
+			CodeManageTransition.Subscribe((args) => OnCodeManageTransition(args)).AddTo(disposables);
 		}
 
 
@@ -105,21 +109,48 @@ namespace P1XCS000086.ViewModels
 		// Reactive Command
 		// ****************************************************************************
 
-		private ReactiveCommandSlim<string> ShowCodeManager { get; }
+		private ReactiveCommandSlim<string> CodeManageTransition { get; }
 		/// <summary>
-		/// コードマネージャーのビューを表示
+		/// コード管理台帳の各種画面への遷移用
 		/// </summary>
-		/// <param name="regionName">コマンドパラメータ</param>
-		public void OnShowCodeManager(string regionName)
+		/// <param name="viewName">コマンドパラメータ</param>
+		public void OnCodeManageTransition(string viewName)
 		{
+			_regionManager.RegisterViewWithRegion(RegionNames.ContentRegion, viewName);
+			
+			/*
+			switch (viewName)
+			{
+				// ビューア画面遷移
+				case "CodeManageViewer":
+					
+					break;
+				// 登録画面遷移
+				case "CodeManageRegister":
 
+					break;
+				// エディタ画面遷移
+				case "CodeManageEditor":
+
+					break;
+				// マスタ画面遷移
+				case "CodeManageMaster":
+
+					break;
+				// 何もない
+				default:
+					break;
+			}
+			*/
 		}
+
+
 
 		// ****************************************************************************
 		// Public Methods
 		// ****************************************************************************
 
-		// 「IDestructible」の実装
+		// 「IDestructible」の実装。オブジェクトの一括破棄
 		public void Destroy()
 		{
 			disposables.Dispose();
