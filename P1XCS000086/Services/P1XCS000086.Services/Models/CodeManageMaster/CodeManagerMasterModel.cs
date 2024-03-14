@@ -90,7 +90,15 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 		/// <summary>
 		/// DIされたモデルを注入
 		/// </summary>
-		/// <param name="integrModel">統合モデル</param>
+		/// <param name="connectionTest"></param>
+		/// <param name="jsonExtention"></param>
+		/// <param name="jsonConnItem"></param>
+		/// <param name="connStr"></param>
+		/// <param name="select"></param>
+		/// <param name="insert"></param>
+		/// <param name="update"></param>
+		/// <param name="delete"></param>
+		/// <param name="showTables"></param>
 		public void InjectModels(
 			ISqlConnectionTest connectionTest,
 			IJsonExtention jsonExtention,
