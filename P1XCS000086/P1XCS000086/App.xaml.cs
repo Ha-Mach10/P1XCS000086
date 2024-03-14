@@ -74,7 +74,7 @@ namespace P1XCS000086
 
 			// # CodeManageMaster
 			containerRegistry.RegisterSingleton<ICodeManageFieldModel, CodeManageFieldModel>();
-			containerRegistry.RegisterSingleton<ICodeManagerMasterHostModel, CodeManagerMasterHostModel>();
+			containerRegistry.RegisterSingleton<ICodeManagerMasterModel, CodeManagerMasterModel>();
 			containerRegistry.RegisterSingleton<IMasterEditorModel, MasterEditorModel>();
 			containerRegistry.RegisterSingleton<IIntegrMasterModel, IntegrMasterModel>();
 			// ## Domains

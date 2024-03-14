@@ -16,10 +16,13 @@ using P1XCS000086.Services.Interfaces.Models.CodeManageMaster;
 using P1XCS000086.Services.Interfaces.Models.CodeManageMaster.Domains;
 using MaterialDesignThemes.Wpf;
 using System.Windows;
+using P1XCS000086.Services.Interfaces.Objects;
+using P1XCS000086.Services.Interfaces.Sql;
+using P1XCS000086.Services.Interfaces.IO;
 
 namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 {
-	public class CodeManageMasterHostViewModel : BindableBase, IDestructible
+	public class CodeManageMasterViewModel : BindableBase, IDestructible
 	{
 		// ****************************************************************************
 		// Fields
@@ -27,8 +30,18 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 
 		private CompositeDisposable _disposable;
 
-		private ICodeManagerMasterHostModel _model;
+		private ICodeManagerMasterModel _model;
 		private IIntegrMasterModel _integrModel;
+
+		private IJsonConnectionStrings _jsonConnStr;
+		private ISqlConnectionTest _connectionTest;
+		private IJsonExtention _jsonExtention;
+		private IJsonConnectionItem _jsonConnItem;
+		private ISqlSelect _select;
+		private ISqlInsert _insert;
+		private ISqlUpdate _update;
+		private ISqlDelete _delete;
+		private ISqlShowTables _showTables;
 
 
 
@@ -73,7 +86,7 @@ namespace P1XCS000086.Modules.CodeManageMaster.ViewModels
 		// Constructor
 		// ****************************************************************************
 
-		public CodeManageMasterHostViewModel(ICodeManagerMasterHostModel model, IIntegrMasterModel integrModel)
+		public CodeManageMasterViewModel(ICodeManagerMasterModel model, IIntegrMasterModel integrModel)
 		{
 			_model = model;
 			_integrModel = integrModel;
