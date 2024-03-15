@@ -20,8 +20,6 @@ namespace P1XCS000086.Modules.CodeManageMaster
 		public void RegisterTypes(IContainerRegistry containerRegistry)
 		{
 			containerRegistry.RegisterSingleton<CodeManageMaster>();
-			containerRegistry.RegisterSingleton<CodeManageField>();
-			containerRegistry.RegisterSingleton<MasterEditor>();
 		}
 	}
 }

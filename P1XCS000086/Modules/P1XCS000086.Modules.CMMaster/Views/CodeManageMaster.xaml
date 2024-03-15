@@ -1,0 +1,245 @@
+﻿<UserControl
+	x:Class="P1XCS000086.Modules.CMMaster.Views.CodeManageMaster"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+	xmlns:local="clr-namespace:P1XCS000086.Modules.CMMaster.Views"
+	xmlns:mahIcon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+	xmlns:prism="http://prismlibrary.com/"
+	d:DesignHeight="420"
+	d:DesignWidth="1000"
+	prism:ViewModelLocator.AutoWireViewModel="True"
+	mc:Ignorable="d">
+
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Controls.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Colors.xaml" />
+
+				<ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml" />
+
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</UserControl.Resources>
+
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="280" />
+			<ColumnDefinition Width="250" />
+			<ColumnDefinition />
+		</Grid.ColumnDefinitions>
+		<GroupBox>
+			<GroupBox.Header>
+				<TextBlock Text="データベース接続" />
+			</GroupBox.Header>
+			<VirtualizingStackPanel Margin="8">
+				<!--  Server Name  -->
+				<TextBlock Text="サーバー名" />
+				<Grid Margin="0,8,0,8">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition />
+					</Grid.ColumnDefinitions>
+					<mahIcon:PackIconOcticons VerticalAlignment="Center" Kind="Server" />
+					<TextBox
+						Grid.Column="1"
+						Margin="8,0,0,0"
+						Text="{Binding Server.Value}" />
+				</Grid>
+
+				<!--  User Name  -->
+				<TextBlock Text="ユーザー名" />
+				<Grid Margin="0,8,0,8">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition />
+					</Grid.ColumnDefinitions>
+					<mahIcon:PackIconMaterial VerticalAlignment="Center" Kind="Account" />
+					<TextBox
+						Grid.Column="1"
+						Margin="8,0,0,0"
+						Text="{Binding User.Value}" />
+				</Grid>
+
+				<!--  Database Name  -->
+				<TextBlock Text="データベース名" />
+				<Grid Margin="0,8,0,8">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition />
+					</Grid.ColumnDefinitions>
+					<mahIcon:PackIconMaterial VerticalAlignment="Center" Kind="Database" />
+					<TextBox
+						Grid.Column="1"
+						Margin="8,0,0,0"
+						Text="{Binding Database.Value}" />
+				</Grid>
+
+				<!--  Password  -->
+				<TextBlock Text="パスワード" />
+				<Grid Margin="0,8,0,8">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition />
+					</Grid.ColumnDefinitions>
+					<mahIcon:PackIconFontAwesome VerticalAlignment="Center" Kind="KeySolid" />
+					<TextBox
+						Grid.Column="1"
+						Margin="8,0,0,0"
+						Text="{Binding Password.Value}" />
+				</Grid>
+
+				<!--  Persiste security info  -->
+				<CheckBox
+					Margin="0,8,0,0"
+					Content="Persist security info"
+					Foreground="White"
+					IsChecked="{Binding PersistSecurityInfo.Value}" />
+
+				<!--  Command Buttons  -->
+				<Button
+					Margin="0,16,0,16"
+					Command="{Binding RegistConnString}"
+					Visibility="{Binding RegisterButtonVisibility.Value}">
+					<StackPanel Orientation="Horizontal">
+						<mahIcon:PackIconMaterial Kind="ContentSave" />
+						<TextBlock Margin="8,0,0,0" Text="登録" />
+					</StackPanel>
+				</Button>
+				<Button Command="{Binding ConnectionTest}">
+					<StackPanel Orientation="Horizontal">
+						<mahIcon:PackIconMaterial Kind="Connection" />
+						<TextBlock Margin="8,0,0,0" Text="接続テスト" />
+					</StackPanel>
+				</Button>
+
+				<!--  Notify Message  -->
+				<md:Snackbar Margin="0,16,0,0" MessageQueue="{Binding ConnSnackbarMessageQueue.Value}" />
+			</VirtualizingStackPanel>
+		</GroupBox>
+		<GroupBox Grid.Column="1">
+			<GroupBox.Header>
+				<TextBlock Text="テーブル編集" />
+			</GroupBox.Header>
+
+			<StackPanel>
+				<!--  Edit Type Selector  -->
+				<StackPanel Margin="0,8,0,8" Orientation="Horizontal">
+					<RadioButton
+						Content="編集"
+						IsChecked="{Binding IsEditChecked.Value}"
+						Margin="8,0,8,0">
+						<i:Interaction.Triggers>
+							<i:EventTrigger EventName="Checked">
+								<prism:InvokeCommandAction Command="{Binding RadioCheckedChanged}" />
+							</i:EventTrigger>
+						</i:Interaction.Triggers>
+					</RadioButton>
+					<RadioButton
+						Content="追加"
+						IsChecked="{Binding IsAddChecked.Value}"
+						Margin="8,0,8,0">
+						<i:Interaction.Triggers>
+							<i:EventTrigger EventName="Checked">
+								<prism:InvokeCommandAction Command="{Binding RadioCheckedChanged}" />
+							</i:EventTrigger>
+						</i:Interaction.Triggers>
+					</RadioButton>
+					<RadioButton
+						Content="削除"
+						IsChecked="{Binding IsDeleteChecked.Value}"
+						Margin="8,0,8,0">
+						<i:Interaction.Triggers>
+							<i:EventTrigger EventName="Checked">
+								<prism:InvokeCommandAction Command="{Binding RadioCheckedChanged}" />
+							</i:EventTrigger>
+						</i:Interaction.Triggers>
+					</RadioButton>
+				</StackPanel>
+
+				<!--  Database Columns Selector  -->
+				<ListView ItemsSource="{Binding ColumnHeaders.Value}" SelectedValue="{Binding SelectedTableName.Value}">
+					<i:Interaction.Triggers>
+						<i:EventTrigger EventName="SelectionChanged">
+							<prism:InvokeCommandAction Command="{Binding ListViewSelectionChanged}" />
+						</i:EventTrigger>
+					</i:Interaction.Triggers>
+				</ListView>
+
+				<!--    -->
+				<ItemsControl ItemsSource="{Binding DatabaseFields}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<VirtualizingStackPanel />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<StackPanel Orientation="Horizontal">
+								<TextBlock Text="{Binding ColumnName.Value}" />
+								<TextBox Width="100" Text="{Binding Value.Value}" />
+							</StackPanel>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+
+				<Button
+					Margin="8"
+					Command="{Binding ApplyButtonClick}"
+					Visibility="{Binding IsChecked}">
+					<StackPanel Orientation="Horizontal">
+						<mahIcon:PackIconFontAwesome Kind="CheckSolid" />
+						<TextBlock Margin="8,0,0,0" Text="適用" />
+					</StackPanel>
+				</Button>
+
+			</StackPanel>
+
+		</GroupBox>
+		<Grid Grid.Column="2">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition />
+			</Grid.RowDefinitions>
+
+			<Border
+				Height="30"
+				Margin="8"
+				BorderBrush="White"
+				BorderThickness="1"
+				CornerRadius="5">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock
+						Margin="8,0,16,0"
+						VerticalAlignment="Center"
+						Foreground="White"
+						Text="テーブル名：" />
+					<TextBlock Text="{Binding SelectedTableName}" />
+				</StackPanel>
+			</Border>
+			<DataGrid
+				Grid.Row="1"
+				CanUserAddRows="False"
+				CanUserDeleteRows="False"
+				CanUserResizeRows="False"
+				GridLinesVisibility="All"
+				ItemsSource="{Binding MasterDataTable.Value}"
+				SelectedItem="{Binding SelectedRow.Value}"
+				SelectionUnit="FullRow"
+				VerticalScrollBarVisibility="Auto"
+				VirtualizingPanel.IsVirtualizing="True"
+				VirtualizingPanel.ScrollUnit="Pixel"
+				VirtualizingPanel.VirtualizationMode="Recycling">
+				<i:Interaction.Triggers>
+					<i:EventTrigger EventName="Selected">
+						<prism:InvokeCommandAction Command="{Binding DataGridSelected}" />
+					</i:EventTrigger>
+				</i:Interaction.Triggers>
+			</DataGrid>
+		</Grid>
+	</Grid>
+</UserControl>

@@ -15,7 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Modules\P1XCS000086.Modules.CodeManageEditor\P1XCS000086.Modules.CodeManageEditor.csproj" />
-    <ProjectReference Include="..\Modules\P1XCS000086.Modules.CodeManageMaster\P1XCS000086.Modules.CodeManageMaster.csproj" />
+    <ProjectReference Include="..\Modules\P1XCS000086.Modules.CodeManageMaster\P1XCS000086.Modules.CodeManageMasterViewer.csproj" />
     <ProjectReference Include="..\Modules\P1XCS000086.Modules.CodeManageRegister\P1XCS000086.Modules.CodeManageRegister.csproj" />
     <ProjectReference Include="..\Modules\P1XCS000086.Modules.CodeManageViewer\P1XCS000086.Modules.CodeManageViewer.csproj" />
     <ProjectReference Include="..\Modules\P1XCS000086.Modules.ViewControls\P1XCS000086.Modules.ViewControls.csproj" />
