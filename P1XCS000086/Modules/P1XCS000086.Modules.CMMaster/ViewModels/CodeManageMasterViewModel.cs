@@ -11,18 +11,20 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Reactive.Disposables;
-using P1XCS000086.Services.Interfaces.Models.CodeManageMaster;
-using P1XCS000086.Services.Interfaces.Models.CodeManageMaster.Domains;
-using MaterialDesignThemes.Wpf;
 using System.Windows;
+using System.Reactive.Disposables;
+
+using MaterialDesignThemes.Wpf;
+
+using P1XCS000086.Services.Interfaces.Models.CodeManageMaster.Domains;
+using P1XCS000086.Services.Interfaces.Models.CodeManageMaster;
 using P1XCS000086.Services.Interfaces.Objects;
 using P1XCS000086.Services.Interfaces.Sql;
 using P1XCS000086.Services.Interfaces.IO;
 
 namespace P1XCS000086.Modules.CMMaster.ViewModels
 {
-	public class CodeManagerMasterViewModel : BindableBase, IDestructible
+	public class CodeManageMasterViewModel : BindableBase, IDestructible
 	{
 		// ****************************************************************************
 		// Fields
@@ -68,7 +70,7 @@ namespace P1XCS000086.Modules.CMMaster.ViewModels
 		/// <summary>
 		///テーブル編集用の入力フィールド
 		/// </summary>
-		public ReactivePropertySlim<List<ITableField>> DatabaseFields { get; }
+		internal ReactivePropertySlim<List<ITableField>> DatabaseFields { get; }
 
 		// CodeManagerFieldViewModelより移植
 		public ReactivePropertySlim<string> Server { get; }
@@ -90,7 +92,7 @@ namespace P1XCS000086.Modules.CMMaster.ViewModels
 			_model = model;
 
 			// DIされたモデルを注入
-			_model.InjectModels();
+			_model.InjectModels(_connectionTest, _jsonExtention, _jsonConnItem, _jsonConnStr, _select, _insert, _update, _delete, _showTables);
 
 			// Properties
 			SelectedTableName = new ReactivePropertySlim<string>().AddTo(_disposable);
@@ -98,8 +100,11 @@ namespace P1XCS000086.Modules.CMMaster.ViewModels
 			SelectedRow = new ReactivePropertySlim<DataRow>().AddTo(_disposable);
 
 			// Reactive Commands
+			RegistConnString = new ReactiveCommandSlim();
+			RegistConnString.Subscribe(() => OnRegistConnString()).AddTo(_disposable);
 			DataGridSelected = new ReactiveCommandSlim();
 			DataGridSelected.Subscribe(() => OnDataGridSelected()).AddTo(_disposable);
+
 		}
 
 
@@ -111,13 +116,11 @@ namespace P1XCS000086.Modules.CMMaster.ViewModels
 		public ReactiveCommandSlim DataGridSelected { get; }
 		private void OnDataGridSelected()
 		{
-			// 取得したDetaRowをセット
-			SetSelectedRow(SelectedRow.Value);
+			
 		}
 
 
 		public ReactiveCommandSlim RegistConnString { get; }
-
 		/// <summary>
 		/// 接続文字列の登録
 		/// </summary>
@@ -129,6 +132,9 @@ namespace P1XCS000086.Modules.CMMaster.ViewModels
 		// MasterEditorViewModelより移植
 
 		public ReactiveCommandSlim RadioCheckedChanged { get; }
+		/// <summary>
+		/// おそらく不要
+		/// </summary>
 		private void OnRadioCheckedChanged()
 		{
 
@@ -139,7 +145,6 @@ namespace P1XCS000086.Modules.CMMaster.ViewModels
 		{
 			if (SelectedTableName.Value is not null)
 			{
-				_integrModel.SetSelectedTableName(SelectedTableName.Value);
 				DatabaseFields.Value = _model.GetTableFields(SelectedTableName.Value);
 			}
 		}

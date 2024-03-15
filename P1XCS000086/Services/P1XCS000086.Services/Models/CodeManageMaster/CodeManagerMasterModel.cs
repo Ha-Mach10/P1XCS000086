@@ -145,7 +145,7 @@ namespace P1XCS000086.Services.Models.CodeManageMaster
 		/// </summary>
 		/// <param name="databaseName">データベース名</param>
 		/// <returns>入力用フィールドオブジェクト</returns>
-		public List<ITableField> GetTableFields(string databaseName)
+		public List<TableField> GetTableFields(string databaseName)
 		{
 			List<string> columnNames = _showTables.ShowTables(databaseName);
 
