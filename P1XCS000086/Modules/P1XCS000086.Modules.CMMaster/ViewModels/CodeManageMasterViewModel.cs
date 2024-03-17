@@ -50,19 +50,23 @@ namespace P1XCS000086.Modules.CMMaster.ViewModels
 		// Properties
 		// ****************************************************************************
 
-		public ReactivePropertySlim<string> SelectedTableName { get; }
-		public ReactivePropertySlim<DataTable> MasterDataTable { get; }
-		public ReactivePropertySlim<DataRow> SelectedRow { get; }
+		public ReactivePropertySlim<string> Server { get; }
+		public ReactivePropertySlim<string> User { get; }
+		public ReactivePropertySlim<string> Database { get; }
+		public ReactivePropertySlim<string> Password { get; }
+		public ReactivePropertySlim<bool> PersistSecurityInfo { get; }
+		public ReactivePropertySlim<SnackbarMessageQueue> ConnSnackbarMessageQueue { get; }
+		public ReactivePropertySlim<Visibility> RegisterButtonVisibility { get; }
 
 		// MasterEditorViewModelより移植
 		public ReactivePropertySlim<bool> IsEditChecked { get; }
 		public ReactivePropertySlim<bool> IsAddChecked { get; }
 		public ReactivePropertySlim<bool> IsDeleteChecked { get; }
-		public ReactivePropertySlim<List<string>> TableItems { get; }
-		/// <summary>
-		/// 選択されたテーブル名
-		/// </summary>
-		// public ReactivePropertySlim<string> SelectedTableName { get; }
+		public ReactivePropertySlim<List<string>> Tables { get; }
+		public ReactivePropertySlim<string> SelectedTableName { get; }
+
+		public ReactivePropertySlim<DataTable> MasterDataTable { get; }
+		public ReactivePropertySlim<DataRow> SelectedRow { get; }
 		/// <summary>
 		/// 
 		/// </summary>
@@ -71,15 +75,6 @@ namespace P1XCS000086.Modules.CMMaster.ViewModels
 		///テーブル編集用の入力フィールド
 		/// </summary>
 		internal ReactivePropertySlim<List<ITableField>> DatabaseFields { get; }
-
-		// CodeManagerFieldViewModelより移植
-		public ReactivePropertySlim<string> Server { get; }
-		public ReactivePropertySlim<string> User { get; }
-		public ReactivePropertySlim<string> Database { get; }
-		public ReactivePropertySlim<string> Password { get; }
-		public ReactivePropertySlim<bool> PersistSecurityInfo { get; }
-		public ReactivePropertySlim<SnackbarMessageQueue> ConnSnackbarMessageQueue { get; }
-		public ReactivePropertySlim<Visibility> RegisterButtonVisibility { get; }
 
 
 
@@ -94,10 +89,20 @@ namespace P1XCS000086.Modules.CMMaster.ViewModels
 			// DIされたモデルを注入
 			_model.InjectModels(_connectionTest, _jsonExtention, _jsonConnItem, _jsonConnStr, _select, _insert, _update, _delete, _showTables);
 
+			// 
+			SnackbarMessageQueue snack = new SnackbarMessageQueue(new TimeSpan(0, 0, 5));
+
 			// Properties
-			SelectedTableName = new ReactivePropertySlim<string>().AddTo(_disposable);
-			MasterDataTable = new ReactivePropertySlim<DataTable>().AddTo(_disposable);
-			SelectedRow = new ReactivePropertySlim<DataRow>().AddTo(_disposable);
+			Server						= new ReactivePropertySlim<string>().AddTo(_disposable);
+			User						= new ReactivePropertySlim<string>().AddTo(_disposable);
+			Database					= new ReactivePropertySlim<string>().AddTo(_disposable);
+			Password					= new ReactivePropertySlim<string>().AddTo(_disposable);
+			PersistSecurityInfo			= new ReactivePropertySlim<bool>(false).AddTo(_disposable);
+			ConnSnackbarMessageQueue	= new ReactivePropertySlim<SnackbarMessageQueue>(new SnackbarMessageQueue(new TimeSpan(0, 0, 5))).AddTo(_disposable);
+			RegisterButtonVisibility	= new ReactivePropertySlim<Visibility>(Visibility.Collapsed).AddTo(_disposable);
+			SelectedTableName			= new ReactivePropertySlim<string>().AddTo(_disposable);
+			MasterDataTable				= new ReactivePropertySlim<DataTable>().AddTo(_disposable);
+			SelectedRow					= new ReactivePropertySlim<DataRow>().AddTo(_disposable);
 
 			// Reactive Commands
 			RegistConnString = new ReactiveCommandSlim();

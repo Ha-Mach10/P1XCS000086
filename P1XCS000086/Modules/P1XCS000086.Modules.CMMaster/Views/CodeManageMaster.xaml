@@ -162,7 +162,7 @@
 				</StackPanel>
 
 				<!--  Database Columns Selector  -->
-				<ListView ItemsSource="{Binding ColumnHeaders.Value}" SelectedValue="{Binding SelectedTableName.Value}">
+				<ListView ItemsSource="{Binding Tables.Value}" SelectedValue="{Binding SelectedTableName.Value}">
 					<i:Interaction.Triggers>
 						<i:EventTrigger EventName="SelectionChanged">
 							<prism:InvokeCommandAction Command="{Binding ListViewSelectionChanged}" />
