@@ -1,4 +1,7 @@
 ﻿using P1XCS000086.Properties;
+
+using MahApps.Metro.Controls;
+
 using System.ComponentModel;
 using System;
 using System.Windows;
@@ -8,7 +11,7 @@ namespace P1XCS000086.Views
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window
+	public partial class MainWindow : MetroWindow
 	{
 		public MainWindow()
 		{

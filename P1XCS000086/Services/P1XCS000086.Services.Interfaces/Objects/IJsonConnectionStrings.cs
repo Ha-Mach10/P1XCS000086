@@ -74,6 +74,6 @@ namespace P1XCS000086.Services.Interfaces.Objects
 		/// <param name="schemaNameKey">目的のデータベース名</param>
 		/// <param name="result">取得可否</param>
 		/// <returns>接続文字列を返す。例外の場合は空文字列を返す。</returns>
-		public string PickConnectionString(string schemaNameKey, out bool result)
+		public string PickConnectionString(string schemaNameKey, out bool result);
 	}
 }

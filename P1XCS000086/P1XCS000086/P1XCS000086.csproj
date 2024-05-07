@@ -1,26 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MahApps.Metro" Version="2.4.10" />
-    <PackageReference Include="MahApps.Metro.IconPacks" Version="4.11.0" />
-    <PackageReference Include="MaterialDesignThemes.MahApps" Version="0.3.0" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
-    <PackageReference Include="Prism.DryIoc" Version="8.1.97" />
-    <PackageReference Include="ReactiveProperty.WPF" Version="9.3.4" />
-    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    <Compile Remove="Domains\TabButton.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Modules\P1XCS000086.Modules.CodeManageEditor\P1XCS000086.Modules.CodeManageEditor.csproj" />
-    <ProjectReference Include="..\Modules\P1XCS000086.Modules.CodeManageMaster\P1XCS000086.Modules.CodeManageMasterViewer.csproj" />
-    <ProjectReference Include="..\Modules\P1XCS000086.Modules.CodeManageRegister\P1XCS000086.Modules.CodeManageRegister.csproj" />
-    <ProjectReference Include="..\Modules\P1XCS000086.Modules.CodeManageViewer\P1XCS000086.Modules.CodeManageViewer.csproj" />
-    <ProjectReference Include="..\Modules\P1XCS000086.Modules.ViewControls\P1XCS000086.Modules.ViewControls.csproj" />
+    <PackageReference Include="Prism.DryIoc" Version="8.1.97" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Modules\P1XCS000086.Modules.CodeManagerView\P1XCS000086.Modules.CodeManagerView.csproj" />
+    <ProjectReference Include="..\Modules\P1XCS000086.Modules.HomeView\P1XCS000086.Modules.HomeView.csproj" />
     <ProjectReference Include="..\P1XCS000086.Core\P1XCS000086.Core.csproj" />
-    <ProjectReference Include="..\Modules\P1XCS000086.Modules.ModuleName\P1XCS000086.Modules.ModuleName.csproj" />
     <ProjectReference Include="..\Services\P1XCS000086.Services.Interfaces\P1XCS000086.Services.Interfaces.csproj" />
     <ProjectReference Include="..\Services\P1XCS000086.Services\P1XCS000086.Services.csproj" />
   </ItemGroup>
@@ -36,5 +29,8 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Domains\" />
   </ItemGroup>
 </Project>

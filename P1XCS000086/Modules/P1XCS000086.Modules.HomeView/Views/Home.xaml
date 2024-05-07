@@ -1,0 +1,80 @@
+﻿<UserControl
+	x:Class="P1XCS000086.Modules.HomeView.Views.Home"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+	xmlns:local="clr-namespace:P1XCS000086.Modules.HomeView.Views"
+	xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+	xmlns:mahIcons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:prism="http://prismlibrary.com/"
+	d:DesignHeight="300"
+	d:DesignWidth="300"
+	prism:ViewModelLocator.AutoWireViewModel="True"
+	mc:Ignorable="d">
+
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Controls.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Colors.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+
+			<Style x:Key="LargeTile" TargetType="mah:Tile">
+				<Style.Setters>
+					<Setter Property="Width" Value="300" />
+					<Setter Property="Height" Value="125" />
+					<Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+					<Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+					<Setter Property="Background" Value="#1E88E5" />
+					<Setter Property="TitleFontSize" Value="16" />
+				</Style.Setters>
+			</Style>
+		</ResourceDictionary>
+	</UserControl.Resources>
+
+	<Grid>
+		<ScrollViewer HorizontalScrollBarVisibility="Auto">
+			<ItemsControl ItemsSource="{Binding ExpanderPanels}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel />
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<Expander IsExpanded="{Binding IsExpanded.Value}">
+							<Expander.Header>
+								<TextBlock Margin="8" Text="{Binding Header}" />
+							</Expander.Header>
+							<ItemsControl ItemsSource="{Binding Contents}">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<WrapPanel />
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<mah:Tile
+											Title="{Binding Content}"
+											Margin="4"
+											HorizontalContentAlignment="Center"
+											mah:ControlsHelper.MouseOverBorderBrush="{DynamicResource MahApps.Brushes.ThemeForeground}"
+											Command="{Binding ViewTransiton}"
+											Style="{StaticResource LargeTile}">
+											<mahIcons:PackIconMaterial
+												Width="46"
+												Height="46"
+												Kind="{Binding IconKind, Mode=OneTime}" />
+										</mah:Tile>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</Expander>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</ScrollViewer>
+	</Grid>
+</UserControl>

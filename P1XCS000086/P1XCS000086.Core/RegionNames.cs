@@ -3,6 +3,7 @@
 	public static class RegionNames
 	{
 		public const string ContentRegion = "ContentRegion";
-		// public const string CodeManageRegion = "CodeManageRegion";
+		public const string HomeRegion = "HomeRegion";
+		public const string CodeManagerRegion = "CodeManagerRegion";
 	}
 }

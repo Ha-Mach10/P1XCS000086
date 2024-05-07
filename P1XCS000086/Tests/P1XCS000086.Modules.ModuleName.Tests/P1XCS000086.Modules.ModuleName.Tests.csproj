@@ -20,8 +20,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Modules\P1XCS000086.Modules.ModuleName\P1XCS000086.Modules.ModuleName.csproj" />
-  </ItemGroup>
-
 </Project>

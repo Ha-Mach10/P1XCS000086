@@ -1,5 +1,6 @@
 ﻿using Prism.Regions;
 using System;
+using System.Reactive.Disposables;
 
 namespace P1XCS000086.Core.Mvvm
 {
@@ -9,6 +10,8 @@ namespace P1XCS000086.Core.Mvvm
 
 		public RegionViewModelBase(IRegionManager regionManager)
 		{
+			_disposables = new CompositeDisposable();
+
 			RegionManager = regionManager;
 		}
 
