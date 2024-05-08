@@ -48,11 +48,14 @@
 				<mahIcons:PackIconMaterial Kind="Home" Height="24" Width="24"/>
 			</Button>
 		</StackPanel>
-		<TabControl Grid.Row="1" ItemsSource="{Binding TabButtons.Value, Mode=TwoWay}" SelectedItem="{Binding SelectedButton.Value, Mode=TwoWay}">
+		<TabControl Grid.Row="1" ItemsSource="{Binding TabButtons.Value, Mode=TwoWay, UpdateSourceTrigger=Explicit}" SelectedItem="{Binding SelectedButton.Value, Mode=TwoWay}">
 			<i:Interaction.Triggers>
 				<i:EventTrigger EventName="SelectionChanged">
 					<prism:InvokeCommandAction Command="{Binding SelectionChanged}"/>
 				</i:EventTrigger>
+				<!--i:EventTrigger EventName="SourceUpdated">
+					<prism:InvokeCommandAction Command="{Binding UpDate}"/>
+				</i:EventTrigger-->
 			</i:Interaction.Triggers>
 			<TabControl.Template>
 				<ControlTemplate>

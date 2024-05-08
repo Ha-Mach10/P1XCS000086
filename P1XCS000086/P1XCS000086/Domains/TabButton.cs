@@ -8,16 +8,8 @@ using System;
 
 namespace P1XCS000086.Domains
 {
-	public class TabButton : RegionViewModelBase, ITabButton
+	public class TabButton : ITabButton
 	{
-		// ****************************************************************************
-		// Fields
-		// ****************************************************************************
-
-		private IRegionManager _regionManager;
-
-
-
 		// ****************************************************************************
 		// Properties
 		// ****************************************************************************
@@ -33,31 +25,34 @@ namespace P1XCS000086.Domains
 		// Constructor
 		// ****************************************************************************
 		
-		public TabButton(IRegionManager regionManager, string header, string regionName, string viewName)
-			: base(regionManager)
+		public TabButton(string header, string regionName, string viewName)
 		{
-			_regionManager = regionManager;
-
 			// プロパティの初期化
 			Header = header;
 			RegionName = regionName;
 			ViewName = viewName;
 
+			/*
 			// コマンドの初期化・メソッドの購読
 			ViewTransiton = new ReactiveCommandSlim();
 			ViewTransiton.Subscribe(_ => OnViewTransiton(RegionName, ViewName)).AddTo(_disposables);
+			*/
 		}
 
+		public void CopyParent(ITabButton tabButton)
+		{
 
+		}
 
 		// ****************************************************************************
 		// ReactiveCommand
 		// ****************************************************************************
-
+		/*
 		public ReactiveCommandSlim ViewTransiton { get; }
 		private void OnViewTransiton(string regionName, string viewName)
 		{
 			_regionManager.RequestNavigate(regionName, viewName);
 		}
+		*/
 	}
 }

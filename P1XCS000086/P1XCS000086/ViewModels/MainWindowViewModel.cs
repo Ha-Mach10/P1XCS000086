@@ -1,6 +1,6 @@
 ﻿using P1XCS000086.Core;
 using P1XCS000086.Core.Mvvm;
-// using P1XCS000086.Domains;
+using P1XCS000086.Domains;
 using P1XCS000086.Modules.HomeView.Views;
 using P1XCS000086.Services.Interfaces.Models;
 using P1XCS000086.Services.Interfaces.Domains;
@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Controls;
 using System.Linq;
+using P1XCS000086.Modules.CodeManagerView.Views;
 
 
 namespace P1XCS000086.ViewModels
@@ -36,10 +37,13 @@ namespace P1XCS000086.ViewModels
 		// Properties
 		// ****************************************************************************
 		public string Title { get; } = "Multi Tool";
+		/*
 		public ReactivePropertySlim<List<ITabButton>> TabButtons
 		{
 			get => _mergeModel.TabButtons;
 		}
+		*/
+		public ReactivePropertySlim<List<ITabButton>> TabButtons { get; }
 		public ReactivePropertySlim<ITabButton> SelectedButton { get; }
 
 
@@ -63,6 +67,15 @@ namespace P1XCS000086.ViewModels
 			// 統合モデルのRegionNameの値を設定（※例外が発生するため）
 			_mergeModel.ChangeRegionName(m_regionName);
 			*/
+			/*
+			List<ITabButton> a = new List<ITabButton>()
+			{
+				new TabButton(nameof(CodeRegister), "コード登録", "TextBoxPlus"),
+				new TabButton(nameof(CodeManager), "登録コード一覧", "Table"),
+				new TabButton(nameof(CodeEditor), "登録コード編集", "TableEdit")
+			};*/
+			TabButtons = new ReactivePropertySlim<List<ITabButton>>(_mergeModel.TabButtons.Value);
+			// TabButtons.Value = a;
 
 			// Properties
 			SelectedButton = new ReactivePropertySlim<ITabButton>();
