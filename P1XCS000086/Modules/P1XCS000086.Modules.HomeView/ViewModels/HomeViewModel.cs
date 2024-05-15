@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using P1XCS000086.Core;
 
 
 namespace P1XCS000086.Modules.HomeView.ViewModels
@@ -57,10 +58,29 @@ namespace P1XCS000086.Modules.HomeView.ViewModels
 		// ReactiveCommand
 		// ****************************************************************************
 
+		/// <summary>
+		/// 画面遷移
+		/// </summary>
+		/// <param name="regionName"></param>
+		/// <param name="viewName"></param>
+		/// <param name="content"></param>
 		private void OnViewTransiton(string regionName, string viewName, string content)
 		{
-			_mergeModel.AddTabButtons(new TabButton(content, regionName, viewName));
+			_mergeModel.AddTabButtons(new TabButton(content, regionName, viewName, OnViewClose));
 			_regionManager.RequestNavigate(regionName, viewName);
+		}
+		/// <summary>
+		/// タブクローズ
+		/// </summary>
+		/// <param name="viewName"></param>
+		private void OnViewClose(string viewName)
+		{
+			if (_mergeModel.TabButtons.Value.Count == 1)
+			{
+				_regionManager.RequestNavigate(RegionNames.ContentRegion, "Home");
+			}
+
+			_mergeModel.RemoveTabButtons(viewName);
 		}
 
 
@@ -94,7 +114,7 @@ namespace P1XCS000086.Modules.HomeView.ViewModels
 		/// <returns>列挙された遷移用ボタン</returns>
 		private IEnumerable<TransitionButton> GenerateHouseholdExpensesButtons()
 		{
-			yield return new TransitionButton(nameof(HEHome), "コード登録", "TextBoxPlus", OnViewTransiton);
+			yield return new TransitionButton(nameof(HEHome), "購入品目登録", "TextBoxPlus", OnViewTransiton);
 		}
 	}
 }

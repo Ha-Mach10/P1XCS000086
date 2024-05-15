@@ -5,11 +5,15 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Domains\TabButton.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Prism.DryIoc" Version="8.1.97" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Modules\P1XCS000086.Modules.CodeManagerView\P1XCS000086.Modules.CodeManagerView.csproj" />
     <ProjectReference Include="..\Modules\P1XCS000086.Modules.HomeView\P1XCS000086.Modules.HomeView.csproj" />
+    <ProjectReference Include="..\Modules\P1XCS000086.Modules.HouseholdExpenses\P1XCS000086.Modules.HouseholdExpenses.csproj" />
     <ProjectReference Include="..\P1XCS000086.Core\P1XCS000086.Core.csproj" />
     <ProjectReference Include="..\Services\P1XCS000086.Services.Interfaces\P1XCS000086.Services.Interfaces.csproj" />
     <ProjectReference Include="..\Services\P1XCS000086.Services\P1XCS000086.Services.csproj" />
@@ -26,5 +30,8 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Domains\" />
   </ItemGroup>
 </Project>

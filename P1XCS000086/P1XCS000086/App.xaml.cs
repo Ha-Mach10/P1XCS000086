@@ -18,6 +18,7 @@ using Prism.Modularity;
 
 using System.Windows;
 using Prism.DryIoc;
+using P1XCS000086.Modules.HouseholdExpenses;
 
 namespace P1XCS000086
 {
@@ -80,6 +81,9 @@ namespace P1XCS000086
 
 			// Code Manager
 			moduleCatalog.AddModule<CodeManagerViewModule>();
+
+			// 
+			moduleCatalog.AddModule<HouseholdExpensesModule>();
 
 			/*
 			moduleCatalog.AddModule<ModuleNameModule>();

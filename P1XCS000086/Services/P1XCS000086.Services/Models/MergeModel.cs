@@ -58,7 +58,31 @@ namespace P1XCS000086.Services.Models
 				return;
 			}
 
-			TabButtons.Value.Add(tabButton);
+			// List<ITabButton>を新たに生成し、一度TabButtonsプロパティの値を移す
+			List<ITabButton> buttons = new List<ITabButton>();
+			buttons.AddRange(TabButtons.Value.Select(x => x).ToList());
+
+			// 追加されたタブボタンをリストに追加
+			buttons.Add(tabButton);
+
+			// 追加済みのList<ITabButton>の値を再度セット
+			TabButtons.Value = buttons;
+		}
+		public void RemoveTabButtons(string viewName)
+		{
+			if (TabButtons.Value.Where(x => x.ViewName == viewName).Any())
+			{
+				// List<ITabButton>を新たに生成し、一度TabButtonsプロパティの値を移す
+				List<ITabButton> buttons = new List<ITabButton>();
+				buttons.AddRange(TabButtons.Value);
+				
+				// 削除コマンドを押されたタブボタンをリストから削除
+				ITabButton tabButton = TabButtons.Value.Where(x => x.ViewName == viewName).First();
+				buttons.Remove(tabButton);
+
+				// 削除済みのList<ITabButton>の値を再度セット
+				TabButtons.Value = buttons;
+			}
 		}
 	}
 }

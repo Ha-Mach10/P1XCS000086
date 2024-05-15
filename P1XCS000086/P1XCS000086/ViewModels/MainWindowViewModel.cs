@@ -1,6 +1,5 @@
 ﻿using P1XCS000086.Core;
 using P1XCS000086.Core.Mvvm;
-using P1XCS000086.Domains;
 using P1XCS000086.Modules.HomeView.Views;
 using P1XCS000086.Services.Interfaces.Models;
 using P1XCS000086.Services.Interfaces.Domains;
@@ -37,14 +36,12 @@ namespace P1XCS000086.ViewModels
 		// Properties
 		// ****************************************************************************
 		public string Title { get; } = "Multi Tool";
-		/*
 		public ReactivePropertySlim<List<ITabButton>> TabButtons
 		{
 			get => _mergeModel.TabButtons;
 		}
-		*/
-		public ReactivePropertySlim<List<ITabButton>> TabButtons { get; }
 		public ReactivePropertySlim<ITabButton> SelectedButton { get; }
+
 
 
 
@@ -63,28 +60,15 @@ namespace P1XCS000086.ViewModels
 			_model = model;
 			_mergeModel = mergeModel;
 
-			/*
-			// 統合モデルのRegionNameの値を設定（※例外が発生するため）
-			_mergeModel.ChangeRegionName(m_regionName);
-			*/
-			/*
-			List<ITabButton> a = new List<ITabButton>()
-			{
-				new TabButton(nameof(CodeRegister), "コード登録", "TextBoxPlus"),
-				new TabButton(nameof(CodeManager), "登録コード一覧", "Table"),
-				new TabButton(nameof(CodeEditor), "登録コード編集", "TableEdit")
-			};*/
-			TabButtons = new ReactivePropertySlim<List<ITabButton>>(_mergeModel.TabButtons.Value);
-			// TabButtons.Value = a;
 
 			// Properties
 			SelectedButton = new ReactivePropertySlim<ITabButton>();
 
 			// Commands
 			GoHome = new ReactiveCommandSlim();
-			GoHome.Subscribe(() => OnGoHome()).AddTo(_disposables);
+			GoHome.Subscribe(OnGoHome).AddTo(_disposables);
 			SelectionChanged = new ReactiveCommandSlim();
-			SelectionChanged.Subscribe(() => OnSelectionChanged());
+			SelectionChanged.Subscribe(OnSelectionChanged).AddTo(_disposables);
 
 
 			// Transition
@@ -100,11 +84,22 @@ namespace P1XCS000086.ViewModels
 		public ReactiveCommandSlim GoHome { get; }
 		private void OnGoHome()
 		{
-			_regionManager.RequestNavigate(m_regionName, nameof(Home));
+			SelectedButton.Value = null;
+
+            _regionManager.RequestNavigate(m_regionName, nameof(Home));
 		}
 		public ReactiveCommandSlim SelectionChanged { get; }
 		private void OnSelectionChanged()
 		{
+			if (TabButtons.Value is null || TabButtons is null)
+			{
+				SelectedButton.Value = null;
+			}
+			if (SelectedButton.Value is null)
+			{
+				_regionManager.RequestNavigate(m_regionName, "Home");
+				return;
+			}
 			_regionManager.RequestNavigate(m_regionName, SelectedButton.Value.ViewName);
 		}
 
@@ -114,20 +109,6 @@ namespace P1XCS000086.ViewModels
 		// Private Methods
 		// ****************************************************************************
 
-		/*
-		private List<TabButton> GenerateTabButtons()
-		{
-			if (TabButtons.Value is not null)
-			{
-				TabButtons.Value.Clear();
-			}
 
-			// List<ITabButton> ifTabButtons = _mergeModel.TabButtons;
-
-			var tabButton = new ReactivePropertySlim<List<TabButton>>();
-
-			return ifTabButtons.Select(x => new TabButton(_regionManager, x.Header, x.RegionName, x.ViewName)).ToList();
-		}
-		*/
 	}
 }

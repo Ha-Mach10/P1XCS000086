@@ -24,65 +24,225 @@
 
 	<mah:MetroWindow.RightWindowCommands>
 		<mah:WindowCommands ShowLastSeparator="False">
-			<Button Style="{StaticResource MahApps.Styles.Button.Window.Notification.VisualStudio}" Margin="0,0,4,0" ToolTip="メッセージ">
-				<mahIcons:PackIconUnicons Kind="CommentAltDots"/>
+			<Button
+				Margin="0,0,4,0"
+				Style="{StaticResource MahApps.Styles.Button.Window.Notification.VisualStudio}"
+				ToolTip="メッセージ">
+				<mahIcons:PackIconUnicons Kind="CommentAltDots" />
 			</Button>
-			<Button Style="{StaticResource MahApps.Styles.Button.Window.Notification.VisualStudio}" Margin="0,0,4,0" ToolTip="説明書">
-				<mahIcons:PackIconForkAwesome Kind="cog"/>
+			<Button
+				Margin="0,0,4,0"
+				Style="{StaticResource MahApps.Styles.Button.Window.Notification.VisualStudio}"
+				ToolTip="説明書">
+				<mahIcons:PackIconForkAwesome Kind="cog" />
 			</Button>
-			<Button Style="{StaticResource MahApps.Styles.Button.Window.Notification.VisualStudio}" Margin="0" ToolTip="設定">
-				<mahIcons:PackIconUnicons Kind="InfoCircle"/>
+			<Button
+				Margin="0"
+				Style="{StaticResource MahApps.Styles.Button.Window.Notification.VisualStudio}"
+				ToolTip="設定">
+				<mahIcons:PackIconUnicons Kind="InfoCircle" />
 			</Button>
 		</mah:WindowCommands>
 	</mah:MetroWindow.RightWindowCommands>
 
 	<Grid>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition/>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition />
 		</Grid.RowDefinitions>
 
-		<StackPanel Orientation="Horizontal" Height="40">
-			<Button Command="{Binding GoHome}" Height="40" Width="60">
-				<mahIcons:PackIconMaterial Kind="Home" Height="24" Width="24"/>
+		<StackPanel Height="40" Orientation="Horizontal">
+			<Button
+				Width="60"
+				Height="40"
+				Command="{Binding GoHome}">
+				<mahIcons:PackIconMaterial
+					Width="24"
+					Height="24"
+					Kind="Home" />
 			</Button>
 		</StackPanel>
-		<TabControl Grid.Row="1" ItemsSource="{Binding TabButtons.Value, Mode=TwoWay, UpdateSourceTrigger=Explicit}" SelectedItem="{Binding SelectedButton.Value, Mode=TwoWay}">
+
+		<Grid Grid.Row="1">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition />
+				<ColumnDefinition Width="120" />
+			</Grid.ColumnDefinitions>
+
+			<Grid.RowDefinitions>
+				<RowDefinition />
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
+
+			<ListView
+				ItemsSource="{Binding TabButtons.Value}"
+				ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+				SelectedItem="{Binding SelectedButton.Value, Mode=TwoWay}">
+				<i:Interaction.Triggers>
+					<i:EventTrigger EventName="SelectionChanged">
+						<prism:InvokeCommandAction Command="{Binding SelectionChanged}" />
+					</i:EventTrigger>
+				</i:Interaction.Triggers>
+
+				<ListView.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Orientation="Horizontal" />
+					</ItemsPanelTemplate>
+				</ListView.ItemsPanel>
+
+				<ListView.ItemTemplate>
+					<DataTemplate>
+						<StackPanel x:Name="TabButton" Margin="4,2,0,2" Orientation="Horizontal">
+							<!--StackPanel.Style>
+								<Style TargetType="StackPanel">
+									<Style.Triggers>
+										<Trigger Property="IsFocused" Value="True">
+											<Setter Property="Background" Value="#1E88E5"/>
+										</Trigger>
+										<Trigger Property="IsFocused" Value="False">
+											<Setter Property="Background" Value="Transparent"/>
+										</Trigger>
+									</Style.Triggers>
+								</Style>
+							</StackPanel.Style-->
+							<TextBlock FontSize="12" Text="{Binding Header}" VerticalAlignment="Center" Margin="0,0,8,0" Style="{StaticResource MahApps.Styles.TextBlock.HamburgerMenuHeader}"/>
+							<Button
+								Background="Transparent"
+								Command="{Binding Close}"
+								CommandParameter="{Binding Header}"
+								Padding="0">
+								<Button.Style>
+									<Style TargetType="Button" BasedOn="{StaticResource MahApps.Styles.Button.Flat}">
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding ElementName=TabButton, Path=IsMouseOver}" Value="True">
+												<Setter Property="Foreground" Value="white"/>
+											</DataTrigger>
+											<DataTrigger Binding="{Binding ElementName=TabButton, Path=IsMouseOver}" Value="False">
+												<Setter Property="Foreground" Value="Transparent"/>
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</Button.Style>
+								<mahIcons:Material Kind="Close" Height="10" Width="10"/>
+							</Button>
+						</StackPanel>
+					</DataTemplate>
+				</ListView.ItemTemplate>
+			</ListView>
+
+			<Border Grid.Row="1" Grid.ColumnSpan="2" BorderThickness="1.5" BorderBrush="#1E88E5"/>
+
+			<ComboBox
+				Grid.Column="1"
+				DisplayMemberPath="Header"
+				ItemsSource="{Binding TabButtons.Value, UpdateSourceTrigger=PropertyChanged}"
+				SelectedItem="{Binding SelectedButton.Value}"
+				Style="{StaticResource MahApps.Styles.ComboBox}">
+				<i:Interaction.Triggers>
+					<i:EventTrigger EventName="SelectionChanged">
+						<prism:InvokeCommandAction Command="{Binding SelectionChanged}" />
+					</i:EventTrigger>
+				</i:Interaction.Triggers>
+			</ComboBox>
+		</Grid>
+		<!--TabControl
+			Grid.Row="1"
+			ItemsSource="{Binding TabButtons.Value}"
+			SelectedItem="{Binding SelectedButton.Value, Mode=TwoWay}"
+			Style="{StaticResource MahApps.Styles.TabControl.VisualStudio}"
+			VirtualizingPanel.IsContainerVirtualizable="True"
+			VirtualizingPanel.IsVirtualizing="True"
+			VirtualizingPanel.VirtualizationMode="Standard">
+
 			<i:Interaction.Triggers>
 				<i:EventTrigger EventName="SelectionChanged">
-					<prism:InvokeCommandAction Command="{Binding SelectionChanged}"/>
+					<prism:InvokeCommandAction Command="{Binding SelectionChanged}" />
 				</i:EventTrigger>
-				<!--i:EventTrigger EventName="SourceUpdated">
-					<prism:InvokeCommandAction Command="{Binding UpDate}"/>
-				</i:EventTrigger-->
 			</i:Interaction.Triggers>
+
 			<TabControl.Template>
 				<ControlTemplate>
 					<Grid>
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition />
-							<ColumnDefinition Width="120"/>
+							<ColumnDefinition Width="120" />
 						</Grid.ColumnDefinitions>
-						<ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" SnapsToDevicePixels="False">
+						<ScrollViewer
+							HorizontalScrollBarVisibility="Hidden"
+							SnapsToDevicePixels="False"
+							VerticalScrollBarVisibility="Disabled">
 							<TabPanel IsItemsHost="True"/>
 						</ScrollViewer>
-						<ComboBox Grid.Column="1" ItemsSource="{Binding TabButtons.Value}" DisplayMemberPath="Header" SelectedItem="{Binding SelectedButton.Value}">
+						<ComboBox
+							Grid.Column="1"
+							DisplayMemberPath="Header"
+							ItemsSource="{Binding TabButtons.Value, UpdateSourceTrigger=PropertyChanged}"
+							SelectedItem="{Binding SelectedButton.Value}"
+							Style="{StaticResource MahApps.Styles.ComboBox}">
 							<i:Interaction.Triggers>
 								<i:EventTrigger EventName="SelectionChanged">
-									<prism:InvokeCommandAction Command="{Binding SelectionChanged}"/>
+									<prism:InvokeCommandAction Command="{Binding SelectionChanged}" />
 								</i:EventTrigger>
 							</i:Interaction.Triggers>
 						</ComboBox>
 					</Grid>
 				</ControlTemplate>
 			</TabControl.Template>
+
 			<TabControl.ItemTemplate>
 				<DataTemplate>
-					<TextBlock Text="{Binding Header}"/>
+					<TextBlock Text="{Binding Header}" />
 				</DataTemplate>
 			</TabControl.ItemTemplate>
-		</TabControl>
-		<ContentControl Margin="8" Grid.Row="2" prism:RegionManager.RegionName="{x:Static core:RegionNames.ContentRegion}"/>
+		</TabControl-->
+
+		<!--Grid Grid.Row="1">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition />
+				<ColumnDefinition Width="120" />
+			</Grid.ColumnDefinitions>
+
+			<TabControl
+				ItemsSource="{Binding TabButtons.Value}"
+				SelectedItem="{Binding SelectedButton.Value, Mode=TwoWay}"
+				Style="{StaticResource MahApps.Styles.TabControl.VisualStudio}">
+
+				<i:Interaction.Triggers>
+					<i:EventTrigger EventName="SelectionChanged">
+						<prism:InvokeCommandAction Command="{Binding SelectionChanged}" />
+					</i:EventTrigger>
+				</i:Interaction.Triggers>
+
+				<TabControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Orientation="Horizontal" />
+					</ItemsPanelTemplate>
+				</TabControl.ItemsPanel>
+
+				<TabControl.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding Header}"/>
+					</DataTemplate>
+				</TabControl.ItemTemplate>
+			</TabControl>
+			<ComboBox
+				Grid.Column="1"
+				DisplayMemberPath="Header"
+				ItemsSource="{Binding TabButtons.Value, UpdateSourceTrigger=PropertyChanged}"
+				SelectedItem="{Binding SelectedButton.Value}"
+				Style="{StaticResource MahApps.Styles.ComboBox}">
+				<i:Interaction.Triggers>
+					<i:EventTrigger EventName="SelectionChanged">
+						<prism:InvokeCommandAction Command="{Binding SelectionChanged}" />
+					</i:EventTrigger>
+				</i:Interaction.Triggers>
+			</ComboBox>
+		</Grid-->
+		<ContentControl
+			Grid.Row="2"
+			Margin="8"
+			prism:RegionManager.RegionName="{x:Static core:RegionNames.ContentRegion}" />
+
 	</Grid>
 </mah:MetroWindow>

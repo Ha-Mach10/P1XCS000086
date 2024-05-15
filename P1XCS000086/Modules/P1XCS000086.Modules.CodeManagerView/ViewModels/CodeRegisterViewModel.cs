@@ -21,7 +21,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 		// Properties
-
+		public ReactivePropertySlim<bool> IsPaneOc { get; }
 
 
 
@@ -30,6 +30,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			_regionManager = regionManager;
 
 
+			// Properties
+			IsPaneOc = new ReactivePropertySlim<bool>(true);
 		}
 	}
 }

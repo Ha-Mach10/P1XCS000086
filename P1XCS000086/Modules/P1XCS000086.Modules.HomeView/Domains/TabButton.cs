@@ -23,12 +23,15 @@ namespace P1XCS000086.Modules.HomeView.Domains
 		// Constructor
 		// ****************************************************************************
 
-		public TabButton(string header, string regionName, string viewName)
+		public TabButton(string header, string regionName, string viewName, Action<string> closeAction)
 		{
 			// プロパティの初期化
 			Header = header;
 			RegionName = regionName;
 			ViewName = viewName;
+
+			Close = new ReactiveCommandSlim();
+			Close.Subscribe(_ => closeAction(ViewName));
 		}
 
 
@@ -43,5 +46,8 @@ namespace P1XCS000086.Modules.HomeView.Domains
 			RegionName = tabButton.RegionName;
 			ViewName = tabButton.ViewName;
 		}
+
+
+		public ReactiveCommandSlim Close { get; }
 	}
 }

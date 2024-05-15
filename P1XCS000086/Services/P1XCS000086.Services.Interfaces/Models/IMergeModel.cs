@@ -23,5 +23,6 @@ namespace P1XCS000086.Services.Interfaces.Models
 
 		public void ChangeRegionName(string newRegionName);
 		public void AddTabButtons(ITabButton tabButton);
+		public void RemoveTabButtons(string viewName);
 	}
 }
