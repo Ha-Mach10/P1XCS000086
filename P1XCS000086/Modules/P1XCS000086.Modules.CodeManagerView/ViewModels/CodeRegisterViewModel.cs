@@ -25,6 +25,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		// Properties
 		public ReactivePropertySlim<bool> IsPaneOc { get; }
 		public ReactivePropertySlim<List<string>> LangTypes { get; }
+		public ReactivePropertySlim<List<string>> DevTypes { get; }
 
 
 
@@ -39,6 +40,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			// Properties
 			IsPaneOc = new ReactivePropertySlim<bool>(true);
 			LangTypes = new ReactivePropertySlim<List<string>>(_model.LangTypes).AddTo(_disposables);
+			DevTypes = new ReactivePropertySlim<List<string>>(model.DevTypes).AddTo(_disposables);
+
 
 		}
 	}

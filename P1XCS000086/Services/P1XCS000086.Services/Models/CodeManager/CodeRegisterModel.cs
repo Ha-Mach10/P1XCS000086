@@ -18,6 +18,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 
 		public List<string> LangTypes { get; private set; }
+		public List<string> DevTypes { get; private set; }
 
 
 
@@ -37,7 +38,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			// "manager_language_type"テーブルから"language_type"カラムを文字列のリストで取得
 			LangTypes = select.SelectedColumnToList("languafe_type", "SELECT `language_type` FROM `manager_language_type`;");
-
+			DevTypes = select.SelectedColumnToList("develop_type", "SELECT `develop_type` FROM `manager_develop_type`;");
 		}
 
 
