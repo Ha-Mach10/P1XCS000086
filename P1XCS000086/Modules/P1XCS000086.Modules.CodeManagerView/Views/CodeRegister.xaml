@@ -9,8 +9,8 @@
 	xmlns:mahIcons="http://metro.mahapps.com/winfx/xaml/iconpacks"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:prism="http://prismlibrary.com/"
-	d:DesignHeight="500"
-	d:DesignWidth="600"
+	d:DesignHeight="1000"
+	d:DesignWidth="1000"
 	prism:ViewModelLocator.AutoWireViewModel="True"
 	mc:Ignorable="d">
 
@@ -57,7 +57,7 @@
 	<mah:SplitView
 		Margin="4"
 		DisplayMode="Inline"
-		IsPaneOpen="{Binding IsPaneOc.Value}"
+		IsPaneOpen="{Binding IsPaneOc.Value, FallbackValue=True}"
 		PaneBackground="{StaticResource MahApps.Brushes.Accent}">
 		<mah:SplitView.Pane>
 			<StackPanel>
@@ -104,7 +104,7 @@
 							SelectedItem="{}" />
 						<TextBlock Style="{StaticResource ContentText}" Text="説明" />
 						<TextBox
-							Height="120"
+							Height="80"
 							AcceptsReturn="True"
 							Style="{StaticResource TextBoxTemplate}"
 							Text="{}"
@@ -112,7 +112,7 @@
 							VerticalScrollBarVisibility="Auto" />
 						<TextBlock Style="{StaticResource ContentText}" Text="適用" />
 						<TextBox
-							Height="120"
+							Height="80"
 							AcceptsReturn="True"
 							Style="{StaticResource TextBoxTemplate}"
 							Text="{}"

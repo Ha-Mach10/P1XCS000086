@@ -10,6 +10,8 @@ using P1XCS000086.Services.Objects;
 using P1XCS000086.Services.Sql.MySql;
 using P1XCS000086.Modules.HomeView;
 using P1XCS000086.Modules.CodeManagerView;
+using P1XCS000086.Services.Interfaces.Models.CodeManager;
+using P1XCS000086.Services.Models.CodeManager;
 
 using P1XCS000086.Views;
 
@@ -70,7 +72,7 @@ namespace P1XCS000086
 			// # Home
 			containerRegistry.RegisterSingleton<IHomeModel, HomeModel>();
 			// # CodeManageMaster
-			// containerRegistry.RegisterSingleton<>();
+			containerRegistry.RegisterSingleton<ICodeRegisterModel, CodeRegisterModel>();
 
 		}
 		// モジュールカタログの設定
@@ -78,10 +80,8 @@ namespace P1XCS000086
 		{
 			// Home Module
 			moduleCatalog.AddModule<HomeViewModule>();
-
 			// Code Manager
 			moduleCatalog.AddModule<CodeManagerViewModule>();
-
 			// 
 			moduleCatalog.AddModule<HouseholdExpensesModule>();
 

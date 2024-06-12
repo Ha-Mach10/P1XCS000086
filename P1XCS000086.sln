@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "P1XCS000086.Modules.HomeVie
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "P1XCS000086.Modules.CodeManagerView", "P1XCS000086\Modules\P1XCS000086.Modules.CodeManagerView\P1XCS000086.Modules.CodeManagerView.csproj", "{BEA0580A-C660-4540-AD39-710E2388CA8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "P1XCS000086.Modules.HouseholdExpenses", "P1XCS000086\Modules\P1XCS000086.Modules.HouseholdExpenses\P1XCS000086.Modules.HouseholdExpenses.csproj", "{5D8713DA-590C-40A2-AF10-A90F6EC13F5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "P1XCS000086.Modules.HouseholdExpenses", "P1XCS000086\Modules\P1XCS000086.Modules.HouseholdExpenses\P1XCS000086.Modules.HouseholdExpenses.csproj", "{5D8713DA-590C-40A2-AF10-A90F6EC13F5F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

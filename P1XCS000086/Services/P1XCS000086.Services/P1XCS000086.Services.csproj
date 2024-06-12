@@ -10,6 +10,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\ConnectionStrings.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\ConnectionStrings.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Csv" Version="2.0.93" />
     <PackageReference Include="MySql.Data" Version="8.4.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="ReactiveProperty.Core" Version="9.5.0" />
