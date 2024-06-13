@@ -75,10 +75,13 @@
 					<GroupBox.Header>
 						<TextBlock Style="{StaticResource GroupBoxHeaderTmplate}" Text="言語種別選択" />
 					</GroupBox.Header>
-					<ComboBox ItemsSource="{Binding LangTypes.Value}" SelectedIndex="0" SelectedValue="{Binding SelectedLangType.Value}">
+					<ComboBox
+						ItemsSource="{Binding LangTypes.Value}"
+						SelectedIndex="0"
+						SelectedValue="{Binding SelectedLangType.Value}">
 						<i:Interaction.Triggers>
 							<i:EventTrigger EventName="SelectionChanged">
-								<prism:InvokeCommandAction Command="{Binding LangTypeSelectionChanged}"/>
+								<prism:InvokeCommandAction Command="{Binding LangTypeSelectionChanged}" />
 							</i:EventTrigger>
 						</i:Interaction.Triggers>
 					</ComboBox>
@@ -87,10 +90,13 @@
 					<GroupBox.Header>
 						<TextBlock Style="{StaticResource GroupBoxHeaderTmplate}" Text="開発種別" />
 					</GroupBox.Header>
-					<ComboBox ItemsSource="{Binding DevTypes.Value}" SelectedIndex="0" SelectedValue="{Binding SelectedDevType.Value}">
+					<ComboBox
+						ItemsSource="{Binding DevTypes.Value}"
+						SelectedIndex="{Binding SelectedIndexDevType.Value}"
+						SelectedValue="{Binding SelectedDevType.Value}">
 						<i:Interaction.Triggers>
 							<i:EventTrigger EventName="SelectionChanged">
-								<prism:InvokeCommandAction Command="{Binding DevTypeSelectionChanged}"/>
+								<prism:InvokeCommandAction Command="{Binding DevTypeSelectionChanged}" />
 							</i:EventTrigger>
 						</i:Interaction.Triggers>
 					</ComboBox>
@@ -103,17 +109,33 @@
 
 					<StackPanel>
 						<TextBlock Style="{StaticResource ContentText}" Text="開発名称" />
-						<TextBox Style="{StaticResource TextBoxTemplate}" Text="{}" />
+						<TextBox Style="{StaticResource TextBoxTemplate}" Text="{Binding DevelopName.Value}" />
 						<TextBlock Style="{StaticResource ContentText}" Text="使用用途" />
-						<mah:ToggleSwitch
-							Margin="4,4,0,4"
-							Foreground="White"
-							Style="{StaticResource MahApps.Styles.ToggleSwitch}" />
-						<TextBox Style="{StaticResource TextBoxTemplate}" Text="{}" />
-						<ComboBox
-							Margin="4,8,4,4"
-							ItemsSource="{Binding}"
-							SelectedItem="{}" />
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition />
+								<ColumnDefinition />
+							</Grid.ColumnDefinitions>
+
+							<StackPanel Margin="4,4,4,4">
+								<TextBox Text="大分類" />
+								<ComboBox ItemsSource="{Binding UseAppMajor.Value}" SelectedItem="{Binding SelectedUseAppMajor.Value}">
+									<i:Interaction.Triggers>
+										<i:EventTrigger EventName="SelectionChanged">
+											<prism:InvokeCommandAction Command="{Binding UseAppMajorSelectionChanged}"/>
+										</i:EventTrigger>
+									</i:Interaction.Triggers>
+								</ComboBox>
+							</StackPanel>
+							<StackPanel Grid.Column="1" Margin="4,4,4,4">
+								<TextBox Text="範囲" />
+								<ComboBox
+									ItemsSource="{Binding UseAppRange.Value}"
+									SelectedIndex="{Binding SelectedIndexUseAppRange.Value}"
+									SelectedItem="{Binding SelectedUseAppRange.Value}" />
+							</StackPanel>
+
+						</Grid>
 						<TextBlock Style="{StaticResource ContentText}" Text="説明" />
 						<TextBox
 							Height="80"
@@ -131,11 +153,11 @@
 							TextWrapping="Wrap"
 							VerticalScrollBarVisibility="Auto" />
 
-						<Button  Margin="8,16,8,8" Height="30">
+						<Button Height="30" Margin="8,16,8,8">
 							<Button.Content>
 								<StackPanel Orientation="Horizontal">
-									<TextBlock Text="登録" Margin="0,0,16,0"/>
-									<mahIcons:PackIconMaterial Kind="DatabaseArrowLeft"/>
+									<TextBlock Margin="0,0,16,0" Text="登録" />
+									<mahIcons:PackIconMaterial Kind="DatabaseArrowLeft" />
 								</StackPanel>
 							</Button.Content>
 						</Button>
@@ -169,7 +191,14 @@
 				</ToggleButton.Style>
 			</ToggleButton>
 
-			<DataGrid ItemsSource="{Binding Table.Value}" Grid.Column="1" Margin="4" />
+			<DataGrid
+				Grid.Column="1"
+				Margin="4"
+				EnableColumnVirtualization="True"
+				EnableRowVirtualization="True"
+				ItemsSource="{Binding Table.Value}"
+				VirtualizingPanel.IsVirtualizing="True"
+				VirtualizingPanel.VirtualizationMode="Recycling" />
 		</Grid>
 	</mah:SplitView>
 </UserControl>

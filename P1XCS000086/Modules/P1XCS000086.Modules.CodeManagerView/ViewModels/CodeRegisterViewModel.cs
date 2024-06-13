@@ -33,6 +33,16 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public ReactivePropertySlim<List<string>> DevTypes { get; }
 		public ReactivePropertySlim<string> SelectedLangType { get; }
 		public ReactivePropertySlim<string> SelectedDevType { get; }
+		public ReactivePropertySlim<int> SelectedIndexDevType { get; }
+
+		public ReactivePropertySlim<string> DevelopName { get; }
+
+		public ReactivePropertySlim<List<string>> UseAppMajor { get; }
+		public ReactivePropertySlim<List<string>> UseAppRange { get; }
+		public ReactivePropertySlim<string> SelectedUseAppMajor { get; }
+		public ReactivePropertySlim<string> SelectedUseAppRange { get; }
+		public ReactivePropertySlim<int> SelectedIndexUseAppRange { get; }
+
 		public ReactivePropertySlim<DataTable> Table { get; }
 
 
@@ -54,6 +64,17 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			SelectedLangType = new ReactivePropertySlim<string>(string.Empty);
 			SelectedDevType = new ReactivePropertySlim<string>(string.Empty);
 
+			SelectedIndexDevType = new ReactivePropertySlim<int>(0);
+
+			DevelopName = new ReactivePropertySlim<string>(string.Empty);
+
+			UseAppMajor = new ReactivePropertySlim<List<string>>(null).AddTo(_disposables);
+			UseAppRange = new ReactivePropertySlim<List<string>>(null).AddTo(_disposables);
+			SelectedUseAppMajor = new ReactivePropertySlim<string>(string.Empty);
+			SelectedUseAppRange = new ReactivePropertySlim<string>(string.Empty);
+			SelectedIndexUseAppRange = new ReactivePropertySlim<int>(0);
+
+
 			Table = new ReactivePropertySlim<DataTable>(null).AddTo(_disposables);
 
 
@@ -62,6 +83,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			LangTypeSelectionChanged.Subscribe(OnLangTypeSelectionChanged).AddTo(_disposables);
 			DevTypeSelectionChanged = new ReactiveCommandSlim();
 			DevTypeSelectionChanged.Subscribe(OnDevTypeSelectionChanged).AddTo(_disposables);
+			UseAppMajorSelectionChanged = new ReactiveCommandSlim();
+			UseAppMajorSelectionChanged.Subscribe(OnUseAppMajorSelectionChanged).AddTo(_disposables);
 		}
 
 
@@ -70,11 +93,17 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		private void OnLangTypeSelectionChanged()
 		{
 			DevTypes.Value = _model.SetDevTpe(SelectedLangType.Value);
+			SelectedIndexDevType.Value = -1;
 		}
 		public ReactiveCommandSlim DevTypeSelectionChanged { get; }
 		private void OnDevTypeSelectionChanged()
 		{
 			Table.Value = _model.SetTable(SelectedLangType.Value, SelectedDevType.Value);
+		}
+		public ReactiveCommandSlim UseAppMajorSelectionChanged { get; }
+		private void OnUseAppMajorSelectionChanged()
+		{
+
 		}
 	}
 }
