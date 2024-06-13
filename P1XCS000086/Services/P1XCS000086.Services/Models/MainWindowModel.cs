@@ -1,6 +1,7 @@
 ﻿using P1XCS000086.Services.IO;
 using P1XCS000086.Services.Objects;
 using P1XCS000086.Services.Sql.MySql;
+using P1XCS000086.Services.Sql;
 
 using System;
 using System.Text;
@@ -40,7 +41,8 @@ namespace P1XCS000086.Services.Models
 
 		public MainWindowModel()
 		{
-
+			// 内部リソースから接続文字列を生成
+			SqlConnectionStrings.GetConnectionStrings();
 		}
 
 

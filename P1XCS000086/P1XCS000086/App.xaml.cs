@@ -72,7 +72,7 @@ namespace P1XCS000086
 			// # Home
 			containerRegistry.RegisterSingleton<IHomeModel, HomeModel>();
 			// # CodeManageMaster
-			containerRegistry.RegisterSingleton<ICodeRegisterModel, CodeRegisterModel>();
+			containerRegistry.Register<ICodeRegisterModel, CodeRegisterModel>();
 
 		}
 		// モジュールカタログの設定

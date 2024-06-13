@@ -32,9 +32,9 @@ namespace P1XCS000086.Services.Sql
 
 
 
-		public static Dictionary<string, string> GetConnectionStrings(string resourcePath)
+		public static Dictionary<string, string> GetConnectionStrings()
 		{
-			DataTable dt = CsvParser.ReadCsv(resourcePath, typeof(SqlConnectionStrings));
+			DataTable dt = CsvParser.ReadCsv(databaseTextFilePath, typeof(SqlConnectionStrings));
 			SetConnectionStrings(dt);
 
 			return ConnectionStrings;
@@ -65,7 +65,7 @@ namespace P1XCS000086.Services.Sql
 				SetDictionary();
 
 				return x;
-			});
+			}).ToList();
 
 			
 		}

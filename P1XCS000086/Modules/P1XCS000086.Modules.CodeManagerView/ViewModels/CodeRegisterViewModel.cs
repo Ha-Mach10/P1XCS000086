@@ -12,10 +12,12 @@ using Reactive.Bindings.Extensions;
 using P1XCS000086.Core.Mvvm;
 using System.ComponentModel;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
+using System.Net.Http;
+using System.Data;
 
 namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 {
-	public class CodeRegisterViewModel : RegionViewModelBase, INotifyPropertyChanged
+	public class CodeRegisterViewModel : RegionViewModelBase, INotifyPropertyChanged, IRegionMemberLifetime
 	{
 		// Fields
 		private IRegionManager _regionManager;
@@ -23,9 +25,15 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 		// Properties
+
+		public bool KeepAlive { get; private set; }
+
 		public ReactivePropertySlim<bool> IsPaneOc { get; }
 		public ReactivePropertySlim<List<string>> LangTypes { get; }
 		public ReactivePropertySlim<List<string>> DevTypes { get; }
+		public ReactivePropertySlim<string> SelectedLangType { get; }
+		public ReactivePropertySlim<string> SelectedDevType { get; }
+		public ReactivePropertySlim<DataTable> Table { get; }
 
 
 
@@ -37,12 +45,36 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			_model = model;
 
 
+
 			// Properties
 			IsPaneOc = new ReactivePropertySlim<bool>(true);
 			LangTypes = new ReactivePropertySlim<List<string>>(_model.LangTypes).AddTo(_disposables);
-			DevTypes = new ReactivePropertySlim<List<string>>(model.DevTypes).AddTo(_disposables);
+			DevTypes = new ReactivePropertySlim<List<string>>(null).AddTo(_disposables);
+
+			SelectedLangType = new ReactivePropertySlim<string>(string.Empty);
+			SelectedDevType = new ReactivePropertySlim<string>(string.Empty);
+
+			Table = new ReactivePropertySlim<DataTable>(null).AddTo(_disposables);
 
 
+			// Commands
+			LangTypeSelectionChanged = new ReactiveCommandSlim();
+			LangTypeSelectionChanged.Subscribe(OnLangTypeSelectionChanged).AddTo(_disposables);
+			DevTypeSelectionChanged = new ReactiveCommandSlim();
+			DevTypeSelectionChanged.Subscribe(OnDevTypeSelectionChanged).AddTo(_disposables);
+		}
+
+
+
+		public ReactiveCommandSlim LangTypeSelectionChanged { get; }
+		private void OnLangTypeSelectionChanged()
+		{
+			DevTypes.Value = _model.SetDevTpe(SelectedLangType.Value);
+		}
+		public ReactiveCommandSlim DevTypeSelectionChanged { get; }
+		private void OnDevTypeSelectionChanged()
+		{
+			Table.Value = _model.SetTable(SelectedLangType.Value, SelectedDevType.Value);
 		}
 	}
 }

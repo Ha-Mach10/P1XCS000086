@@ -75,13 +75,25 @@
 					<GroupBox.Header>
 						<TextBlock Style="{StaticResource GroupBoxHeaderTmplate}" Text="言語種別選択" />
 					</GroupBox.Header>
-					<TextBox />
+					<ComboBox ItemsSource="{Binding LangTypes.Value}" SelectedIndex="0" SelectedValue="{Binding SelectedLangType.Value}">
+						<i:Interaction.Triggers>
+							<i:EventTrigger EventName="SelectionChanged">
+								<prism:InvokeCommandAction Command="{Binding LangTypeSelectionChanged}"/>
+							</i:EventTrigger>
+						</i:Interaction.Triggers>
+					</ComboBox>
 				</GroupBox>
 				<GroupBox Style="{StaticResource GroupBoxTemplate}">
 					<GroupBox.Header>
 						<TextBlock Style="{StaticResource GroupBoxHeaderTmplate}" Text="開発種別" />
 					</GroupBox.Header>
-					<ComboBox ItemsSource="{Binding}" SelectedItem="{}" />
+					<ComboBox ItemsSource="{Binding DevTypes.Value}" SelectedIndex="0" SelectedValue="{Binding SelectedDevType.Value}">
+						<i:Interaction.Triggers>
+							<i:EventTrigger EventName="SelectionChanged">
+								<prism:InvokeCommandAction Command="{Binding DevTypeSelectionChanged}"/>
+							</i:EventTrigger>
+						</i:Interaction.Triggers>
+					</ComboBox>
 				</GroupBox>
 
 				<GroupBox Style="{StaticResource GroupBoxTemplate}">
@@ -157,7 +169,7 @@
 				</ToggleButton.Style>
 			</ToggleButton>
 
-			<DataGrid Grid.Column="1" Margin="4" />
+			<DataGrid ItemsSource="{Binding Table.Value}" Grid.Column="1" Margin="4" />
 		</Grid>
 	</mah:SplitView>
 </UserControl>
