@@ -14,12 +14,18 @@ namespace P1XCS000086.Services.Models.CodeManager
 	{
 		private string _connStr;
 
-		private SqlSelect select;
+		private SqlSelect _select;
+		private SqlInsert _insert;
 
 
 
 		public List<string> LangTypes { get; private set; }
 		public List<string> DevTypes { get; private set; }
+
+		public List<string> UseAppMajor { get; private set; }
+		public List<string> UseAppRange { get; private set; }
+		public List<string> UiFramework { get; private set; }
+
 		public DataTable Table { get; private set; }
 
 
@@ -43,27 +49,40 @@ namespace P1XCS000086.Services.Models.CodeManager
 			_connStr = connStr;
 
 			// MySQLのSELECT用クラスのインスタンスを生成し、初期化
-			select = new SqlSelect(connStr);
+			_select = new SqlSelect(connStr);
+			_insert = new SqlInsert(connStr);
+
 
 			// "manager_language_type"テーブルから"language_type"カラムを文字列のリストで取得
-			LangTypes = select.SelectedColumnToList("language_type", "SELECT `language_type` FROM `manager_language_type`;");
-			DevTypes = select.SelectedColumnToList("develop_type", "SELECT `develop_type` FROM `manager_develop_type`;");
+			LangTypes = _select.SelectedColumnToList("language_type", "SELECT `language_type` FROM `manager_language_type`;");
+			DevTypes = _select.SelectedColumnToList("develop_type", "SELECT `develop_type` FROM `manager_develop_type`;");
+			UseAppMajor = _select.SelectedColumnToList("use_name_jp", "SELECT `use_name_jp` FROM `manager_use_application` WHERE `sign` = 1;");
+			UseAppRange = _select.SelectedColumnToList("use_name_jp", "SELECT `use_name_jp` FROM `manager_use_application` WHERE `sign` = 2;");
 
 			int a = 0;
 		}
-		public List<string> SetDevTpe(string selectedValue)
+		public List<string> SetDevType(string selectedValue)
 		{
 			string subQuery = "SELECT `script_type` FROM `manager_language_type` WHERE `language_type` = @language_type;";
 			List<string> columnNames = new List<string>() { "language_type" };
 			List<string> values = new List<string>() { selectedValue };
 
 			// "script_type" を取得
-			string subResult = select.GetJustOneSelectedItem("script_type", subQuery, columnNames, values);
+			string subResult = _select.GetJustOneSelectedItem("script_type", subQuery, columnNames, values);
 			
 			// "subResult"から"develop_type"を取得
 			string query = $"SELECT `develop_type` FROM `manager_develop_type` WHERE `script_type` = '{subResult}';";
-			DevTypes = select.SelectedColumnToList("develop_type", query);
+			DevTypes = _select.SelectedColumnToList("develop_type", query);
 			return DevTypes;
+		}
+		public List<string> SetFrameworkName(string selectedLangValue)
+		{
+			List<string> columns = new List<string> { "target_language" };
+			List<string> values = new List<string> { selectedLangValue };
+			string query = "SELECT `framework_name` FROM `manager_master_ui_framework` WHERE `target_language` = @target_language;";
+			UiFramework = _select.SelectedColumnToList("framework_name", query, columns, values);
+
+			return UiFramework;
 		}
 		public DataTable SetTable(string selectedLangType, string selectedDevType)
 		{
@@ -82,15 +101,19 @@ namespace P1XCS000086.Services.Models.CodeManager
 			// 
 			string tmpColumn = "CONCAT(`develop_type_code`, `language_type_code`)";
 			// 
-			string subResult = select.GetJustOneSelectedItem(tmpColumn, subQuery, columnNames, values);
+			string subResult = _select.GetJustOneSelectedItem(tmpColumn, subQuery, columnNames, values);
 
 			// 
 			string query = $"SELECT * FROM `manager_register_code` WHERE `develop_number` LIKE '{subResult}%';";
 
 			// 
-			Table = select.Select(query);
+			Table = _select.Select(query);
 
 			return Table;
+		}
+		public void InsertCodeManager(string devNum, string devName, string uiFramework, string date, string useApp)
+		{
+
 		}
 	}
 }

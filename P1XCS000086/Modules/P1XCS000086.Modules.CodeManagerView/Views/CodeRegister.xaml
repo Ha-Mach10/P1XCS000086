@@ -68,7 +68,7 @@
 					CornerRadius="5">
 					<StackPanel Margin="8" Orientation="Horizontal">
 						<TextBlock Text="項目数：" />
-						<TextBlock Text="{}" />
+						<TextBlock Margin="8,0,0,0" Text="{Binding RecordCount.Value}" />
 					</StackPanel>
 				</Border>
 				<GroupBox Style="{StaticResource GroupBoxTemplate}">
@@ -122,7 +122,7 @@
 								<ComboBox ItemsSource="{Binding UseAppMajor.Value}" SelectedItem="{Binding SelectedUseAppMajor.Value}">
 									<i:Interaction.Triggers>
 										<i:EventTrigger EventName="SelectionChanged">
-											<prism:InvokeCommandAction Command="{Binding UseAppMajorSelectionChanged}"/>
+											<prism:InvokeCommandAction Command="{Binding UseAppMajorSelectionChanged}" />
 										</i:EventTrigger>
 									</i:Interaction.Triggers>
 								</ComboBox>
@@ -134,8 +134,13 @@
 									SelectedIndex="{Binding SelectedIndexUseAppRange.Value}"
 									SelectedItem="{Binding SelectedUseAppRange.Value}" />
 							</StackPanel>
-
 						</Grid>
+						<TextBlock Style="{StaticResource ContentText}" Text="UIフレームワーク" />
+						<ComboBox
+							Margin="4"
+							ItemsSource="{Binding UiFramework.Value}"
+							SelectedIndex="{Binding SelectedIndexUiFramework.Value}"
+							SelectedValue="{Binding SelectedUiFramework.Value}" />
 						<TextBlock Style="{StaticResource ContentText}" Text="説明" />
 						<TextBox
 							Height="80"

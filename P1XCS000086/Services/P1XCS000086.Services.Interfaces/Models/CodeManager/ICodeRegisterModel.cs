@@ -9,12 +9,19 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 	{
 		public List<string> LangTypes { get; }
 		public List<string> DevTypes { get; }
+
+		public List<string> UseAppMajor { get; }
+		public List<string> UseAppRange { get; }
+
+		public List<string> UiFramework { get; }
+
 		public DataTable Table { get; }
 
 
 
 		public void RefreshValue();
-		public List<string> SetDevTpe(string selectedValue);
+		public List<string> SetDevType(string selectedValue);
+		public List<string> SetFrameworkName(string selectedLangValue);
 		public DataTable SetTable(string selectedLangType, string selectedDevType);
 	}
 }

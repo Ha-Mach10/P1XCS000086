@@ -29,6 +29,9 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public bool KeepAlive { get; private set; }
 
 		public ReactivePropertySlim<bool> IsPaneOc { get; }
+
+		public ReactivePropertySlim<int> RecordCount { get; }
+
 		public ReactivePropertySlim<List<string>> LangTypes { get; }
 		public ReactivePropertySlim<List<string>> DevTypes { get; }
 		public ReactivePropertySlim<string> SelectedLangType { get; }
@@ -42,6 +45,11 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public ReactivePropertySlim<string> SelectedUseAppMajor { get; }
 		public ReactivePropertySlim<string> SelectedUseAppRange { get; }
 		public ReactivePropertySlim<int> SelectedIndexUseAppRange { get; }
+
+		public ReactivePropertySlim<List<string>> UiFramework { get; }
+		public ReactivePropertySlim<string> SelectedUiFramework { get; }
+		public ReactivePropertySlim<int> SelectedIndexUiFramework { get; }
+
 
 		public ReactivePropertySlim<DataTable> Table { get; }
 
@@ -58,6 +66,9 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 			// Properties
 			IsPaneOc = new ReactivePropertySlim<bool>(true);
+
+			RecordCount = new ReactivePropertySlim<int>(0);
+
 			LangTypes = new ReactivePropertySlim<List<string>>(_model.LangTypes).AddTo(_disposables);
 			DevTypes = new ReactivePropertySlim<List<string>>(null).AddTo(_disposables);
 
@@ -68,11 +79,15 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 			DevelopName = new ReactivePropertySlim<string>(string.Empty);
 
-			UseAppMajor = new ReactivePropertySlim<List<string>>(null).AddTo(_disposables);
-			UseAppRange = new ReactivePropertySlim<List<string>>(null).AddTo(_disposables);
+			UseAppMajor = new ReactivePropertySlim<List<string>>(_model.UseAppMajor).AddTo(_disposables);
+			UseAppRange = new ReactivePropertySlim<List<string>>(_model.UseAppRange).AddTo(_disposables);
 			SelectedUseAppMajor = new ReactivePropertySlim<string>(string.Empty);
 			SelectedUseAppRange = new ReactivePropertySlim<string>(string.Empty);
-			SelectedIndexUseAppRange = new ReactivePropertySlim<int>(0);
+			SelectedIndexUseAppRange = new ReactivePropertySlim<int>(-1);
+
+			UiFramework = new ReactivePropertySlim<List<string>>(null).AddTo(_disposables);
+			SelectedUiFramework = new ReactivePropertySlim<string>(string.Empty);
+			SelectedIndexUiFramework = new ReactivePropertySlim<int>(0);
 
 
 			Table = new ReactivePropertySlim<DataTable>(null).AddTo(_disposables);
@@ -92,13 +107,18 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public ReactiveCommandSlim LangTypeSelectionChanged { get; }
 		private void OnLangTypeSelectionChanged()
 		{
-			DevTypes.Value = _model.SetDevTpe(SelectedLangType.Value);
+			// 開発種別を選択するコンボボックス用Listに格納
+			DevTypes.Value = _model.SetDevType(SelectedLangType.Value);
 			SelectedIndexDevType.Value = -1;
+
+			UiFramework.Value = _model.SetFrameworkName(SelectedLangType.Value);
+			SelectedIndexUiFramework.Value = -1;
 		}
 		public ReactiveCommandSlim DevTypeSelectionChanged { get; }
 		private void OnDevTypeSelectionChanged()
 		{
 			Table.Value = _model.SetTable(SelectedLangType.Value, SelectedDevType.Value);
+			RecordCount.Value = Table.Value.Rows.Count;
 		}
 		public ReactiveCommandSlim UseAppMajorSelectionChanged { get; }
 		private void OnUseAppMajorSelectionChanged()
