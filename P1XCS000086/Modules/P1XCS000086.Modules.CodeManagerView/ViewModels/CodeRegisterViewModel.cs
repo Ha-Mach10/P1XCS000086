@@ -14,6 +14,7 @@ using System.ComponentModel;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using System.Net.Http;
 using System.Data;
+using System.ComponentModel.DataAnnotations;
 
 namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 {
@@ -38,9 +39,11 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public ReactivePropertySlim<string> SelectedDevType { get; }
 		public ReactivePropertySlim<int> SelectedIndexDevType { get; }
 
-		public ReactivePropertySlim<string> DevelopName { get; }
+		[Required(ErrorMessage = "必須項目\n開発名称を入力してください")]
+		[RegularExpression("^[0-9a-Z_]+$", ErrorMessage = "規定の文字のみを含んだ文字列を入力してください")]
+		public ReactiveProperty<string> DevelopName { get; }
 
-		public ReactivePropertySlim<List<string>> UseAppMajor { get; }
+		public ReactiveProperty<List<string>> UseAppMajor { get; }
 		public ReactivePropertySlim<List<string>> UseAppRange { get; }
 		public ReactivePropertySlim<string> SelectedUseAppMajor { get; }
 		public ReactivePropertySlim<string> SelectedUseAppRange { get; }
@@ -49,6 +52,9 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public ReactivePropertySlim<List<string>> UiFramework { get; }
 		public ReactivePropertySlim<string> SelectedUiFramework { get; }
 		public ReactivePropertySlim<int> SelectedIndexUiFramework { get; }
+
+		public ReactivePropertySlim<string> Explanation { get; }
+		public ReactivePropertySlim<string> Summary { get; }
 
 
 		public ReactivePropertySlim<DataTable> Table { get; }
@@ -77,9 +83,13 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 			SelectedIndexDevType = new ReactivePropertySlim<int>(0);
 
-			DevelopName = new ReactivePropertySlim<string>(string.Empty);
+			DevelopName = new ReactiveProperty<string>(string.Empty)
+				.SetValidateAttribute(() => DevelopName)
+				.AddTo(_disposables);
 
-			UseAppMajor = new ReactivePropertySlim<List<string>>(_model.UseAppMajor).AddTo(_disposables);
+			UseAppMajor = new ReactiveProperty<List<string>>(_model.UseAppMajor)
+				.SetValidateAttribute(() => UseAppMajor)
+				.AddTo(_disposables);
 			UseAppRange = new ReactivePropertySlim<List<string>>(_model.UseAppRange).AddTo(_disposables);
 			SelectedUseAppMajor = new ReactivePropertySlim<string>(string.Empty);
 			SelectedUseAppRange = new ReactivePropertySlim<string>(string.Empty);
@@ -89,6 +99,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			SelectedUiFramework = new ReactivePropertySlim<string>(string.Empty);
 			SelectedIndexUiFramework = new ReactivePropertySlim<int>(0);
 
+			Explanation = new ReactivePropertySlim<string>(string.Empty);
+			Summary = new ReactivePropertySlim<string>(string.Empty);
 
 			Table = new ReactivePropertySlim<DataTable>(null).AddTo(_disposables);
 
@@ -100,6 +112,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			DevTypeSelectionChanged.Subscribe(OnDevTypeSelectionChanged).AddTo(_disposables);
 			UseAppMajorSelectionChanged = new ReactiveCommandSlim();
 			UseAppMajorSelectionChanged.Subscribe(OnUseAppMajorSelectionChanged).AddTo(_disposables);
+			RegistCodeNumber = new ReactiveCommandSlim();
+			RegistCodeNumber.Subscribe(OnRegistCodeNumber).AddTo(_disposables);
 		}
 
 
@@ -122,6 +136,11 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		}
 		public ReactiveCommandSlim UseAppMajorSelectionChanged { get; }
 		private void OnUseAppMajorSelectionChanged()
+		{
+
+		}
+		public ReactiveCommandSlim RegistCodeNumber { get; }
+		private void OnRegistCodeNumber()
 		{
 
 		}

@@ -146,7 +146,7 @@
 							Height="80"
 							AcceptsReturn="True"
 							Style="{StaticResource TextBoxTemplate}"
-							Text="{}"
+							Text="{Binding Explanation.Value}"
 							TextWrapping="Wrap"
 							VerticalScrollBarVisibility="Auto" />
 						<TextBlock Style="{StaticResource ContentText}" Text="適用" />
@@ -154,11 +154,11 @@
 							Height="80"
 							AcceptsReturn="True"
 							Style="{StaticResource TextBoxTemplate}"
-							Text="{}"
+							Text="{Binding Summary.Value}"
 							TextWrapping="Wrap"
 							VerticalScrollBarVisibility="Auto" />
 
-						<Button Height="30" Margin="8,16,8,8">
+						<Button Height="30" Margin="8,16,8,8" Command="{Binding RegistCodeNumber}">
 							<Button.Content>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Margin="0,0,16,0" Text="登録" />
