@@ -105,6 +105,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			Table = new ReactivePropertySlim<DataTable>(null).AddTo(_disposables);
 
 
+			// 
+
 			// Commands
 			LangTypeSelectionChanged = new ReactiveCommandSlim();
 			LangTypeSelectionChanged.Subscribe(OnLangTypeSelectionChanged).AddTo(_disposables);
@@ -112,7 +114,14 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			DevTypeSelectionChanged.Subscribe(OnDevTypeSelectionChanged).AddTo(_disposables);
 			UseAppMajorSelectionChanged = new ReactiveCommandSlim();
 			UseAppMajorSelectionChanged.Subscribe(OnUseAppMajorSelectionChanged).AddTo(_disposables);
-			RegistCodeNumber = new ReactiveCommandSlim();
+			RegistCodeNumber =
+				new[]
+				{
+					DevelopName.ObserveHasErrors,
+					UseAppMajor.ObserveHasErrors
+				}
+				.CombineLatestValuesAreAllFalse()
+				.ToReactiveCommand();
 			RegistCodeNumber.Subscribe(OnRegistCodeNumber).AddTo(_disposables);
 		}
 
@@ -139,10 +148,22 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		{
 
 		}
-		public ReactiveCommandSlim RegistCodeNumber { get; }
+		public ReactiveCommand RegistCodeNumber { get; }
 		private void OnRegistCodeNumber()
 		{
+			string developNumber = $"{_model.CodeDevType}{RecordCount.Value.ToString("000000")}";
+			string developName = DevelopName.Value;
+			string uiFramework = SelectedUiFramework.Value;
+			string createdOn = DateTime.Now.ToString();
+			string useApplication = SelectedUseAppMajor.Value;
+			if (string.IsNullOrEmpty(SelectedUseAppRange.Value) is false)
+			{
+				useApplication = $"{useApplication}_{SelectedUseAppRange.Value}";
+			}
+			string explanation = Explanation.Value;
+			string summary = Summary.Value;
 
+			int a = 0;
 		}
 	}
 }

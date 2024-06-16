@@ -7,6 +7,8 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 {
 	public interface ICodeRegisterModel
 	{
+		public string CodeDevType { get; }
+
 		public List<string> LangTypes { get; }
 		public List<string> DevTypes { get; }
 

@@ -18,6 +18,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 		private SqlInsert _insert;
 
 
+		public string CodeDevType { get; private set; }
 
 		public List<string> LangTypes { get; private set; }
 		public List<string> DevTypes { get; private set; }
@@ -102,6 +103,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 			string tmpColumn = "CONCAT(`develop_type_code`, `language_type_code`)";
 			// 
 			string subResult = _select.GetJustOneSelectedItem(tmpColumn, subQuery, columnNames, values);
+			CodeDevType = subResult;
 
 			// 
 			string query = $"SELECT * FROM `manager_register_code` WHERE `develop_number` LIKE '{subResult}%';";
