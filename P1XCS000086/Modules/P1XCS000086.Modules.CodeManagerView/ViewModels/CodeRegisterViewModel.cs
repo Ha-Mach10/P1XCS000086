@@ -39,8 +39,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public ReactivePropertySlim<string> SelectedDevType { get; }
 		public ReactivePropertySlim<int> SelectedIndexDevType { get; }
 
-		[Required(ErrorMessage = "必須項目\n開発名称を入力してください")]
-		[RegularExpression("^[0-9a-Z_]+$", ErrorMessage = "規定の文字のみを含んだ文字列を入力してください")]
+		[RegularExpression("^[0-9A-z_]{1,50}$", ErrorMessage = "規定の文字のみを含んだ文字列を入力してください")]
 		public ReactiveProperty<string> DevelopName { get; }
 
 		public ReactiveProperty<List<string>> UseAppMajor { get; }
@@ -118,7 +117,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 				new[]
 				{
 					DevelopName.ObserveHasErrors,
-					UseAppMajor.ObserveHasErrors
+					UseAppMajor.ObserveHasErrors,
 				}
 				.CombineLatestValuesAreAllFalse()
 				.ToReactiveCommand();
@@ -151,10 +150,10 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public ReactiveCommand RegistCodeNumber { get; }
 		private void OnRegistCodeNumber()
 		{
-			string developNumber = $"{_model.CodeDevType}{RecordCount.Value.ToString("000000")}";
+			string developNumber = $"{_model.CodeDevType}{(RecordCount.Value + 1).ToString("000000")}";
 			string developName = DevelopName.Value;
 			string uiFramework = SelectedUiFramework.Value;
-			string createdOn = DateTime.Now.ToString();
+			string createdOn = DateTime.Today.ToString();
 			string useApplication = SelectedUseAppMajor.Value;
 			if (string.IsNullOrEmpty(SelectedUseAppRange.Value) is false)
 			{
