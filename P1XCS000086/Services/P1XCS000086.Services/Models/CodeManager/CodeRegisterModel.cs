@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using P1XCS000086.Services.Sql;
@@ -113,9 +115,39 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			return Table;
 		}
-		public void InsertCodeManager(string devNum, string devName, string uiFramework, string date, string useApp)
+		public void InsertCodeManager(string devNum, string devName, string uiFramework, string date, string useApp, string explanation = "", string summary = "")
 		{
+			List<string> columnNames = new List<string>
+			{
+				"`develop_number`",
+				"`develop_name`",
+				"`ui_framework`",
+				"`created_on`",
+				"`use_application`",
+				"`explanation`",
+				"`summary`"
+			};
+			List<string> values = new List<string>
+			{
+				devNum,
+				devName,
+				uiFramework,
+				date,
+				useApp,
+				explanation,
+				summary
+			};
 
+			var parametors = columnNames.Select(x => $"@{Regex.Replace(x, "`", "")}").ToList();
+
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine(@"INSERT INTO `manager_register_code`");
+			sb.AppendLine($"({string.Join(",", columnNames)})");
+			sb.AppendLine($"VALUES ({string.Join(",", parametors)});");
+
+			string query = sb.ToString();
+
+			_insert.Insert(query, columnNames, values);
 		}
 	}
 }
