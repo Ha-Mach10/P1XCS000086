@@ -25,6 +25,7 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 		public List<string> SetDevType(string selectedValue);
 		public List<string> SetFrameworkName(string selectedLangValue);
 		public DataTable SetTable(string selectedLangType, string selectedDevType);
+		public string SetUseApplication(string useApplication);
 		public void InsertCodeManager(string devNum, string devName, string uiFramework, string date, string useApp, string explanation = "", string summary = "");
 	}
 }

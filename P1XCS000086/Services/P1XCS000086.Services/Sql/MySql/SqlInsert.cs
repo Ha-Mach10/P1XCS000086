@@ -27,7 +27,7 @@ namespace P1XCS000086.Services.Sql.MySql
 		// Properties
 		// ****************************************************************************
 
-		public string ResultMessage { get; private set; } = "データ更新に成功";
+		public string ResultMessage { get; private set; } = "";
 		public string ExceptionMessage {  get; private set; } = string.Empty;
 
 
@@ -117,13 +117,19 @@ namespace P1XCS000086.Services.Sql.MySql
 						tran = conn.BeginTransaction();
 
 						// コマンドパラメータを設定（SQLインジェクション対策）
+						/*
 						for (int i = 0; i > columns.Count; i++)
 						{
 							cmd.Parameters.Add(new MySqlParameter(columns[i], values[i]));
 						}
+						*/
+						var paramaters = columns.Zip(values, (column, value) => new MySqlParameter(column, value)).ToArray();
+						cmd.Parameters.AddRange(paramaters);
 
 						// コマンドを実行
 						var result = cmd.ExecuteNonQuery();
+						// タイムアウト設定の変更
+						cmd.CommandTimeout = 10000;
 
 						// 実行された結果が1行未満のとき
 						if (result != 1)

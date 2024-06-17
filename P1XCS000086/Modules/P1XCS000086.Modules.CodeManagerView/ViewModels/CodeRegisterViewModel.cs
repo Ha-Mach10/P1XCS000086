@@ -154,9 +154,10 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			string developName = DevelopName.Value;
 			string uiFramework = SelectedUiFramework.Value;
 			string createdOn = DateTime.Today.ToString("yyyy/MM/dd");
-			string useApplication = SelectedUseAppMajor.Value;
+			string useApplication = _model.SetUseApplication(SelectedUseAppMajor.Value);
 			if (string.IsNullOrEmpty(SelectedUseAppRange.Value) is false)
 			{
+				string useAppSub = _model.SetUseApplication(SelectedIndexUseAppRange.Value);
 				useApplication = $"{useApplication}_{SelectedUseAppRange.Value}";
 			}
 			string explanation = Explanation.Value;

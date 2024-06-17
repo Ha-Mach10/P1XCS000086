@@ -115,6 +115,13 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			return Table;
 		}
+		public string SetUseApplication(string useApplication)
+		{
+			string query = $"SELECT `use_name_en` FROM `manager_use_application` WHERE `use_name_jp = {useApplication};`";
+			string result = _select.GetJustOneSelectedItem("use_name_en", query);
+
+			return result;
+		}
 		public void InsertCodeManager(string devNum, string devName, string uiFramework, string date, string useApp, string explanation = "", string summary = "")
 		{
 			List<string> columnNames = new List<string>
@@ -148,6 +155,11 @@ namespace P1XCS000086.Services.Models.CodeManager
 			string query = sb.ToString();
 
 			_insert.Insert(query, columnNames, values);
+
+			string error = _insert.ExceptionMessage;
+			string result = _insert.ResultMessage;
+
+			int a = 0;
 		}
 	}
 }
