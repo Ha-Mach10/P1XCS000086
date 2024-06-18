@@ -118,8 +118,11 @@
 							</Grid.ColumnDefinitions>
 
 							<StackPanel Margin="4,4,4,4">
-								<TextBox Text="大分類" />
-								<ComboBox ItemsSource="{Binding UseAppMajor.Value}" SelectedItem="{Binding SelectedUseAppMajor.Value}">
+								<TextBlock Margin="0,0,0,4" Text="大分類" />
+								<ComboBox
+									mah:TextBoxHelper.ClearTextButton="True"
+									ItemsSource="{Binding UseAppMajor.Value}"
+									SelectedItem="{Binding SelectedUseAppMajor.Value}">
 									<i:Interaction.Triggers>
 										<i:EventTrigger EventName="SelectionChanged">
 											<prism:InvokeCommandAction Command="{Binding UseAppMajorSelectionChanged}" />
@@ -128,8 +131,9 @@
 								</ComboBox>
 							</StackPanel>
 							<StackPanel Grid.Column="1" Margin="4,4,4,4">
-								<TextBox Text="範囲" />
+								<TextBlock Margin="0,0,0,4" Text="範囲" />
 								<ComboBox
+									mah:TextBoxHelper.ClearTextButton="True"
 									ItemsSource="{Binding UseAppRange.Value}"
 									SelectedIndex="{Binding SelectedIndexUseAppRange.Value}"
 									SelectedItem="{Binding SelectedUseAppRange.Value}" />
@@ -140,7 +144,8 @@
 							Margin="4"
 							ItemsSource="{Binding UiFramework.Value}"
 							SelectedIndex="{Binding SelectedIndexUiFramework.Value}"
-							SelectedValue="{Binding SelectedUiFramework.Value}" />
+							SelectedValue="{Binding SelectedUiFramework.Value}"
+							 mah:TextBoxHelper.ClearTextButton="True"/>
 						<TextBlock Style="{StaticResource ContentText}" Text="説明" />
 						<TextBox
 							Height="80"
@@ -158,7 +163,10 @@
 							TextWrapping="Wrap"
 							VerticalScrollBarVisibility="Auto" />
 
-						<Button Height="30" Margin="8,16,8,8" Command="{Binding RegistCodeNumber}">
+						<Button
+							Height="30"
+							Margin="8,16,8,8"
+							Command="{Binding RegistCodeNumber}">
 							<Button.Content>
 								<StackPanel Orientation="Horizontal">
 									<TextBlock Margin="0,0,16,0" Text="登録" />

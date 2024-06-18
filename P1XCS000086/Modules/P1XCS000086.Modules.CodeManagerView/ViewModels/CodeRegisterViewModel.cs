@@ -153,19 +153,19 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			string developNumber = $"{_model.CodeDevType}{(RecordCount.Value + 1).ToString("000000")}";
 			string developName = DevelopName.Value;
 			string uiFramework = SelectedUiFramework.Value;
-			string createdOn = DateTime.Today.ToString("yyyy/MM/dd");
+			string createdOn = DateTime.Today.ToString("yyyy-MM-dd");
 			string useApplication = _model.SetUseApplication(SelectedUseAppMajor.Value);
 			if (string.IsNullOrEmpty(SelectedUseAppRange.Value) is false)
 			{
-				string useAppSub = _model.SetUseApplication(SelectedIndexUseAppRange.Value);
-				useApplication = $"{useApplication}_{SelectedUseAppRange.Value}";
+				string useAppSub = _model.SetUseApplication(SelectedUseAppRange.Value);
+				useApplication = $"{useApplication}_{useAppSub}";
 			}
 			string explanation = Explanation.Value;
 			string summary = Summary.Value;
 
 			_model.InsertCodeManager(developNumber, developName, uiFramework, createdOn, useApplication, explanation, summary);
 
-			int a = 0;
+			Table.Value = _model.SetTable(SelectedLangType.Value, SelectedDevType.Value);
 		}
 	}
 }

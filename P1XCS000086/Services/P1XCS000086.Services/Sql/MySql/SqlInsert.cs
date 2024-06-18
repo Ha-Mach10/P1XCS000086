@@ -4,6 +4,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using MySql.Data;
@@ -96,10 +97,12 @@ namespace P1XCS000086.Services.Sql.MySql
 		{
 			// 
 			string connectionString = connStr;
-			if (connStr == "")
+
+			if (string.IsNullOrEmpty(connStr) == false)
 			{
-				connectionString = _connStr;
+				connectionString = $"{_connStr};allowuservariables=True;";
 			}
+
 
 			try
 			{
@@ -113,26 +116,24 @@ namespace P1XCS000086.Services.Sql.MySql
 					{
 						// コネクションを開く
 						conn.Open();
-						// トランザクションを開始
-						tran = conn.BeginTransaction();
 
-						// コマンドパラメータを設定（SQLインジェクション対策）
-						/*
-						for (int i = 0; i > columns.Count; i++)
-						{
-							cmd.Parameters.Add(new MySqlParameter(columns[i], values[i]));
-						}
-						*/
+						// コマンドパラメータを設定
+						
 						var paramaters = columns.Zip(values, (column, value) => new MySqlParameter(column, value)).ToArray();
 						cmd.Parameters.AddRange(paramaters);
+						
+						// var paramaters = columns.Zip(values, (column, value) => cmd.Parameters.AddWithValue(Regex.Replace(column, "^`", "`@"), value));
+
+						// トランザクションを開始
+						tran = conn.BeginTransaction();
 
 						// コマンドを実行
 						var result = cmd.ExecuteNonQuery();
 						// タイムアウト設定の変更
-						cmd.CommandTimeout = 10000;
+						cmd.CommandTimeout = 999999;
 
 						// 実行された結果が1行未満のとき
-						if (result != 1)
+						if (result < 0)
 						{
 							ResultMessage = "データ更新の失敗";
 
@@ -143,6 +144,11 @@ namespace P1XCS000086.Services.Sql.MySql
 
 						// コミットする
 						tran.Commit();
+
+						// 挿入に成功
+						ResultMessage = "データ更新に成功";
+						ExceptionMessage = string.Empty;
+						return true;
 					}
 					// データベース操作で例外が発生した場合
 					catch (MySqlException sqlEx)
@@ -158,13 +164,6 @@ namespace P1XCS000086.Services.Sql.MySql
 				ExceptionMessage = $"発生した例外：{ex.Message}\n\n発生元：{ex.Source}";
 				return false;
 			}
-
-
-
-			// 挿入に成功
-			ResultMessage = "データ更新に成功";
-			ExceptionMessage = string.Empty;
-			return true;
 		}
 	}
 }

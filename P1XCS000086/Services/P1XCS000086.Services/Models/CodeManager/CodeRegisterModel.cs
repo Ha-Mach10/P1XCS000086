@@ -117,7 +117,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 		}
 		public string SetUseApplication(string useApplication)
 		{
-			string query = $"SELECT `use_name_en` FROM `manager_use_application` WHERE `use_name_jp = {useApplication};`";
+			string query = $"SELECT `use_name_en` FROM `manager_use_application` WHERE `use_name_jp` = '{useApplication}';";
 			string result = _select.GetJustOneSelectedItem("use_name_en", query);
 
 			return result;
@@ -130,7 +130,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 				"`develop_name`",
 				"`ui_framework`",
 				"`created_on`",
-				"`use_application`",
+				"`use_applications`",
 				"`explanation`",
 				"`summary`"
 			};
@@ -149,17 +149,14 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine(@"INSERT INTO `manager_register_code`");
-			sb.AppendLine($"({string.Join(",", columnNames)})");
-			sb.AppendLine($"VALUES ({string.Join(",", parametors)});");
+			sb.AppendLine($"({string.Join(", ", columnNames)})");
+			sb.AppendLine($"VALUES ({string.Join(", ", parametors)});");
 
 			string query = sb.ToString();
 
-			_insert.Insert(query, columnNames, values);
+			bool a = _insert.Insert(query, columnNames, values);
 
-			string error = _insert.ExceptionMessage;
-			string result = _insert.ResultMessage;
-
-			int a = 0;
+			int b = 0;
 		}
 	}
 }
