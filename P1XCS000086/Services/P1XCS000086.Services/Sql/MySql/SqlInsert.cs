@@ -100,6 +100,7 @@ namespace P1XCS000086.Services.Sql.MySql
 
 			if (string.IsNullOrEmpty(connStr) == false)
 			{
+				// connectionString = _connStr;
 				connectionString = $"{_connStr};allowuservariables=True;";
 			}
 
@@ -119,10 +120,12 @@ namespace P1XCS000086.Services.Sql.MySql
 
 						// コマンドパラメータを設定
 						
-						var paramaters = columns.Zip(values, (column, value) => new MySqlParameter(column, value)).ToArray();
-						cmd.Parameters.AddRange(paramaters);
+						var parameters = columns.Zip(values, (column, value) => new MySqlParameter(column, value)).ToArray();
+						cmd.Parameters.AddRange(parameters);
 						
-						// var paramaters = columns.Zip(values, (column, value) => cmd.Parameters.AddWithValue(Regex.Replace(column, "^`", "`@"), value));
+
+						// columns.Zip(values, (column, value) => cmd.Parameters.Add(new MySqlParameter(column, value)));
+						// columns.Zip(values, (column, value) => cmd.Parameters.AddWithValue(Regex.Replace(column, "^`", "`@"), value));
 
 						// トランザクションを開始
 						tran = conn.BeginTransaction();
@@ -130,7 +133,7 @@ namespace P1XCS000086.Services.Sql.MySql
 						// コマンドを実行
 						var result = cmd.ExecuteNonQuery();
 						// タイムアウト設定の変更
-						cmd.CommandTimeout = 999999;
+						// cmd.CommandTimeout = 999999;
 
 						// 実行された結果が1行未満のとき
 						if (result < 0)

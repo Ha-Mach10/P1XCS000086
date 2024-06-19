@@ -126,13 +126,13 @@ namespace P1XCS000086.Services.Models.CodeManager
 		{
 			List<string> columnNames = new List<string>
 			{
-				"`develop_number`",
-				"`develop_name`",
-				"`ui_framework`",
-				"`created_on`",
-				"`use_applications`",
-				"`explanation`",
-				"`summary`"
+				"develop_number",
+				"develop_name",
+				"ui_framework",
+				"created_on",
+				"use_applications",
+				"explanation",
+				"summary"
 			};
 			List<string> values = new List<string>
 			{
@@ -145,7 +145,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 				summary
 			};
 
-			var parametors = columnNames.Select(x => $"@{Regex.Replace(x, "`", "")}").ToList();
+			var parametors = columnNames.Select(x => $"?{x}").ToList();
 
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine(@"INSERT INTO `manager_register_code`");
