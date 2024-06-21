@@ -57,6 +57,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 		public ReactivePropertySlim<DataTable> Table { get; }
+		public ReactivePropertySlim<DataRow> Row { get; }
 
 
 
@@ -102,6 +103,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			Summary = new ReactivePropertySlim<string>(string.Empty);
 
 			Table = new ReactivePropertySlim<DataTable>(null).AddTo(_disposables);
+			Row = new ReactivePropertySlim<DataRow>(null).AddTo(_disposables);
 
 
 			// 
@@ -113,6 +115,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			DevTypeSelectionChanged.Subscribe(OnDevTypeSelectionChanged).AddTo(_disposables);
 			UseAppMajorSelectionChanged = new ReactiveCommandSlim();
 			UseAppMajorSelectionChanged.Subscribe(OnUseAppMajorSelectionChanged).AddTo(_disposables);
+			// 
 			RegistCodeNumber =
 				new[]
 				{
@@ -122,6 +125,9 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 				.CombineLatestValuesAreAllFalse()
 				.ToReactiveCommand();
 			RegistCodeNumber.Subscribe(OnRegistCodeNumber).AddTo(_disposables);
+			// 
+			ContextMenuOpenParentFolder = new ReactiveCommandSlim();
+			ContextMenuOpenParentFolder.Subscribe(OnContextMenuOpenParentFolder).AddTo(_disposables);
 		}
 
 
@@ -166,6 +172,17 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			_model.InsertCodeManager(developNumber, developName, uiFramework, createdOn, useApplication, explanation, summary);
 
 			Table.Value = _model.SetTable(SelectedLangType.Value, SelectedDevType.Value);
+		}
+		public ReactiveCommandSlim ContextMenuOpenParentFolder { get; }
+		private void OnContextMenuOpenParentFolder()
+		{
+
+		}
+
+
+		private void GetSelectedDevelopNumber(DataRow selectedRow)
+		{
+			string devNumber = selectedRow["develop_number"].ToString();
 		}
 	}
 }

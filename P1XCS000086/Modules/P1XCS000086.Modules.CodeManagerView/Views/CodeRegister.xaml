@@ -51,6 +51,13 @@
 					<Setter Property="Margin" Value="4" />
 				</Style.Setters>
 			</Style>
+
+			<!--ContextMenu x:Key="DataGridContextMenu">
+				<MenuItem
+					Command="{Binding Path=ContextMenuOpenParentFolder, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"
+					CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"
+					Header="親フォルダを開く" />
+			</ContextMenu-->
 		</ResourceDictionary>
 	</UserControl.Resources>
 
@@ -142,10 +149,10 @@
 						<TextBlock Style="{StaticResource ContentText}" Text="UIフレームワーク" />
 						<ComboBox
 							Margin="4"
+							mah:TextBoxHelper.ClearTextButton="True"
 							ItemsSource="{Binding UiFramework.Value}"
 							SelectedIndex="{Binding SelectedIndexUiFramework.Value}"
-							SelectedValue="{Binding SelectedUiFramework.Value}"
-							 mah:TextBoxHelper.ClearTextButton="True"/>
+							SelectedValue="{Binding SelectedUiFramework.Value}" />
 						<TextBlock Style="{StaticResource ContentText}" Text="説明" />
 						<TextBox
 							Height="80"
@@ -211,7 +218,21 @@
 				EnableRowVirtualization="True"
 				ItemsSource="{Binding Table.Value}"
 				VirtualizingPanel.IsVirtualizing="True"
-				VirtualizingPanel.VirtualizationMode="Recycling" />
+				VirtualizingPanel.VirtualizationMode="Recycling"
+				IsReadOnly="True"
+				SelectedValue="{Binding Row.Value}">
+				<DataGrid.ContextMenu>
+					<ContextMenu>
+						<MenuItem Header="親フォルダ―を開く" Command="{Binding ContextMenuOpenParentFolder}"/>
+					</ContextMenu>
+				</DataGrid.ContextMenu>
+				<!--DataGrid.Resources>
+					<Style TargetType="DataGridRow">
+						<Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=DataContext}" />
+						<Setter Property="ContextMenu" Value="{Binding Source={StaticResource DataGridContextMenu}}" />
+					</Style>
+				</DataGrid.Resources-->
+			</DataGrid>
 		</Grid>
 	</mah:SplitView>
 </UserControl>

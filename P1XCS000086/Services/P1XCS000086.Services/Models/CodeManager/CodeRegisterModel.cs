@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -14,11 +15,36 @@ namespace P1XCS000086.Services.Models.CodeManager
 {
 	public class CodeRegisterModel : ICodeRegisterModel
 	{
+		public enum TranslateDataType
+		{
+			Table,
+			Column,
+		}
+		public enum TranslateTargetLanguage
+		{
+			En,
+			Jp,
+		}
+
+		// *****************************************************************************
+		// Fields
+		// *****************************************************************************
+
 		private string _connStr;
 
+		private SqlShowTables _showTables;
 		private SqlSelect _select;
 		private SqlInsert _insert;
 
+		private string _getColumn = string.Empty;
+		private List<string> _columns = new List<string>();
+		private List<string> _values = new List<string>();
+
+
+
+		// *****************************************************************************
+		// Properties
+		// *****************************************************************************
 
 		public string CodeDevType { get; private set; }
 
@@ -32,6 +58,9 @@ namespace P1XCS000086.Services.Models.CodeManager
 		public DataTable Table { get; private set; }
 
 
+		// *****************************************************************************
+		// Contructor
+		// *****************************************************************************
 
 		public CodeRegisterModel()
 		{
@@ -39,6 +68,9 @@ namespace P1XCS000086.Services.Models.CodeManager
 		}
 
 
+		// *****************************************************************************
+		// Publick Methods
+		// *****************************************************************************
 
 		public void RefreshValue()
 		{
@@ -52,6 +84,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 			_connStr = connStr;
 
 			// MySQLのSELECT用クラスのインスタンスを生成し、初期化
+			_showTables = new SqlShowTables(connStr);
 			_select = new SqlSelect(connStr);
 			_insert = new SqlInsert(connStr);
 
@@ -157,6 +190,98 @@ namespace P1XCS000086.Services.Models.CodeManager
 			bool a = _insert.Insert(query, columnNames, values);
 
 			int b = 0;
+		}
+		/// <summary>
+		/// 指定した言語種別からその言語の開発ディレクトリの親ディレクトリをエクスプローラーで開く
+		/// </summary>
+		/// <param name="langType"></param>
+		public void OpenProjectParentDirectry(string langType)
+		{
+			string langageTypeCode = GetLanguageType(langType);
+
+			string parentDirPath = GetLanguageDirectry(langageTypeCode);
+
+			Process.Start(parentDirPath);
+		}
+		public void OpenProjectDirectry(string langType, string devType)
+		{
+			// string 
+		}
+
+
+
+		// *****************************************************************************
+		// Private Methods
+		// *****************************************************************************
+
+
+		private string GetLanguageType(string langTypeCode)
+		{
+			_columns = new List<string> { "language_type" };
+			_values = new List<string> { langTypeCode };
+			string query = "SELECT `language_type_code` FROM `manager_language_type` WHERE `language_type` = @language_type;";
+
+			// リスト破棄
+
+
+			return _select.GetJustOneSelectedItem("language_type", query, _columns, _values);
+		}
+
+		private string GetLanguageDirectry(string langTypeCode)
+		{
+			_getColumn = "language_directry";
+			_columns = new List<string> { "language_type_code" };
+			_values = new List<string> { langTypeCode };
+			string query = $"SELECT `{_getColumn}` FROM `development_project_directry` WHERE `{_columns[0]}` = @{_columns[0]};";
+
+			return _select.GetJustOneSelectedItem(_getColumn, query, _columns, _values);
+		}
+		/// <summary>
+		/// DataTableのカラム名を翻訳する
+		/// </summary>
+		/// <param name="dt">対象のDataTable</param>
+		/// <param name="tableName">対象となるテーブル</param>
+		/// <param name="type">翻訳する対象（Table / Column）</param>
+		/// <param name="targetLang">翻訳後言語</param>
+		/// <returns></returns>
+		private DataTable SetColumnName(DataTable dt, string tableName, TranslateTargetLanguage targetLang = TranslateTargetLanguage.Jp)
+		{
+			// 翻訳する言語（English or Japanese）
+			string targetColumn = string.Empty;
+			switch (targetLang)
+			{
+				case TranslateTargetLanguage.En:
+					targetColumn = "column_name";
+					break;
+				case TranslateTargetLanguage.Jp:
+					targetColumn = "japanese";
+					break;
+			}
+
+			string query1 = $"SELECT `{targetColumn}` FROM `table_tranclator` WHERE `type` = 'column' AND WHERE `table_name` = '{tableName}'";
+			List<string> columnNames = _select.SelectedColumnToList(targetColumn, query1);
+			List<string> tableColumnNames = _showTables.ShowTables("table_translator");
+
+			// ColumnNameを置換
+			columnNames.Zip(tableColumnNames, (baseColumnName, targetColumnName) =>
+			{
+				dt.Columns[baseColumnName].ColumnName = targetColumnName;
+
+				return (baseColumnName, targetColumnName);
+			});
+
+			return dt;
+		}
+		/// <summary>
+		/// フィールド変数のリスト破棄
+		/// </summary>
+		private void ClearLists()
+		{
+			_columns.Clear();
+			_values.Clear();
+
+			_columns.Capacity = 0;
+			_values.Capacity = 0;
 		}
 	}
 }
