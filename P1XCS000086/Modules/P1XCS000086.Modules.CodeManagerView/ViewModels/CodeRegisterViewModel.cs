@@ -128,6 +128,10 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			// 
 			ContextMenuOpenParentFolder = new ReactiveCommandSlim();
 			ContextMenuOpenParentFolder.Subscribe(OnContextMenuOpenParentFolder).AddTo(_disposables);
+			ContextMenuOpenProjectFolder = new ReactiveCommandSlim();
+			ContextMenuOpenProjectFolder.Subscribe(OnContextMenuOpenProjectFolder).AddTo(_disposables);
+			ContextMenuOpenProject = new ReactiveCommandSlim();
+			ContextMenuOpenProject.Subscribe(OnContextMenuOpenProject).AddTo(_disposables);
 		}
 
 
@@ -176,13 +180,34 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public ReactiveCommandSlim ContextMenuOpenParentFolder { get; }
 		private void OnContextMenuOpenParentFolder()
 		{
-
+			_model.OpenProjectParentDirectry(SelectedLangType.Value);
+		}
+		public ReactiveCommandSlim ContextMenuOpenProjectFolder { get; }
+		private void OnContextMenuOpenProjectFolder()
+		{
+			(string developNumber, string _) = GetSelectedDevelopNumber(Row.Value);
+			_model.OpenProjectDirectry(developNumber, SelectedLangType.Value);
+		}
+		public ReactiveCommandSlim ContextMenuOpenProject { get; }
+		private void OnContextMenuOpenProject()
+		{
+			(string developNumber, string dirFileName) = GetSelectedDevelopNumber(Row.Value);
+			_model.OpenProjectFile(developNumber, dirFileName, SelectedLangType.Value);
 		}
 
 
-		private void GetSelectedDevelopNumber(DataRow selectedRow)
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="selectedRow"></param>
+		/// <returns></returns>
+		private (string, string) GetSelectedDevelopNumber(DataRow selectedRow)
 		{
 			string devNumber = selectedRow["develop_number"].ToString();
+			string dirFileName = selectedRow["dir_file_name"].ToString();
+
+			return (devNumber, dirFileName);
 		}
 	}
 }
