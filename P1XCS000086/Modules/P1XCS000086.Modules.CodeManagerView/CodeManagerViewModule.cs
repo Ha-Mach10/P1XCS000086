@@ -14,7 +14,7 @@ namespace P1XCS000086.Modules.CodeManagerView
 
 		public void RegisterTypes(IContainerRegistry containerRegistry)
 		{
-			containerRegistry.RegisterForNavigation<CodeEditor>();
+			containerRegistry.RegisterForNavigation<MasterManager>();
 			containerRegistry.RegisterForNavigation<CodeManager>();
 			containerRegistry.RegisterForNavigation<CodeRegister>();
 		}

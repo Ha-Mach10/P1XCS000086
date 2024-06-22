@@ -204,18 +204,6 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			Table.Value = _model.SetTable(SelectedLangType.Value, SelectedDevType.Value);
 		}
 		public ReactiveCommandSlim DataGridRowSelectionChanged { get; }
-		private void OnDataGridRowSelectionChanged()
-		{
-			/*
-			if (Row.Value is not null)
-			{
-				(string developNumber, string _) = GetSelectedDevelopNumber(Row.Value);
-				OpenDirHeaderContent.Value = $"{developNumber}フォルダをエクスプローラーで開く";
-				OpenFileHeaderContent.Value = $"{developNumber}プロジェクトを開く";
-			}
-			*/
-
-		}
 		public ReactiveCommandSlim ContextMenuOpenParentFolder { get; }
 		private void OnContextMenuOpenParentFolder()
 		{

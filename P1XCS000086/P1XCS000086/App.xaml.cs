@@ -41,29 +41,6 @@ namespace P1XCS000086
 			// 初期
 			containerRegistry.RegisterSingleton<IMessageService, MessageService>();
 
-			/*
-			// JSONs
-			containerRegistry.RegisterSingleton<IJsonExtention, JsonExtention>();
-			containerRegistry.RegisterSingleton<IJsonConnectionStrings, JsonConnectionStrings>();
-			containerRegistry.RegisterSingleton<IJsonConnectionItem, JsonConnectionItem>();
-			containerRegistry.RegisterSingleton<IJsonSqlDatabaseName, JsonSqlDatabaseName>();
-			containerRegistry.RegisterSingleton<IJsonSqlDatabaseNames, JsonSqlDatabaseNames>();
-
-			// SQLs
-			containerRegistry.RegisterSingleton<ISqlDatabaseStrings, SqlDatabaseStrings>();
-			containerRegistry.RegisterSingleton<ISqlSchemaNames, SqlSchemaNames>();
-			// # MySql
-			containerRegistry.RegisterSingleton<IMySqlConnectionString, SqlConnectionString>();
-			containerRegistry.RegisterSingleton<ISqlConnectionTest, SqlConnectionTest>();
-			containerRegistry.RegisterSingleton<ISqlSelect, SqlSelect>();
-			containerRegistry.RegisterSingleton<ISqlInsert, SqlInsert>();
-			containerRegistry.RegisterSingleton<ISqlUpdate, SqlUpdate>();
-			containerRegistry.RegisterSingleton<ISqlDelete, SqlDelete>();
-			containerRegistry.RegisterSingleton<ISqlShowTables, SqlShowTables>();
-			containerRegistry.RegisterSingleton<ISqlShowSchemas, SqlShowSchemas>();
-			// # SqlServer
-			*/
-
 			// Models
 			// # Merged
 			containerRegistry.RegisterSingleton<IMergeModel, MergeModel>();
@@ -73,6 +50,7 @@ namespace P1XCS000086
 			containerRegistry.RegisterSingleton<IHomeModel, HomeModel>();
 			// # CodeManageMaster
 			containerRegistry.Register<ICodeRegisterModel, CodeRegisterModel>();
+			containerRegistry.Register<IMasterManagerModel, MasterManagerModel>();
 
 		}
 		// モジュールカタログの設定
@@ -84,20 +62,6 @@ namespace P1XCS000086
 			moduleCatalog.AddModule<CodeManagerViewModule>();
 			// 
 			moduleCatalog.AddModule<HouseholdExpensesModule>();
-
-			/*
-			moduleCatalog.AddModule<ModuleNameModule>();
-			moduleCatalog.AddModule<ViewControlsModule>();
-
-			// コード台帳参照用のモジュール
-			moduleCatalog.AddModule<CodeManageViewerModule>();
-			// コード台帳登録用のモジュール
-			moduleCatalog.AddModule<CodeManageRegisterModule>();
-			// コード台帳編集用のモジュール
-			moduleCatalog.AddModule<CodeManageEditorModule>();
-			// コード台帳マスタ用のモジュール
-			moduleCatalog.AddModule<CodeManageMasterModule>();
-			*/
 		}
 	}
 }

@@ -32,6 +32,8 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 		private string _connStr;
 
+		private CommonModel _common;
+
 		private SqlShowTables _showTables;
 		private SqlSelect _select;
 		private SqlInsert _insert;
@@ -51,7 +53,6 @@ namespace P1XCS000086.Services.Models.CodeManager
 		public string CodeDevType { get; private set; }
 
 		public List<string> LangTypes { get; private set; }
-		public List<string> DevTypes { get; private set; }
 
 		public List<string> UseAppMajor { get; private set; }
 		public List<string> UseAppRange { get; private set; }
@@ -85,6 +86,9 @@ namespace P1XCS000086.Services.Models.CodeManager
 			// 接続文字列を取得
 			_connStr = connStr;
 
+			// 共通モデルを生成
+			_common = new CommonModel();
+
 			// MySQLのSELECT用クラスのインスタンスを生成し、初期化
 			_showTables = new SqlShowTables(connStr);
 			_select = new SqlSelect(connStr);
@@ -92,10 +96,9 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 
 			// "manager_language_type"テーブルから"language_type"カラムを文字列のリストで取得
-			LangTypes = _select.SelectedColumnToList("language_type", "SELECT `language_type` FROM `manager_language_type`;");
-			DevTypes = _select.SelectedColumnToList("develop_type", "SELECT `develop_type` FROM `manager_develop_type`;");
-			UseAppMajor = _select.SelectedColumnToList("use_name_jp", "SELECT `use_name_jp` FROM `manager_use_application` WHERE `sign` = 1;");
-			UseAppRange = _select.SelectedColumnToList("use_name_jp", "SELECT `use_name_jp` FROM `manager_use_application` WHERE `sign` = 2;");
+			LangTypes = _common.LangTypes;
+			UseAppMajor = _common.UseAppMajor;
+			UseAppRange = _common.UseAppRange;
 
 			int a = 0;
 		}
@@ -110,12 +113,12 @@ namespace P1XCS000086.Services.Models.CodeManager
 			
 			// "subResult"から"develop_type"を取得
 			string query = $"SELECT `develop_type` FROM `manager_develop_type` WHERE `script_type` = '{subResult}';";
-			DevTypes = _select.SelectedColumnToList("develop_type", query);
+			List<string> devTypes = _select.SelectedColumnToList("develop_type", query);
 
 			// 
 			ResetQueryFieldValiable();
 
-			return DevTypes;
+			return devTypes;
 		}
 		public List<string> SetFrameworkName(string selectedLangValue)
 		{

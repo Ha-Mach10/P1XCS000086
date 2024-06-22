@@ -18,9 +18,9 @@ namespace P1XCS000086.Modules.CodeManagerView.Views
 	/// <summary>
 	/// Interaction logic for ViewA.xaml
 	/// </summary>
-	public partial class CodeEditor : UserControl
+	public partial class MasterManager : UserControl
 	{
-		public CodeEditor()
+		public MasterManager()
 		{
 			InitializeComponent();
 		}
