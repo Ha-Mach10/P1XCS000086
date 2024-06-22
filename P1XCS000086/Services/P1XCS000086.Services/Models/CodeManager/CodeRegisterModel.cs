@@ -40,6 +40,8 @@ namespace P1XCS000086.Services.Models.CodeManager
 		private List<string> _columns = new List<string>();
 		private List<string> _values = new List<string>();
 
+		private string s_explorer = "EXPLORER.EXE";
+
 
 
 		// *****************************************************************************
@@ -109,6 +111,10 @@ namespace P1XCS000086.Services.Models.CodeManager
 			// "subResult"から"develop_type"を取得
 			string query = $"SELECT `develop_type` FROM `manager_develop_type` WHERE `script_type` = '{subResult}';";
 			DevTypes = _select.SelectedColumnToList("develop_type", query);
+
+			// 
+			ResetQueryFieldValiable();
+
 			return DevTypes;
 		}
 		public List<string> SetFrameworkName(string selectedLangValue)
@@ -117,6 +123,9 @@ namespace P1XCS000086.Services.Models.CodeManager
 			_values = new List<string> { selectedLangValue };
 			string query = "SELECT `framework_name` FROM `manager_master_ui_framework` WHERE `target_language` = @target_language;";
 			UiFramework = _select.SelectedColumnToList("framework_name", query, _columns, _values);
+
+			// 
+			ResetQueryFieldValiable();
 
 			return UiFramework;
 		}
@@ -144,14 +153,25 @@ namespace P1XCS000086.Services.Models.CodeManager
 			string query = $"SELECT * FROM `manager_register_code` WHERE `develop_number` LIKE '{subResult}%';";
 
 			// 
-			Table = _select.Select(query);
+			DataTable dt = _select.Select(query);
+			// Table = SetColumnName(dt, "manager_register_code", TranslateTargetLanguage.Jp);
 
-			return Table;
+			// return Table;
+			return dt;
 		}
+
+		/// <summary>
+		/// 使用用途種別を取得
+		/// </summary>
+		/// <param name="useApplication"></param>
+		/// <returns></returns>
 		public string SetUseApplication(string useApplication)
 		{
 			string query = $"SELECT `use_name_en` FROM `manager_use_application` WHERE `use_name_jp` = '{useApplication}';";
 			string result = _select.GetJustOneSelectedItem("use_name_en", query);
+
+			// 
+			ResetQueryFieldValiable();
 
 			return result;
 		}
@@ -188,6 +208,9 @@ namespace P1XCS000086.Services.Models.CodeManager
 			string query = sb.ToString();
 
 			_insert.Insert(query, _columns, _values);
+
+			// 
+			ResetQueryFieldValiable();
 		}
 		/// <summary>
 		/// 指定した言語からその言語の開発ディレクトリの親ディレクトリをエクスプローラーで開く
@@ -198,7 +221,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 			string languageTypeCode = GetLanguageType(langType);
 			string parentDirPath = GetLanguageDirectry(languageTypeCode);
 
-			Process.Start(parentDirPath);
+			Process.Start(s_explorer, parentDirPath);
 		}
 		/// <summary>
 		/// 指定した言語から、その言語の指定された開発番号の親ディレクトリをエクスプローラーで開く
@@ -212,7 +235,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			string path = $"{parentDirPath}\\{developNumber}";
 
-			Process.Start(path);
+			Process.Start(s_explorer, path);
 		}
 		/// <summary>
 		/// 指定した言語から、その言語の開発用ファイルを規定のソフトウェアで開く
@@ -225,9 +248,16 @@ namespace P1XCS000086.Services.Models.CodeManager
 			string languageTypeCode = GetLanguageType(langType);
 			string dirPath = GetLanguageDirectry(languageTypeCode);
 
-			string path = $"{dirFilePath}\\{developNumber}\\{dirFilePath}";
+			string path = $"{dirPath}\\{developNumber}\\{dirFilePath}";
 
-			Process.Start(path);
+			var startInfo = new ProcessStartInfo()
+			{
+				FileName = path,
+				UseShellExecute = true,
+				CreateNoWindow = true,
+			};
+
+			Process.Start(startInfo);
 		}
 
 
@@ -239,19 +269,21 @@ namespace P1XCS000086.Services.Models.CodeManager
 		/// <summary>
 		/// 言語種別を取得
 		/// </summary>
-		/// <param name="langTypeCode"></param>
+		/// <param name="langType"></param>
 		/// <returns></returns>
-		private string GetLanguageType(string langTypeCode)
+		private string GetLanguageType(string langType)
 		{
 			_columnName = "language_type_code";
 			_columns = new List<string> { "language_type" };
-			_values = new List<string> { langTypeCode };
+			_values = new List<string> { langType };
 			string query = $"SELECT `{_columnName}` FROM `manager_language_type` WHERE `language_type` = @language_type;";
 
-			// リスト破棄
+			string langTypeCode = _select.GetJustOneSelectedItem(_columnName, query, _columns, _values);
+
+			// フィールド変数初期化
 			ResetQueryFieldValiable();
 
-			return _select.GetJustOneSelectedItem(_columnName, query, _columns, _values);
+			return langTypeCode;
 		}
 		/// <summary>
 		/// 開発種別を取得
@@ -265,10 +297,12 @@ namespace P1XCS000086.Services.Models.CodeManager
 			_values = new List<string> { devType };
 			string query = $"SELECT `{_columnName}` FROM `manager_develop_type` WHERE `develop_type` = @develop_type;";
 
+			string devTypeCode = _select.GetJustOneSelectedItem(_columnName, query, _columns, _values);
+
 			// フィールド変数初期化
 			ResetQueryFieldValiable();
 
-			return _select.GetJustOneSelectedItem(_columnName, query, _columns, _values);
+			return devTypeCode;
 		}
 		/// <summary>
 		/// 指定言語のプロジェクトを格納した親ディレクトリを取得
@@ -280,11 +314,14 @@ namespace P1XCS000086.Services.Models.CodeManager
 			_columnName = "language_directry";
 			_columns = new List<string> { "language_type_code" };
 			_values = new List<string> { langTypeCode };
-			string query = $"SELECT `{_columnName}` FROM `development_project_directry` WHERE `language_type_code` = @language_type_code;";
+			string query = $"SELECT `{_columnName}` FROM `manager_development_project_directry` WHERE `language_type_code` = @language_type_code;";
 
+			string languageDirctry = _select.GetJustOneSelectedItem(_columnName, query, _columns, _values);
+
+			// 
 			ResetQueryFieldValiable();
 
-			return _select.GetJustOneSelectedItem(_columnName, query, _columns, _values);
+			return languageDirctry;
 		}
 		/// <summary>
 		/// DataTableのカラム名を翻訳する
@@ -317,7 +354,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 				dt.Columns[baseColumnName].ColumnName = targetColumnName;
 
 				return (baseColumnName, targetColumnName);
-			});
+			}).ToList();
 
 			ResetQueryFieldValiable();
 

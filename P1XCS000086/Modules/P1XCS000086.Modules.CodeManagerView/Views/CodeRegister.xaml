@@ -212,6 +212,7 @@
 			</ToggleButton>
 
 			<DataGrid
+				x:Name="ViewGrid"
 				Grid.Column="1"
 				Margin="4"
 				EnableColumnVirtualization="True"
@@ -220,10 +221,17 @@
 				VirtualizingPanel.IsVirtualizing="True"
 				VirtualizingPanel.VirtualizationMode="Recycling"
 				IsReadOnly="True"
-				SelectedValue="{Binding Row.Value}">
+				SelectionUnit="FullRow">
+				<i:Interaction.Triggers>
+					<i:EventTrigger EventName="SelectionChanged">
+						<prism:InvokeCommandAction Command="{Binding DataGridRowSelectionChanged}" CommandParameter="{Binding ElementName=ViewGrid, Path=SelectedItem}"/>
+					</i:EventTrigger>
+				</i:Interaction.Triggers>
 				<DataGrid.ContextMenu>
 					<ContextMenu>
 						<MenuItem Header="親フォルダ―を開く" Command="{Binding ContextMenuOpenParentFolder}"/>
+						<MenuItem Header="{Binding OpenDirHeaderContent.Value}" Command="{Binding ContextMenuOpenProjectFolder}"/>
+						<MenuItem Header="{Binding OpenFileHeaderContent.Value}" Command="{Binding ContextMenuOpenProject}"/>
 					</ContextMenu>
 				</DataGrid.ContextMenu>
 				<!--DataGrid.Resources>

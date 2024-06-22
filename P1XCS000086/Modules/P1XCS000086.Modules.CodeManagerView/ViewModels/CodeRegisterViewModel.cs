@@ -15,6 +15,7 @@ using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using System.Net.Http;
 using System.Data;
 using System.ComponentModel.DataAnnotations;
+using System.Windows.Controls;
 
 namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 {
@@ -25,7 +26,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		private ICodeRegisterModel _model;
 
 
-		// Properties
+		#region Properties
 
 		public bool KeepAlive { get; private set; }
 
@@ -57,7 +58,12 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 		public ReactivePropertySlim<DataTable> Table { get; }
-		public ReactivePropertySlim<DataRow> Row { get; }
+		public DataRow Row { get; private set; }
+
+		public ReactivePropertySlim<string> OpenDirHeaderContent { get; }
+		public ReactivePropertySlim<string> OpenFileHeaderContent { get; }
+		
+		#endregion
 
 
 
@@ -70,7 +76,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 
-			// Properties
+			#region Properties
+
 			IsPaneOc = new ReactivePropertySlim<bool>(true);
 
 			RecordCount = new ReactivePropertySlim<int>(0);
@@ -103,8 +110,11 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			Summary = new ReactivePropertySlim<string>(string.Empty);
 
 			Table = new ReactivePropertySlim<DataTable>(null).AddTo(_disposables);
-			Row = new ReactivePropertySlim<DataRow>(null).AddTo(_disposables);
 
+			OpenDirHeaderContent = new ReactivePropertySlim<string>(string.Empty);
+			OpenFileHeaderContent = new ReactivePropertySlim<string>(string.Empty);
+
+			#endregion
 
 			// 
 
@@ -125,6 +135,22 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 				.CombineLatestValuesAreAllFalse()
 				.ToReactiveCommand();
 			RegistCodeNumber.Subscribe(OnRegistCodeNumber).AddTo(_disposables);
+			// 
+			DataGridRowSelectionChanged = new ReactiveCommandSlim();
+			DataGridRowSelectionChanged.Subscribe(param =>
+			{
+				// コマンドパラメータから受け取った値をキャスト
+				DataRowView dataRowView = param as DataRowView;				
+				
+				if (dataRowView is not null)
+				{
+					Row = dataRowView.Row;
+					(string developNumber, string _) = GetSelectedDevelopNumber(Row);
+					OpenDirHeaderContent.Value = $"{developNumber}フォルダをエクスプローラーで開く";
+					OpenFileHeaderContent.Value = $"{developNumber}プロジェクトを開く";
+				}				
+			});
+			// DataGridRowSelectionChanged.Subscribe(OnDataGridRowSelectionChanged).AddTo(_disposables);
 			// 
 			ContextMenuOpenParentFolder = new ReactiveCommandSlim();
 			ContextMenuOpenParentFolder.Subscribe(OnContextMenuOpenParentFolder).AddTo(_disposables);
@@ -177,6 +203,19 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 			Table.Value = _model.SetTable(SelectedLangType.Value, SelectedDevType.Value);
 		}
+		public ReactiveCommandSlim DataGridRowSelectionChanged { get; }
+		private void OnDataGridRowSelectionChanged()
+		{
+			/*
+			if (Row.Value is not null)
+			{
+				(string developNumber, string _) = GetSelectedDevelopNumber(Row.Value);
+				OpenDirHeaderContent.Value = $"{developNumber}フォルダをエクスプローラーで開く";
+				OpenFileHeaderContent.Value = $"{developNumber}プロジェクトを開く";
+			}
+			*/
+
+		}
 		public ReactiveCommandSlim ContextMenuOpenParentFolder { get; }
 		private void OnContextMenuOpenParentFolder()
 		{
@@ -185,13 +224,13 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public ReactiveCommandSlim ContextMenuOpenProjectFolder { get; }
 		private void OnContextMenuOpenProjectFolder()
 		{
-			(string developNumber, string _) = GetSelectedDevelopNumber(Row.Value);
+			(string developNumber, string _) = GetSelectedDevelopNumber(Row);
 			_model.OpenProjectDirectry(developNumber, SelectedLangType.Value);
 		}
 		public ReactiveCommandSlim ContextMenuOpenProject { get; }
 		private void OnContextMenuOpenProject()
 		{
-			(string developNumber, string dirFileName) = GetSelectedDevelopNumber(Row.Value);
+			(string developNumber, string dirFileName) = GetSelectedDevelopNumber(Row);
 			_model.OpenProjectFile(developNumber, dirFileName, SelectedLangType.Value);
 		}
 
