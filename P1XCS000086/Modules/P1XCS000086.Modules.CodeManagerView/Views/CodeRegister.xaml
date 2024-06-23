@@ -217,21 +217,21 @@
 				Margin="4"
 				EnableColumnVirtualization="True"
 				EnableRowVirtualization="True"
-				ItemsSource="{Binding Table.Value}"
-				VirtualizingPanel.IsVirtualizing="True"
-				VirtualizingPanel.VirtualizationMode="Recycling"
 				IsReadOnly="True"
-				SelectionUnit="FullRow">
+				ItemsSource="{Binding Table.Value}"
+				SelectionUnit="FullRow"
+				VirtualizingPanel.IsVirtualizing="True"
+				VirtualizingPanel.VirtualizationMode="Recycling">
 				<i:Interaction.Triggers>
 					<i:EventTrigger EventName="SelectionChanged">
-						<prism:InvokeCommandAction Command="{Binding DataGridRowSelectionChanged}" CommandParameter="{Binding ElementName=ViewGrid, Path=SelectedItem}"/>
+						<prism:InvokeCommandAction Command="{Binding DataGridRowSelectionChanged}" CommandParameter="{Binding ElementName=ViewGrid, Path=SelectedItem}" />
 					</i:EventTrigger>
 				</i:Interaction.Triggers>
 				<DataGrid.ContextMenu>
 					<ContextMenu>
-						<MenuItem Header="親フォルダ―を開く" Command="{Binding ContextMenuOpenParentFolder}"/>
-						<MenuItem Header="{Binding OpenDirHeaderContent.Value}" Command="{Binding ContextMenuOpenProjectFolder}"/>
-						<MenuItem Header="{Binding OpenFileHeaderContent.Value}" Command="{Binding ContextMenuOpenProject}"/>
+						<MenuItem Command="{Binding ContextMenuOpenParentFolder}" Header="親フォルダ―を開く" />
+						<MenuItem Command="{Binding ContextMenuOpenProjectFolder}" Header="{Binding OpenDirHeaderContent.Value}" />
+						<MenuItem Command="{Binding ContextMenuOpenProject}" Header="{Binding OpenFileHeaderContent.Value}" />
 					</ContextMenu>
 				</DataGrid.ContextMenu>
 				<!--DataGrid.Resources>

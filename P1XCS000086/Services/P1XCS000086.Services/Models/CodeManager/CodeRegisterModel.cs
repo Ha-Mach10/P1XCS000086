@@ -77,22 +77,16 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 		public void RefreshValue()
 		{
-			// Keyに"manager"が含まれているか判別
-			if (SqlConnectionStrings.ConnectionStrings.TryGetValue("manager", out string connStr) is false)
-			{
-				return;
-			}
-
-			// 接続文字列を取得
-			_connStr = connStr;
-
 			// 共通モデルを生成
 			_common = new CommonModel();
 
+			// 接続文字列を取得
+			_connStr = _common.ConnStr;
+
 			// MySQLのSELECT用クラスのインスタンスを生成し、初期化
-			_showTables = new SqlShowTables(connStr);
-			_select = new SqlSelect(connStr);
-			_insert = new SqlInsert(connStr);
+			_showTables = new SqlShowTables(_connStr);
+			_select = new SqlSelect(_connStr);
+			_insert = new SqlInsert(_connStr);
 
 
 			// "manager_language_type"テーブルから"language_type"カラムを文字列のリストで取得

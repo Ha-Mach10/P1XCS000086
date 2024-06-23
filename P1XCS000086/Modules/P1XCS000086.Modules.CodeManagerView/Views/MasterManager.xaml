@@ -40,13 +40,14 @@
 			<ColumnDefinition />
 		</Grid.ColumnDefinitions>
 
-		<!--
-			TextBlock
-			HorizontalAlignment="Center"
-			VerticalAlignment="Center"
-			Foreground="White"
-			Text="登録コード編集" /
-		-->
+		<StackPanel>
+			<GroupBox Header="テーブル一覧">
+				<ListView>
+
+				</ListView>
+			</GroupBox>
+		</StackPanel>
+
 		<StackPanel Grid.Column="1">
 			<StackPanel Orientation="Horizontal">
 				<ComboBox
@@ -75,4 +76,5 @@
 			<DataGrid />
 		</StackPanel>
 	</Grid>
+	
 </UserControl>
