@@ -4,6 +4,11 @@ using System.Text;
 
 using P1XCS000086.Services.Sql.MySql;
 using P1XCS000086.Services.Sql;
+using Google.Protobuf.WellKnownTypes;
+using Org.BouncyCastle.Pqc.Crypto.Lms;
+using System.ComponentModel;
+using System.Linq;
+using System.Data;
 
 namespace P1XCS000086.Services.Models.CodeManager
 {
@@ -51,6 +56,41 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 
 		// 
+		public List<(string, string)> GetTranclateTableName()
+		{
+			List<(string, string)> resultTappleList = new List<(string, string)>();
 
+			// クエリ文字列
+			string query = $"SELECT `column_name`, `japanese` FROM `table_translator` WHERE `type` = 'Table';";
+			
+			_select.Select(query).AsEnumerable().Select(x =>
+			{
+				string columnName = x["column_name"].ToString();
+				string japanese = x["japanese"].ToString();
+
+				resultTappleList.Add((columnName, japanese));
+
+				return x;
+			}).ToArray();
+
+			return resultTappleList;
+		}
+		public List<string> GetSingleColumnFromTable(string tableName, string columnName, List<string> columns = null, List<string> values = null)
+		{
+			string query = string.Empty;
+			List<string> result = new List<string>();
+
+			if ((columns is not null && values is not null)
+				&& columns.Count == values.Count)
+			{
+				string param = 
+				query = $"SELECT `{columnName}` FROM `{tableName}`";
+			}
+			else if (columns is null || values is null)
+			{
+				query = $"SELECT `{columnName}` FROM `{tableName}`;";
+				result = _select.SelectedColumnToList(columnName, query);
+			}
+		}
 	}
 }

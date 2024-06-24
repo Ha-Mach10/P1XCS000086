@@ -15,7 +15,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 
 		// Properties
-		public List<string> LangTypes { get; }
+		public List<string> TableNames { get; }
 		public List<string> UseAppMajor { get; }
 		public List<string> UseAppRange { get; }
 
@@ -27,7 +27,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 			_common = new CommonModel();
 
 
-			LangTypes = _common.LangTypes;
+			TableNames = _common.TableNames;
 			UseAppMajor = _common.UseAppMajor;
 			UseAppRange = _common.UseAppRange;
 		}

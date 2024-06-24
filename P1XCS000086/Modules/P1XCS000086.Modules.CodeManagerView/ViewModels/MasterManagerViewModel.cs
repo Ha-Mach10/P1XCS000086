@@ -14,6 +14,7 @@ using P1XCS000086.Core.Mvvm;
 using System.ComponentModel;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using System.Data;
+using P1XCS000086.Modules.CodeManagerView.Domains;
 
 namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 {
@@ -25,7 +26,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 		// Properties
-		public ReactivePropertySlim<List<string>> LangTypes { get; }
+		public ReactivePropertySlim<List<string>> TableNames { get; }
 
 		public ReactivePropertySlim<DataTable> Table { get; }
 
@@ -39,7 +40,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 			// Properties
-			LangTypes = new ReactivePropertySlim<List<string>>(_model.LangTypes).AddTo(_disposables);
+			TableNames = new ReactivePropertySlim<List<string>>(_model.TableNames).AddTo(_disposables);
 
 
 			// Commands
@@ -51,6 +52,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 
+		// Commands
 		public ReactiveCommandSlim LangTypeSelectionChanged { get; }
 		private void OnLangTypeSelectionChanged()
 		{
@@ -60,6 +62,21 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		private void OnDevTypeSelectionChanged()
 		{
 
+		}
+
+
+
+		// Private Methods
+		private IEnumerable<TableNameListItem> GenerateTableNameListItems()
+		{
+			_model.TableNames.Select(x =>
+			{
+
+
+
+				return x;
+			}).ToArray();
+			yield return new TableNameListItem()
 		}
 	}
 }
