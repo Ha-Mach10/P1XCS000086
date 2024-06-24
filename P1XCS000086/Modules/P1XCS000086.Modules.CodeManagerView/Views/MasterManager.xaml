@@ -42,8 +42,26 @@
 
 		<StackPanel>
 			<GroupBox Header="テーブル一覧">
-				<ListView>
+				<ListView ItemsSource="{Binding TableNames.Value}" SelectedItem="{Binding SelectedTableName.Value}">
+					<ListView.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel/>
+						</ItemsPanelTemplate>
+					</ListView.ItemsPanel>
+					<ListView.ItemTemplate>
+						<DataTemplate>
+							<StackPanel>
+								<TextBlock Text="{Binding TableNameJp}" FontSize="14"/>
+								<TextBlock Text="{Binding Japanese}" />
+							</StackPanel>
+						</DataTemplate>
+					</ListView.ItemTemplate>
 
+					<i:Interaction.Triggers>
+						<i:EventTrigger EventName="SelectionChanged">
+							<prism:InvokeCommandAction Command="{Binding}"/>
+						</i:EventTrigger>
+					</i:Interaction.Triggers>
 				</ListView>
 			</GroupBox>
 		</StackPanel>

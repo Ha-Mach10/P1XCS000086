@@ -26,7 +26,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 		// Properties
-		public ReactivePropertySlim<List<string>> TableNames { get; }
+		public ReactivePropertySlim<List<TableNameListItem>> TableNames { get; }
+		public ReactivePropertySlim<TableNameListItem> SelectedTableName { get; }
 
 		public ReactivePropertySlim<DataTable> Table { get; }
 
@@ -40,7 +41,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 			// Properties
-			TableNames = new ReactivePropertySlim<List<string>>(_model.TableNames).AddTo(_disposables);
+			TableNames = new ReactivePropertySlim<List<TableNameListItem>>(GenerateTableNameListItems().ToList()).AddTo(_disposables);
+			SelectedTableName = new ReactivePropertySlim<TableNameListItem>().AddTo(_disposables);
 
 
 			// Commands
@@ -69,14 +71,10 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		// Private Methods
 		private IEnumerable<TableNameListItem> GenerateTableNameListItems()
 		{
-			_model.TableNames.Select(x =>
+			foreach (var item in _model.TableNames)
 			{
-
-
-
-				return x;
-			}).ToArray();
-			yield return new TableNameListItem()
+				yield return new TableNameListItem(item.Item1, item.Item2);
+			}
 		}
 	}
 }

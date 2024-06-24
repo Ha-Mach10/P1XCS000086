@@ -56,7 +56,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 
 		// 
-		public List<(string, string)> GetTranclateTableName()
+		public List<(string, string)> GetTranclateTableNames()
 		{
 			List<(string, string)> resultTappleList = new List<(string, string)>();
 
@@ -74,23 +74,6 @@ namespace P1XCS000086.Services.Models.CodeManager
 			}).ToArray();
 
 			return resultTappleList;
-		}
-		public List<string> GetSingleColumnFromTable(string tableName, string columnName, List<string> columns = null, List<string> values = null)
-		{
-			string query = string.Empty;
-			List<string> result = new List<string>();
-
-			if ((columns is not null && values is not null)
-				&& columns.Count == values.Count)
-			{
-				string param = 
-				query = $"SELECT `{columnName}` FROM `{tableName}`";
-			}
-			else if (columns is null || values is null)
-			{
-				query = $"SELECT `{columnName}` FROM `{tableName}`;";
-				result = _select.SelectedColumnToList(columnName, query);
-			}
 		}
 	}
 }
