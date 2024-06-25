@@ -74,31 +74,38 @@
 			</GroupBox>
 		</StackPanel>
 
-		<StackPanel Grid.Column="1">
-			<StackPanel Orientation="Horizontal">
-				<!--ComboBox
-					mah:TextBoxHelper.Watermark="言語種別の選択"
-					ItemsSource="{Binding LangTypes.Value}"
-					SelectedValue="{Binding SelectedLangType.Value}"
-					Style="{StaticResource FilterCombo}">
-					<i:Interaction.Triggers>
-						<i:EventTrigger EventName="SelectionChanged">
-							<prism:InvokeCommandAction Command="{Binding LangTypeSelectionChanged}" />
-						</i:EventTrigger>
-					</i:Interaction.Triggers>
-				</ComboBox-->
+		<Grid Grid.Column="1">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition />
+			</Grid.RowDefinitions>
+
+			<StackPanel>
+				<StackPanel Orientation="Horizontal">
+					<!--ComboBox
+			mah:TextBoxHelper.Watermark="言語種別の選択"
+			ItemsSource="{Binding LangTypes.Value}"
+			SelectedValue="{Binding SelectedLangType.Value}"
+			Style="{StaticResource FilterCombo}">
+			<i:Interaction.Triggers>
+				<i:EventTrigger EventName="SelectionChanged">
+					<prism:InvokeCommandAction Command="{Binding LangTypeSelectionChanged}" />
+				</i:EventTrigger>
+			</i:Interaction.Triggers>
+		</ComboBox-->
+				</StackPanel>
 			</StackPanel>
 			<DataGrid
 				x:Name="ViewGrid"
+				Grid.Row="1"
 				EnableColumnVirtualization="True"
 				EnableRowVirtualization="True"
 				IsReadOnly="True"
 				ItemsSource="{Binding Table.Value}"
 				SelectionUnit="FullRow"
 				VirtualizingPanel.IsVirtualizing="True"
-				VirtualizingPanel.VirtualizationMode="Recycling"
-				ScrollViewer.VerticalScrollBarVisibility="Auto"/>
-		</StackPanel>
+				VirtualizingPanel.VirtualizationMode="Recycling" />
+		</Grid>
 	</Grid>
 
 </UserControl>

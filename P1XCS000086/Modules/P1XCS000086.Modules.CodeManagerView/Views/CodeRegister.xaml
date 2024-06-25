@@ -234,12 +234,6 @@
 						<MenuItem Command="{Binding ContextMenuOpenProject}" Header="{Binding OpenFileHeaderContent.Value}" />
 					</ContextMenu>
 				</DataGrid.ContextMenu>
-				<!--DataGrid.Resources>
-					<Style TargetType="DataGridRow">
-						<Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=DataContext}" />
-						<Setter Property="ContextMenu" Value="{Binding Source={StaticResource DataGridContextMenu}}" />
-					</Style>
-				</DataGrid.Resources-->
 			</DataGrid>
 		</Grid>
 	</mah:SplitView>
