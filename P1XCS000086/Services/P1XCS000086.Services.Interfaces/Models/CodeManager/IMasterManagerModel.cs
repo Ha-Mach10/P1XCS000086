@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 
 namespace P1XCS000086.Services.Interfaces.Models.CodeManager
@@ -15,5 +16,11 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 
 		// Public Methods
 
+		/// <summary>
+		/// 任意のテーブルをDataTableで取得
+		/// </summary>
+		/// <param name="tableName"></param>
+		/// <returns></returns>
+		public DataTable SearchTable(string tableName);
 	}
 }

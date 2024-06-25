@@ -36,30 +36,38 @@
 
 	<Grid>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="200" />
+			<ColumnDefinition Width="220" />
 			<ColumnDefinition />
 		</Grid.ColumnDefinitions>
 
 		<StackPanel>
-			<GroupBox Header="テーブル一覧">
+			<GroupBox
+				Padding="0,8,0,8"
+				Header="テーブル一覧"
+				ScrollViewer.VerticalScrollBarVisibility="Auto">
 				<ListView ItemsSource="{Binding TableNames.Value}" SelectedItem="{Binding SelectedTableName.Value}">
 					<ListView.ItemsPanel>
 						<ItemsPanelTemplate>
-							<StackPanel/>
+							<StackPanel />
 						</ItemsPanelTemplate>
 					</ListView.ItemsPanel>
 					<ListView.ItemTemplate>
 						<DataTemplate>
-							<StackPanel>
-								<TextBlock Text="{Binding TableNameJp}" FontSize="14"/>
-								<TextBlock Text="{Binding Japanese}" />
-							</StackPanel>
+							<Border
+								Padding="4"
+								BorderBrush="White"
+								BorderThickness="1">
+								<StackPanel>
+									<TextBlock FontSize="14" Text="{Binding TableNameJp}" />
+									<TextBlock Margin="8" Text="{Binding TableName}" />
+								</StackPanel>
+							</Border>
 						</DataTemplate>
 					</ListView.ItemTemplate>
 
 					<i:Interaction.Triggers>
 						<i:EventTrigger EventName="SelectionChanged">
-							<prism:InvokeCommandAction Command="{Binding}"/>
+							<prism:InvokeCommandAction Command="{Binding ListViewSelectionChanged}" />
 						</i:EventTrigger>
 					</i:Interaction.Triggers>
 				</ListView>
@@ -68,7 +76,7 @@
 
 		<StackPanel Grid.Column="1">
 			<StackPanel Orientation="Horizontal">
-				<ComboBox
+				<!--ComboBox
 					mah:TextBoxHelper.Watermark="言語種別の選択"
 					ItemsSource="{Binding LangTypes.Value}"
 					SelectedValue="{Binding SelectedLangType.Value}"
@@ -78,10 +86,18 @@
 							<prism:InvokeCommandAction Command="{Binding LangTypeSelectionChanged}" />
 						</i:EventTrigger>
 					</i:Interaction.Triggers>
-				</ComboBox>
+				</ComboBox-->
 			</StackPanel>
-			<DataGrid />
+			<DataGrid
+				x:Name="ViewGrid"
+				EnableColumnVirtualization="True"
+				EnableRowVirtualization="True"
+				IsReadOnly="True"
+				ItemsSource="{Binding Table.Value}"
+				SelectionUnit="FullRow"
+				VirtualizingPanel.IsVirtualizing="True"
+				VirtualizingPanel.VirtualizationMode="Recycling" />
 		</StackPanel>
 	</Grid>
-	
+
 </UserControl>

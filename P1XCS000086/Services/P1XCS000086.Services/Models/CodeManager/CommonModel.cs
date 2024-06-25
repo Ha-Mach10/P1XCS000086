@@ -43,8 +43,8 @@ namespace P1XCS000086.Services.Models.CodeManager
 			ConnStr = connStr;
 
 			// 
-			_showTable = new SqlShowTables();
-			_select = new SqlSelect();
+			_showTable = new SqlShowTables(ConnStr);
+			_select = new SqlSelect(connStr);
 
 			// "manager_language_type"テーブルから"language_type"カラムを文字列のリストで取得
 			TableNames = _showTable.ShowTables();
@@ -58,17 +58,17 @@ namespace P1XCS000086.Services.Models.CodeManager
 		// 
 		public List<(string, string)> GetTranclateTableNames()
 		{
-			List<(string, string)> resultTappleList = new List<(string, string)>();
+			List<(string tableNameJp, string tableName)> resultTappleList = new List<(string, string)>();
 
 			// クエリ文字列
 			string query = $"SELECT `column_name`, `japanese` FROM `table_translator` WHERE `type` = 'Table';";
 			
 			_select.Select(query).AsEnumerable().Select(x =>
 			{
-				string columnName = x["column_name"].ToString();
-				string japanese = x["japanese"].ToString();
+				string tableName = x["column_name"].ToString();
+				string tableNameJp = x["japanese"].ToString();
 
-				resultTappleList.Add((columnName, japanese));
+				resultTappleList.Add((tableNameJp, tableName));
 
 				return x;
 			}).ToArray();

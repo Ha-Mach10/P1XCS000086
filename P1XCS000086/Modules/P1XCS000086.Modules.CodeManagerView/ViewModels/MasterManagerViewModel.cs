@@ -46,6 +46,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 			// Commands
+			ListViewSelectionChanged = new ReactiveCommandSlim();
+			ListViewSelectionChanged.Subscribe(OnListViewSelectionChanged).AddTo(_disposables);
 			LangTypeSelectionChanged = new ReactiveCommandSlim();
 			LangTypeSelectionChanged.Subscribe(OnLangTypeSelectionChanged).AddTo(_disposables);
 			DevTypeSelectionChanged = new ReactiveCommandSlim();
@@ -55,6 +57,11 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 		// Commands
+		public ReactiveCommandSlim ListViewSelectionChanged { get; }
+		private void OnListViewSelectionChanged()
+		{
+			Table.Value = _model.SearchTable(SelectedTableName.Value.TableName);
+		}
 		public ReactiveCommandSlim LangTypeSelectionChanged { get; }
 		private void OnLangTypeSelectionChanged()
 		{
