@@ -96,7 +96,8 @@
 				ItemsSource="{Binding Table.Value}"
 				SelectionUnit="FullRow"
 				VirtualizingPanel.IsVirtualizing="True"
-				VirtualizingPanel.VirtualizationMode="Recycling" />
+				VirtualizingPanel.VirtualizationMode="Recycling"
+				ScrollViewer.VerticalScrollBarVisibility="Auto"/>
 		</StackPanel>
 	</Grid>
 
