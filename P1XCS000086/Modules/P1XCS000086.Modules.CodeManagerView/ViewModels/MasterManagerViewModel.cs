@@ -44,6 +44,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			TableNames = new ReactivePropertySlim<List<TableNameListItem>>(GenerateTableNameListItems().ToList()).AddTo(_disposables);
 			SelectedTableName = new ReactivePropertySlim<TableNameListItem>().AddTo(_disposables);
 
+			Table = new ReactivePropertySlim<DataTable>().AddTo(_disposables);
 
 			// Commands
 			ListViewSelectionChanged = new ReactiveCommandSlim();
