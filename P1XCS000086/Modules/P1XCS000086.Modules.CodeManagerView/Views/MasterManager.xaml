@@ -45,6 +45,7 @@
 				Padding="0,8,0,8"
 				Header="テーブル一覧"
 				ScrollViewer.VerticalScrollBarVisibility="Auto">
+				<
 				<ListView ItemsSource="{Binding TableNames.Value}" SelectedItem="{Binding SelectedTableName.Value}">
 					<ListView.ItemsPanel>
 						<ItemsPanelTemplate>

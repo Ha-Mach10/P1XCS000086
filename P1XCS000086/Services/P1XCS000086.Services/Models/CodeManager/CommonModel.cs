@@ -21,7 +21,10 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 
 		// Properties
-		public string ConnStr { get; }
+		public string ConnStrManager { get; private set; }
+		public string ConnStrCommonManager { get; private set; }
+
+
 		public List<string> TableNames { get; }
 		public List<string> LangTypes { get; }
 		public List<string> DevTypes { get; }
@@ -34,17 +37,34 @@ namespace P1XCS000086.Services.Models.CodeManager
 		// Constructor
 		public CommonModel()
 		{
-			// Keyに"manager"が含まれているか判別
-			if (SqlConnectionStrings.ConnectionStrings.TryGetValue("manager", out string connStr) is false)
+			List<string> databaseName = new List<string>
 			{
-				return;
+				"manager",
+				"common_manager"
+			};
+			foreach (var name in databaseName)
+			{
+				// Keyに"manager"が含まれているか判別
+				if (SqlConnectionStrings.ConnectionStrings.TryGetValue(name, out string connStr) is false)
+				{
+					continue;
+				}
+
+				switch (name)
+				{
+					case "manager":
+						ConnStrManager = connStr;
+						break;
+					case "common_manager":
+						ConnStrCommonManager = connStr;
+						break;
+				}
 			}
 
-			ConnStr = connStr;
 
 			// 
-			_showTable = new SqlShowTables(ConnStr);
-			_select = new SqlSelect(connStr);
+			_showTable = new SqlShowTables(ConnStrManager);
+			_select = new SqlSelect(ConnStrManager);
 
 			// "manager_language_type"テーブルから"language_type"カラムを文字列のリストで取得
 			TableNames = _showTable.ShowTables();
