@@ -81,7 +81,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 			_common = new CommonModel();
 
 			// 接続文字列を取得
-			_connStr = _common.ConnStr;
+			_connStr = _common.ConnStrManager;
 
 			// MySQLのSELECT用クラスのインスタンスを生成し、初期化
 			_showTables = new SqlShowTables(_connStr);

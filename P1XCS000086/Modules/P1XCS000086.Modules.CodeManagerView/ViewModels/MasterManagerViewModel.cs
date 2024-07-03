@@ -26,6 +26,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 		// Properties
+		public ReactivePropertySlim<List<string>> DatabaseNames { get; }
+		public ReactivePropertySlim<string> SelectedDatabaseName { get; }
 		public ReactivePropertySlim<List<TableNameListItem>> TableNames { get; }
 		public ReactivePropertySlim<TableNameListItem> SelectedTableName { get; }
 
@@ -41,12 +43,16 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 			// Properties
-			TableNames = new ReactivePropertySlim<List<TableNameListItem>>(GenerateTableNameListItems().ToList()).AddTo(_disposables);
+			DatabaseNames = new ReactivePropertySlim<List<string>>(GenerateDatabaseNames().ToList()).AddTo(_disposables);
+			SelectedDatabaseName = new ReactivePropertySlim<string>(string.Empty);
+			TableNames = new ReactivePropertySlim<List<TableNameListItem>>().AddTo(_disposables);
 			SelectedTableName = new ReactivePropertySlim<TableNameListItem>().AddTo(_disposables);
 
 			Table = new ReactivePropertySlim<DataTable>().AddTo(_disposables);
 
 			// Commands
+			DatabaseNameSelectionChanged = new ReactiveCommandSlim();
+			DatabaseNameSelectionChanged.Subscribe(OnDatabaseNameSelectionChanged).AddTo(_disposables);
 			ListViewSelectionChanged = new ReactiveCommandSlim();
 			ListViewSelectionChanged.Subscribe(OnListViewSelectionChanged).AddTo(_disposables);
 			LangTypeSelectionChanged = new ReactiveCommandSlim();
@@ -58,10 +64,21 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 		// Commands
+
+		public ReactiveCommandSlim DatabaseNameSelectionChanged { get; }
+		private void OnDatabaseNameSelectionChanged()
+		{
+			TableNames.Value = GenerateTableNameListItems().ToList();
+		}
 		public ReactiveCommandSlim ListViewSelectionChanged { get; }
 		private void OnListViewSelectionChanged()
 		{
-			Table.Value = _model.SearchTable(SelectedTableName.Value.TableName);
+			if (SelectedTableName.Value is null)
+			{
+				Table.Value = null;
+				return;
+			}
+			Table.Value = _model.SearchTable(SelectedDatabaseName.Value, SelectedTableName.Value.TableName);
 		}
 		public ReactiveCommandSlim LangTypeSelectionChanged { get; }
 		private void OnLangTypeSelectionChanged()
@@ -77,9 +94,17 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 		// Private Methods
+		
+		private IEnumerable<string> GenerateDatabaseNames()
+		{
+			foreach(var item in _model.DatabaseNames)
+			{
+				yield return item;
+			}
+		}
 		private IEnumerable<TableNameListItem> GenerateTableNameListItems()
 		{
-			foreach (var item in _model.TableNames)
+			foreach (var item in _model.GetTableNameSets(SelectedDatabaseName.Value))
 			{
 				yield return new TableNameListItem(item.Item1, item.Item2);
 			}

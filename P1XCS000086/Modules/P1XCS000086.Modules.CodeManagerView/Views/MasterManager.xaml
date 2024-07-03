@@ -11,7 +11,7 @@
 	xmlns:prism="http://prismlibrary.com/"
 	xmlns:rg="clr-namespace:unvell.ReoGrid;assembly=unvell.ReoGrid"
 	d:DesignHeight="500"
-	d:DesignWidth="1000  "
+	d:DesignWidth="1000"
 	prism:ViewModelLocator.AutoWireViewModel="True"
 	mc:Ignorable="d">
 
@@ -36,17 +36,32 @@
 
 	<Grid>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="220" />
+			<ColumnDefinition Width="260" />
 			<ColumnDefinition />
 		</Grid.ColumnDefinitions>
 
-		<StackPanel>
-			<GroupBox
-				Padding="0,8,0,8"
-				Header="テーブル一覧"
-				ScrollViewer.VerticalScrollBarVisibility="Auto">
-				<
-				<ListView ItemsSource="{Binding TableNames.Value}" SelectedItem="{Binding SelectedTableName.Value}">
+		<GroupBox Padding="0,8,0,8" Header="テーブル一覧">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition />
+				</Grid.RowDefinitions>
+
+				<ComboBox
+					Margin="0,0,0,8"
+					ItemsSource="{Binding DatabaseNames.Value}"
+					SelectedValue="{Binding SelectedDatabaseName.Value}">
+					<i:Interaction.Triggers>
+						<i:EventTrigger EventName="SelectionChanged">
+							<prism:InvokeCommandAction Command="{Binding DatabaseNameSelectionChanged}" />
+						</i:EventTrigger>
+					</i:Interaction.Triggers>
+				</ComboBox>
+				<ListView
+					Grid.Row="1"
+					ItemsSource="{Binding TableNames.Value}"
+					ScrollViewer.VerticalScrollBarVisibility="Auto"
+					SelectedItem="{Binding SelectedTableName.Value}">
 					<ListView.ItemsPanel>
 						<ItemsPanelTemplate>
 							<StackPanel />
@@ -72,8 +87,8 @@
 						</i:EventTrigger>
 					</i:Interaction.Triggers>
 				</ListView>
-			</GroupBox>
-		</StackPanel>
+			</Grid>
+		</GroupBox>
 
 		<Grid Grid.Column="1">
 			<Grid.RowDefinitions>

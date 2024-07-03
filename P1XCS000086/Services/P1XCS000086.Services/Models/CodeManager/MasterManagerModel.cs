@@ -12,11 +12,13 @@ namespace P1XCS000086.Services.Models.CodeManager
 	{
 		// Fields
 		private CommonModel _common;
-		private SqlSelect _select;
+		private SqlSelect _selectManager;
+		private SqlSelect _selectCommonManager;
 
 
 
 		// Properties
+		public List<string> DatabaseNames { get; }
 		public List<(string, string)> TableNames { get; }
 		public List<string> UseAppMajor { get; }
 		public List<string> UseAppRange { get; }
@@ -27,9 +29,11 @@ namespace P1XCS000086.Services.Models.CodeManager
 		public MasterManagerModel()
 		{
 			_common = new CommonModel();
-			_select = new SqlSelect(_common.ConnStr);
 
-			TableNames = _common.GetTranclateTableNames();
+			_selectManager = new SqlSelect(_common.ConnStrManager);
+			_selectCommonManager = new SqlSelect(_common.ConnStrCommonManager);
+
+			DatabaseNames = _common.DatabaseNames;
 			UseAppMajor = _common.UseAppMajor;
 			UseAppRange = _common.UseAppRange;
 		}
@@ -37,15 +41,34 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 
 		// Public Methods
+
+		/// <summary>
+		/// 取得したテーブルからカラム名と論理名のタプルリストを取得
+		/// </summary>
+		/// <param name="selectedDatabaseName"></param>
+		/// <returns></returns>
+		public List<(string columnName, string logicalName)> GetTableNameSets(string selectedDatabaseName)
+		{
+			return _common.GetTranclateTableNames(selectedDatabaseName);
+		}
 		/// <summary>
 		/// 任意のテーブルをDataTableで取得
 		/// </summary>
 		/// <param name="tableName"></param>
 		/// <returns></returns>
-		public DataTable SearchTable(string tableName)
+		public DataTable SearchTable(string databaseName, string tableName)
 		{
 			string query = $"SELECT * FROM `{tableName}`";
-			return _select.Select(query);
+
+			switch (databaseName)
+			{
+				case "manager":
+					return _selectManager.Select(query);
+				case "common_manager":
+					return _selectCommonManager.Select(query);
+			}
+
+			return null;
 		}
 	}
 }

@@ -17,6 +17,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 		// Fields
 		private SqlShowTables _showTable;
 		private SqlSelect _select;
+		private SqlSelect _selectCommonManager;
 
 
 
@@ -24,6 +25,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 		public string ConnStrManager { get; private set; }
 		public string ConnStrCommonManager { get; private set; }
 
+		public List<string> DatabaseNames { get; }
 
 		public List<string> TableNames { get; }
 		public List<string> LangTypes { get; }
@@ -64,9 +66,14 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			// 
 			_showTable = new SqlShowTables(ConnStrManager);
+			// 
 			_select = new SqlSelect(ConnStrManager);
+			_selectCommonManager = new SqlSelect(ConnStrCommonManager);
+
+			// 以下、共通処理
 
 			// "manager_language_type"テーブルから"language_type"カラムを文字列のリストで取得
+			DatabaseNames = _selectCommonManager.SelectedColumnToList("database_name", "SELECT `database_name` FROM `database_structure` WHERE `type` = 'database';");
 			TableNames = _showTable.ShowTables();
 			LangTypes = _select.SelectedColumnToList("language_type", "SELECT `language_type` FROM `manager_language_type`;");
 			UseAppMajor = _select.SelectedColumnToList("use_name_jp", "SELECT `use_name_jp` FROM `manager_use_application` WHERE `sign` = 1;");
@@ -76,17 +83,27 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 
 		// 
-		public List<(string, string)> GetTranclateTableNames()
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public List<(string, string)> GetTranclateTableNames(string databaseName)
 		{
 			List<(string tableNameJp, string tableName)> resultTappleList = new List<(string, string)>();
 
-			// クエリ文字列
-			string query = $"SELECT `column_name`, `japanese` FROM `table_translator` WHERE `type` = 'Table';";
-			
-			_select.Select(query).AsEnumerable().Select(x =>
+			List<string> columnNames = new List<string>
 			{
-				string tableName = x["column_name"].ToString();
-				string tableNameJp = x["japanese"].ToString();
+				"column_name",
+				"logical_name",
+			};
+
+			// クエリ文字列
+			string query = $"SELECT `{columnNames[0]}`, `{columnNames[1]}` FROM `database_structure` WHERE `type` = 'Table' AND `database_name` = '{databaseName}';";
+			
+			_selectCommonManager.Select(query).AsEnumerable().Select(x =>
+			{
+				string tableName = x[columnNames[0]].ToString();
+				string tableNameJp = x[columnNames[1]].ToString();
 
 				resultTappleList.Add((tableNameJp, tableName));
 
