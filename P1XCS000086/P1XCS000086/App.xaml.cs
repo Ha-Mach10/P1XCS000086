@@ -49,8 +49,8 @@ namespace P1XCS000086
 			// # Home
 			containerRegistry.RegisterSingleton<IHomeModel, HomeModel>();
 			// # CodeManageMaster
-			containerRegistry.Register<ICodeRegisterModel, CodeRegisterModel>();
-			containerRegistry.Register<IMasterManagerModel, MasterManagerModel>();
+			containerRegistry.RegisterSingleton<ICodeRegisterModel, CodeRegisterModel>();
+			containerRegistry.RegisterSingleton<IMasterManagerModel, MasterManagerModel>();
 
 		}
 		// モジュールカタログの設定

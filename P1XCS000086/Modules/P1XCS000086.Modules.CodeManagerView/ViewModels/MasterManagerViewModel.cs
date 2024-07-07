@@ -18,7 +18,7 @@ using P1XCS000086.Modules.CodeManagerView.Domains;
 
 namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 {
-	public class MasterManagerViewModel : RegionViewModelBase, INotifyPropertyChanged
+	public class MasterManagerViewModel : RegionViewModelBase, INotifyPropertyChanged, IRegionMemberLifetime
 	{
 		// Fields
 		private IRegionManager _regionManager;
@@ -26,6 +26,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 		// Properties
+
+		public bool KeepAlive { get; private set; }
 		public ReactivePropertySlim<List<string>> DatabaseNames { get; }
 		public ReactivePropertySlim<string> SelectedDatabaseName { get; }
 		public ReactivePropertySlim<List<TableNameListItem>> TableNames { get; }
@@ -41,6 +43,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			_regionManager = regionManager;
 			_model = model;
 
+			// このビューモデルの生存
+			KeepAlive = true;
 
 			// Properties
 			DatabaseNames = new ReactivePropertySlim<List<string>>(GenerateDatabaseNames().ToList()).AddTo(_disposables);

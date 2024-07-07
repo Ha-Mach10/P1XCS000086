@@ -75,6 +75,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			_model = model;
 
 
+			// このビューモデルの生存
+			KeepAlive = true;
 
 			#region Properties
 
