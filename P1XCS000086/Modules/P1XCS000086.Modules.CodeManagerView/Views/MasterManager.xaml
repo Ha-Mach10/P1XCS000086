@@ -90,28 +90,39 @@
 			</Grid>
 		</GroupBox>
 
-		<Grid Grid.Column="1">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition />
-			</Grid.RowDefinitions>
+		<mah:SplitView Grid.Column="1" OpenPaneLength="300" IsPaneOpen="{Binding ElementName=PaneOpenToggle, Path=IsChecked}">
 
-			<StackPanel>
-				<StackPanel Orientation="Horizontal">
-					<
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition />
+				</Grid.RowDefinitions>
+
+				<StackPanel>
+					<StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+						<ToggleButton x:Name="PaneOpenToggle" Style="{StaticResource MahApps.Styles.Button.Flat}">
+							<ToggleButton.Content>
+								<mahIcons:MaterialDesign Kind="ChevronLeft" />
+							</ToggleButton.Content>
+						</ToggleButton>
+					</StackPanel>
 				</StackPanel>
-			</StackPanel>
-			<DataGrid
-				x:Name="ViewGrid"
-				Grid.Row="1"
-				EnableColumnVirtualization="True"
-				EnableRowVirtualization="True"
-				IsReadOnly="True"
-				ItemsSource="{Binding Table.Value}"
-				SelectionUnit="FullRow"
-				VirtualizingPanel.IsVirtualizing="True"
-				VirtualizingPanel.VirtualizationMode="Recycling" />
-		</Grid>
+				<DataGrid
+					x:Name="ViewGrid"
+					Grid.Row="1"
+					EnableColumnVirtualization="True"
+					EnableRowVirtualization="True"
+					IsReadOnly="True"
+					ItemsSource="{Binding Table.Value}"
+					SelectionUnit="FullRow"
+					VirtualizingPanel.IsVirtualizing="True"
+					VirtualizingPanel.VirtualizationMode="Recycling" />
+			</Grid>
+
+			<mah:SplitView.Pane>
+				<rg:ReoGridControl />
+			</mah:SplitView.Pane>
+		</mah:SplitView>
 	</Grid>
 
 </UserControl>
