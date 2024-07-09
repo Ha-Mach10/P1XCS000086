@@ -15,6 +15,7 @@ using System.ComponentModel;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using System.Data;
 using P1XCS000086.Modules.CodeManagerView.Domains;
+using unvell.ReoGrid;
 
 namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 {
@@ -34,6 +35,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public ReactivePropertySlim<TableNameListItem> SelectedTableName { get; }
 
 		public ReactivePropertySlim<DataTable> Table { get; }
+		public ReactivePropertySlim<ReoGridControl> ReoGrid { get; }
 
 
 
@@ -53,6 +55,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			SelectedTableName = new ReactivePropertySlim<TableNameListItem>().AddTo(_disposables);
 
 			Table = new ReactivePropertySlim<DataTable>().AddTo(_disposables);
+			ReoGrid = new ReactivePropertySlim<ReoGridControl>(ReoGridInitializedObject()).AddTo(_disposables);
+
 
 			// Commands
 			DatabaseNameSelectionChanged = new ReactiveCommandSlim();
@@ -83,6 +87,9 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 				return;
 			}
 			Table.Value = _model.SearchTable(SelectedDatabaseName.Value, SelectedTableName.Value.TableName);
+
+			// ReoGridの各種プロパティを再定義
+			ResetReoGrid();
 		}
 		public ReactiveCommandSlim LangTypeSelectionChanged { get; }
 		private void OnLangTypeSelectionChanged()
@@ -112,6 +119,63 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			{
 				yield return new TableNameListItem(item.Item1, item.Item2);
 			}
+		}
+		private ReoGridControl ReoGridInitializedObject()
+		{
+			ReoGridControl reoGrid = new();
+
+			var sheet = reoGrid.CurrentWorksheet;
+			sheet.Resize(rows: 60, cols: 4);
+
+			return reoGrid;
+		}
+		private void ResetReoGrid()
+		{
+			ReoGridControl reoGrid = ReoGrid.Value;
+			DataTable dt = Table.Value;
+
+			var sheet = reoGrid.CurrentWorksheet;
+
+			// ReoGridの行列サイズを再定義
+			sheet.Resize( rows: dt.Rows.Count, cols: dt.Columns.Count);
+
+			// ReoGridのカラム名称を変更
+			for(int i = 0; i <= dt.Columns.Count; i++)
+			{
+				sheet.RowHeaders[i].Text = dt.Columns[i].ColumnName;
+			}
+
+			// reoGrid.CurrentWorksheet = 
+		}
+		private string ConvertAlphabet(int index)
+		{
+			string result = string.Empty;
+
+			List<int> indexes = new List<int>();
+
+			int riminder = 0;
+			int quotient = 0;
+			while (index > 0)
+			{
+				
+			}
+
+			// indexが26より大きい場合
+			do
+			{
+				// 余り
+				int reminder = index % 26;
+				// 商
+				int quotient = index / 26;
+
+
+
+				// 余りをアルファベットに変換
+				result = ('A' + reminder - 1).ToString() + result;
+
+
+			}
+			while (index > 26)
 		}
 	}
 }

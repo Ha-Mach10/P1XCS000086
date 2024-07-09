@@ -90,7 +90,12 @@
 			</Grid>
 		</GroupBox>
 
-		<mah:SplitView Grid.Column="1" OpenPaneLength="300" IsPaneOpen="{Binding ElementName=PaneOpenToggle, Path=IsChecked}">
+		<mah:SplitView
+			Grid.Column="1"
+			DisplayMode="Inline"
+			IsPaneOpen="{Binding ElementName=PaneOpenToggle, Path=IsChecked}"
+			OpenPaneLength="600"
+			PanePlacement="Right">
 
 			<Grid>
 				<Grid.RowDefinitions>
@@ -99,11 +104,37 @@
 				</Grid.RowDefinitions>
 
 				<StackPanel>
-					<StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-						<ToggleButton x:Name="PaneOpenToggle" Style="{StaticResource MahApps.Styles.Button.Flat}">
-							<ToggleButton.Content>
-								<mahIcons:MaterialDesign Kind="ChevronLeft" />
-							</ToggleButton.Content>
+					<StackPanel
+						Height="50"
+						HorizontalAlignment="Right"
+						Orientation="Horizontal">
+						<ToggleButton x:Name="PaneOpenToggle">
+							<ToggleButton.Style>
+								<Style BasedOn="{StaticResource MahApps.Styles.Button.Flat}" TargetType="ToggleButton">
+									<Style.Triggers>
+										<Trigger Property="IsChecked" Value="True">
+											<Setter Property="Content">
+												<Setter.Value>
+													<StackPanel Orientation="Horizontal">
+														<mahIcons:PackIconMaterial Kind="ChevronRight" />
+														<mahIcons:PackIconMaterial Kind="Pencil" />
+													</StackPanel>
+												</Setter.Value>
+											</Setter>
+										</Trigger>
+										<Trigger Property="IsChecked" Value="False">
+											<Setter Property="Content">
+												<Setter.Value>
+													<StackPanel Orientation="Horizontal">
+														<mahIcons:PackIconMaterial Kind="ChevronLeft" />
+														<mahIcons:PackIconMaterial Kind="Pencil" />
+													</StackPanel>
+												</Setter.Value>
+											</Setter>
+										</Trigger>
+									</Style.Triggers>
+								</Style>
+							</ToggleButton.Style>
 						</ToggleButton>
 					</StackPanel>
 				</StackPanel>
@@ -120,7 +151,7 @@
 			</Grid>
 
 			<mah:SplitView.Pane>
-				<rg:ReoGridControl />
+				<ContentControl Content="{Binding ReoGrid.Value}" />
 			</mah:SplitView.Pane>
 		</mah:SplitView>
 	</Grid>
