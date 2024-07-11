@@ -108,7 +108,7 @@
 						Height="50"
 						HorizontalAlignment="Right"
 						Orientation="Horizontal">
-						<ToggleButton x:Name="PaneOpenToggle">
+						<ToggleButton x:Name="PaneOpenToggle" IsChecked="True">
 							<ToggleButton.Style>
 								<Style BasedOn="{StaticResource MahApps.Styles.Button.Flat}" TargetType="ToggleButton">
 									<Style.Triggers>
@@ -151,7 +151,9 @@
 			</Grid>
 
 			<mah:SplitView.Pane>
-				<ContentControl Content="{Binding ReoGrid.Value}" />
+				<GroupBox Header="テーブル編集">
+					<ContentControl Content="{Binding ReoGrid.Value}" />
+				</GroupBox>
 			</mah:SplitView.Pane>
 		</mah:SplitView>
 	</Grid>

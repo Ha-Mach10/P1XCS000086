@@ -16,6 +16,7 @@ using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using System.Data;
 using P1XCS000086.Modules.CodeManagerView.Domains;
 using unvell.ReoGrid;
+using unvell.ReoGrid.DataFormat;
 
 namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 {
@@ -127,8 +128,12 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			var sheet = reoGrid.CurrentWorksheet;
 			sheet.Resize(rows: 60, cols: 4);
 
+
 			return reoGrid;
 		}
+		/// <summary>
+		/// ReoGridの各種パラメータを調整
+		/// </summary>
 		private void ResetReoGrid()
 		{
 			ReoGridControl reoGrid = ReoGrid.Value;
@@ -139,43 +144,68 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			// ReoGridの行列サイズを再定義
 			sheet.Resize( rows: dt.Rows.Count, cols: dt.Columns.Count);
 
-			// ReoGridのカラム名称を変更
-			for(int i = 0; i <= dt.Columns.Count; i++)
+			// カラムの番地を取得
+			string sheetHeaderRight = ConvertAlphabet(dt.Columns.Count);
+			// 列加算用
+			int count = 1;
+
+			dt.AsEnumerable().Select(x =>
 			{
-				sheet.RowHeaders[i].Text = dt.Columns[i].ColumnName;
+				string address = $"A{count}:{sheetHeaderRight}{count}";
+				// 一列ずつxのDataRowの配列を格納
+				sheet[address] = x.ItemArray;
+				sheet.SetRangeDataFormat(address, CellDataFormatFlag.Text);
+
+				count++;
+				return x;
+
+			}).ToList();
+
+			// ReoGridのカラム名称を変更
+			for (int i = 0; i < dt.Columns.Count; i++)
+			{
+				// カラム名称変更
+				sheet.ColumnHeaders[i].Text = dt.Columns[i].ColumnName;
+
+				// 列幅調整
+				sheet.AutoFitColumnWidth(i);
+				sheet.ColumnHeaders[i].IsAutoWidth = true;
 			}
 
-			// reoGrid.CurrentWorksheet = 
+			sheet.ZoomReset();
 		}
+		/// <summary>
+		/// 数値からアルファベットへの変換（Excelシート等のカラムを指定するためのメソッド）
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
 		private string ConvertAlphabet(int index)
 		{
-			string result = string.Empty;
+			// 出力用のキャラクタを格納するリスト
+			List<char> chars = new List<char>();
 
-			List<int> indexes = new List<int>();
+			// 演算結果の格納用
+			// divide：商、riminder：余り
+			int divide = index, riminder;
 
-			int riminder = 0;
-			int quotient = 0;
-			while (index > 0)
+			// 商が
+			while (divide != 0)
 			{
-				
+				// 26で割り、商と余りを出力
+				(divide, riminder) = Math.DivRem(divide, 26);
+
+				// 余りが0の場合（余りが0→26以下）
+				if (riminder == 0)
+				{
+					(divide, riminder) = (divide - 1, 26);
+				}
+
+				// charに値を加えて"chars"に格納
+				chars.Add((char)('A' + riminder - 1));
 			}
 
-			// indexが26より大きい場合
-			do
-			{
-				// 余り
-				int reminder = index % 26;
-				// 商
-				int quotient = index / 26;
-
-
-
-				// 余りをアルファベットに変換
-				result = ('A' + reminder - 1).ToString() + result;
-
-
-			}
-			while (index > 26)
+			// 格納された逆の順序で配列に変換し、連結して文字列に変換
+			return new string(chars.AsEnumerable().Reverse().ToArray());
 		}
 	}
 }
