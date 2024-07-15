@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
 
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
@@ -69,6 +70,47 @@ namespace P1XCS000086.Services.Models.CodeManager
 			}
 
 			return null;
+		}
+
+		/// <summary>
+		/// 2つのDataTableを比較し、差分を抽出してデータベースを更新
+		/// </summary>
+		/// <param name="beforeTable">編集前のDataTable</param>
+		/// <param name="afterTable">編集後のDataTable</param>
+		public void TableUpDate(DataTable beforeTable, DataTable afterTable)
+		{
+			List<string> columnNames = new();
+            foreach (var column in beforeTable.Columns)
+            {
+				columnNames.Add(column.ToString());
+            }
+
+            var DataRows = afterTable.AsEnumerable()
+									 .ToList()
+									 .Except(beforeTable.AsEnumerable().ToList())
+									 .ToList();
+			List<List<string>> bRowItems = new();
+			List<List<string>> aRowItems = new();
+
+            foreach (var columnName in columnNames)
+            {
+				List<string> bRow = new();
+                foreach (var rowItem in beforeTable.AsEnumerable().ToList())
+				{
+					bRow.Add(rowItem.ToString());
+				}
+
+				List<string> aRow = new();
+				foreach(var rowItem in afterTable.AsEnumerable().ToList())
+				{
+					aRow.Add(rowItem.ToString());
+				}
+
+
+            }
+
+
+            int a = 0;
 		}
 	}
 }

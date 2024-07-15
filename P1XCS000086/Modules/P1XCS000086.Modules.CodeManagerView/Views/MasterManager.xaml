@@ -31,6 +31,16 @@
 					<Setter Property="{x:Static mah:TextBoxHelper.ClearTextButtonProperty}" Value="True" />
 				</Style.Setters>
 			</Style>
+			<Style
+				x:Key="DefaultButton"
+				BasedOn="{StaticResource MahApps.Styles.Button.Window.VisualStudio}"
+				TargetType="Button">
+				<Style.Setters>
+					<Setter Property="Height" Value="35" />
+					<Setter Property="Width" Value="100" />
+					<Setter Property="Margin" Value="4" />
+				</Style.Setters>
+			</Style>
 		</ResourceDictionary>
 	</UserControl.Resources>
 
@@ -90,54 +100,22 @@
 			</Grid>
 		</GroupBox>
 
-		<mah:SplitView
-			Grid.Column="1"
-			DisplayMode="Inline"
-			IsPaneOpen="{Binding ElementName=PaneOpenToggle, Path=IsChecked}"
-			OpenPaneLength="600"
-			PanePlacement="Right">
+		<Grid Grid.Column="1">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition />
+			</Grid.RowDefinitions>
 
-			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto" />
-					<RowDefinition />
-				</Grid.RowDefinitions>
+			<StackPanel
+				Height="50"
+				HorizontalAlignment="Right"
+				Orientation="Horizontal" />
+			<Grid Grid.Row="1">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition />
+					<ColumnDefinition />
+				</Grid.ColumnDefinitions>
 
-				<StackPanel>
-					<StackPanel
-						Height="50"
-						HorizontalAlignment="Right"
-						Orientation="Horizontal">
-						<ToggleButton x:Name="PaneOpenToggle" IsChecked="True">
-							<ToggleButton.Style>
-								<Style BasedOn="{StaticResource MahApps.Styles.Button.Flat}" TargetType="ToggleButton">
-									<Style.Triggers>
-										<Trigger Property="IsChecked" Value="True">
-											<Setter Property="Content">
-												<Setter.Value>
-													<StackPanel Orientation="Horizontal">
-														<mahIcons:PackIconMaterial Kind="ChevronRight" />
-														<mahIcons:PackIconMaterial Kind="Pencil" />
-													</StackPanel>
-												</Setter.Value>
-											</Setter>
-										</Trigger>
-										<Trigger Property="IsChecked" Value="False">
-											<Setter Property="Content">
-												<Setter.Value>
-													<StackPanel Orientation="Horizontal">
-														<mahIcons:PackIconMaterial Kind="ChevronLeft" />
-														<mahIcons:PackIconMaterial Kind="Pencil" />
-													</StackPanel>
-												</Setter.Value>
-											</Setter>
-										</Trigger>
-									</Style.Triggers>
-								</Style>
-							</ToggleButton.Style>
-						</ToggleButton>
-					</StackPanel>
-				</StackPanel>
 				<DataGrid
 					x:Name="ViewGrid"
 					Grid.Row="1"
@@ -148,14 +126,41 @@
 					SelectionUnit="FullRow"
 					VirtualizingPanel.IsVirtualizing="True"
 					VirtualizingPanel.VirtualizationMode="Recycling" />
-			</Grid>
+				<GroupBox
+					Grid.Column="1"
+					Header="テーブル編集"
+					Style="{StaticResource MahApps.Styles.GroupBox.VisualStudio}">
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition />
+						</Grid.RowDefinitions>
 
-			<mah:SplitView.Pane>
-				<GroupBox Header="テーブル編集">
-					<ContentControl Content="{Binding ReoGrid.Value}" />
+						<StackPanel Orientation="Horizontal">
+							<Button
+								Command="{Binding EditTableButtonClick}"
+								Style="{StaticResource DefaultButton}"
+								Visibility="{Binding EditTableButtonVisibility.Value}">
+								<StackPanel Orientation="Horizontal">
+									<mahIcons:PackIconMaterial Margin="0,0,8,0" Kind="DatabaseEdit" />
+									<TextBlock Text="編集" />
+								</StackPanel>
+							</Button>
+							<Button
+								Command="{Binding FixTableButtonClick}"
+								Style="{StaticResource DefaultButton}"
+								Visibility="{Binding FixTableButtonVisibility.Value}">
+								<StackPanel Orientation="Horizontal">
+									<mahIcons:PackIconMaterial Margin="0,0,8,0" Kind="Check" />
+									<TextBlock Text="確定" />
+								</StackPanel>
+							</Button>
+						</StackPanel>
+						<ContentControl Grid.Row="1" Content="{Binding ReoGrid.Value}" />
+					</Grid>
 				</GroupBox>
-			</mah:SplitView.Pane>
-		</mah:SplitView>
+			</Grid>
+		</Grid>
 	</Grid>
 
 </UserControl>

@@ -29,5 +29,11 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 		/// <param name="tableName"></param>
 		/// <returns></returns>
 		public DataTable SearchTable(string databaseName, string tableName);
+		/// <summary>
+		/// 2つのDataTableを比較し、差分を抽出してデータベースを更新
+		/// </summary>
+		/// <param name="beforeTable">編集前のDataTable</param>
+		/// <param name="afterTable">編集後のDataTable</param>
+		public void TableUpDate(DataTable beforeTable, DataTable afterTable);
 	}
 }

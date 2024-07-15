@@ -17,6 +17,9 @@ using System.Data;
 using P1XCS000086.Modules.CodeManagerView.Domains;
 using unvell.ReoGrid;
 using unvell.ReoGrid.DataFormat;
+using unvell.ReoGrid.Data;
+using System.Windows;
+using P1XCS000086.Services.Interfaces.Data;
 
 namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 {
@@ -25,6 +28,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		// Fields
 		private IRegionManager _regionManager;
 		private IMasterManagerModel _model;
+		private IDTConveter _conveter;
 
 
 		// Properties
@@ -38,13 +42,17 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public ReactivePropertySlim<DataTable> Table { get; }
 		public ReactivePropertySlim<ReoGridControl> ReoGrid { get; }
 
+		public ReactivePropertySlim<Visibility> EditTableButtonVisibility { get; }
+		public ReactivePropertySlim<Visibility> FixTableButtonVisibility { get; }
 
 
-		public MasterManagerViewModel(IRegionManager regionManager, IMasterManagerModel model)
+
+		public MasterManagerViewModel(IRegionManager regionManager, IMasterManagerModel model, IDTConveter conveter)
 			: base(regionManager)
 		{
 			_regionManager = regionManager;
 			_model = model;
+			_conveter = conveter;
 
 			// このビューモデルの生存
 			KeepAlive = true;
@@ -56,7 +64,10 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			SelectedTableName = new ReactivePropertySlim<TableNameListItem>().AddTo(_disposables);
 
 			Table = new ReactivePropertySlim<DataTable>().AddTo(_disposables);
-			ReoGrid = new ReactivePropertySlim<ReoGridControl>(ReoGridInitializedObject()).AddTo(_disposables);
+			ReoGrid = new ReactivePropertySlim<ReoGridControl>(new()).AddTo(_disposables);
+
+			EditTableButtonVisibility = new ReactivePropertySlim<Visibility>(Visibility.Collapsed);
+			FixTableButtonVisibility = new ReactivePropertySlim<Visibility>(Visibility.Collapsed);
 
 
 			// Commands
@@ -68,6 +79,11 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			LangTypeSelectionChanged.Subscribe(OnLangTypeSelectionChanged).AddTo(_disposables);
 			DevTypeSelectionChanged = new ReactiveCommandSlim();
 			DevTypeSelectionChanged.Subscribe(OnDevTypeSelectionChanged).AddTo(_disposables);
+
+			EditTableButtonClick = new ReactiveCommandSlim();
+			EditTableButtonClick.Subscribe(OnEditTableButtonClick).AddTo(_disposables);
+			FixTableButtonClick = new ReactiveCommandSlim();
+			FixTableButtonClick.Subscribe(OnFixTableButtonClick).AddTo(_disposables);
 		}
 
 
@@ -89,6 +105,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			}
 			Table.Value = _model.SearchTable(SelectedDatabaseName.Value, SelectedTableName.Value.TableName);
 
+			EditTableButtonVisibility.Value = Visibility.Visible;
+
 			// ReoGridの各種プロパティを再定義
 			ResetReoGrid();
 		}
@@ -102,11 +120,59 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		{
 
 		}
+		public ReactiveCommandSlim EditTableButtonClick { get; }
+		private void OnEditTableButtonClick()
+		{
+			// ReoGrid及びTableを取得
+			ReoGridControl reoGrid = ReoGrid.Value;
+			DataTable dt = Table.Value;
+
+			// シートを定義
+			var sheet = reoGrid.CurrentWorksheet;
+
+			// ReoGridの行列サイズを再定義
+			// (編集可能なように、行サイズを限界近くまで拡張)
+			sheet.Resize(rows: 1040000, cols: dt.Columns.Count);
+
+			// ボタンの可視性変更
+			FixTableButtonVisibility.Value = Visibility.Visible;
+			EditTableButtonVisibility.Value = Visibility.Collapsed;
+		}
+		public ReactiveCommandSlim FixTableButtonClick { get; }
+		private void OnFixTableButtonClick()
+		{
+			// シートを追加
+			var sheet = ReoGrid.Value.CurrentWorksheet;
+
+			// カラム名を取得
+			List<string> columnNames
+				= new List<string>(sheet.ColumnHeaders.Select(x => x.Text));
+
+			// 指定した範囲のセルを取得
+			RangePosition rp = new RangePosition()
+			{
+				Cols = sheet.UsedRange.Cols,
+				Rows = sheet.UsedRange.Rows
+			};
+
+			// DataTableを定義
+			DataTable beforeTable = Table.Value;
+			DataTable afterTable = _conveter.Convert(columnNames, sheet.GetRangeData(rp));
+
+			_model.TableUpDate(beforeTable, afterTable);
+
+			// サイズの再定義
+			sheet.Resize(rp.Rows, rp.Cols);
+
+			// ボタンの可視性変更
+			FixTableButtonVisibility.Value = Visibility.Collapsed;
+			EditTableButtonVisibility.Value = Visibility.Visible;
+		}
 
 
 
 		// Private Methods
-		
+
 		private IEnumerable<string> GenerateDatabaseNames()
 		{
 			foreach(var item in _model.DatabaseNames)
@@ -121,45 +187,25 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 				yield return new TableNameListItem(item.Item1, item.Item2);
 			}
 		}
-		private ReoGridControl ReoGridInitializedObject()
-		{
-			ReoGridControl reoGrid = new();
-
-			var sheet = reoGrid.CurrentWorksheet;
-			sheet.Resize(rows: 60, cols: 4);
-
-
-			return reoGrid;
-		}
 		/// <summary>
-		/// ReoGridの各種パラメータを調整
+		/// ReoGridへのデータ格納及び各種パラメータを調整
 		/// </summary>
 		private void ResetReoGrid()
 		{
+			ReoGrid.Value = new ReoGridControl();
+
 			ReoGridControl reoGrid = ReoGrid.Value;
 			DataTable dt = Table.Value;
 
+			// 現在のワークシートを取得
 			var sheet = reoGrid.CurrentWorksheet;
 
+			string cellRange = $"A1:{ConvertAlphabet(dt.Columns.Count)}{dt.Rows.Count}";
+			// A1番地を基点にデータを格納
+			sheet.SetRangeData(cellRange, dt);
+			
 			// ReoGridの行列サイズを再定義
-			sheet.Resize( rows: dt.Rows.Count, cols: dt.Columns.Count);
-
-			// カラムの番地を取得
-			string sheetHeaderRight = ConvertAlphabet(dt.Columns.Count);
-			// 列加算用
-			int count = 1;
-
-			dt.AsEnumerable().Select(x =>
-			{
-				string address = $"A{count}:{sheetHeaderRight}{count}";
-				// 一列ずつxのDataRowの配列を格納
-				sheet[address] = x.ItemArray;
-				sheet.SetRangeDataFormat(address, CellDataFormatFlag.Text);
-
-				count++;
-				return x;
-
-			}).ToList();
+			sheet.Resize(rows: dt.Rows.Count, cols: dt.Columns.Count);
 
 			// ReoGridのカラム名称を変更
 			for (int i = 0; i < dt.Columns.Count; i++)
@@ -169,10 +215,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 				// 列幅調整
 				sheet.AutoFitColumnWidth(i);
-				sheet.ColumnHeaders[i].IsAutoWidth = true;
 			}
-
-			sheet.ZoomReset();
 		}
 		/// <summary>
 		/// 数値からアルファベットへの変換（Excelシート等のカラムを指定するためのメソッド）

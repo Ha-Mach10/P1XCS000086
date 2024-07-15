@@ -21,6 +21,8 @@ using Prism.Modularity;
 using System.Windows;
 using Prism.DryIoc;
 using P1XCS000086.Modules.HouseholdExpenses;
+using P1XCS000086.Services.Interfaces.Data;
+using P1XCS000086.Services.Data;
 
 namespace P1XCS000086
 {
@@ -51,6 +53,8 @@ namespace P1XCS000086
 			// # CodeManageMaster
 			containerRegistry.RegisterSingleton<ICodeRegisterModel, CodeRegisterModel>();
 			containerRegistry.RegisterSingleton<IMasterManagerModel, MasterManagerModel>();
+			// # Common Models
+			containerRegistry.RegisterSingleton<IDTConveter, DTConverter>();
 
 		}
 		// モジュールカタログの設定
