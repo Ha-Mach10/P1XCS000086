@@ -11,6 +11,15 @@ namespace P1XCS000086.Services.Models.CodeManager
 {
 	public class MasterManagerModel : IMasterManagerModel
 	{
+		// Enum
+		public enum QueryType
+		{
+			None	= 0,
+			Update	= 1,
+			Insert	= 2,
+			Delete	= 3,
+		}
+
 		// Fields
 		private CommonModel _common;
 		private SqlSelect _selectManager;
@@ -79,19 +88,23 @@ namespace P1XCS000086.Services.Models.CodeManager
 		/// <param name="afterTable">編集後のDataTable</param>
 		public void TableUpDate(DataTable beforeTable, DataTable afterTable)
 		{
-			List<string> columnNames = new();
-            foreach (var column in beforeTable.Columns)
-            {
-				columnNames.Add(column.ToString());
-            }
+			List<(string, List<string>)> queryAndValues = new();
 
-            var DataRows = afterTable.AsEnumerable()
-									 .ToList()
-									 .Except(beforeTable.AsEnumerable().ToList())
-									 .ToList();
-			List<List<string>> bRowItems = new();
-			List<List<string>> aRowItems = new();
+			List<List<string>> bRowItems = DatatableToList(beforeTable);
+			List<List<string>> aRowItems = DatatableToList(afterTable);
 
+			
+			foreach (List<string> bRowItem in bRowItems)
+			{
+
+			}
+
+			// var ssss = aRowItems.Except(bRowItems).ToList();
+			// var exceptedRowItems = aRowItems.Except().ToList();
+
+			// foreach (List<string> rowI)
+
+			/*
             foreach (var columnName in columnNames)
             {
 				List<string> bRow = new();
@@ -106,11 +119,61 @@ namespace P1XCS000086.Services.Models.CodeManager
 					aRow.Add(rowItem.ToString());
 				}
 
+				// 列の差分が1以上の場合、
+				if (bRow.Except(aRow).Count() >= 1)
+				{
 
+				}
             }
+			*/
 
 
             int a = 0;
+		}
+
+		private List<List<string>> DatatableToList(DataTable dt)
+		{
+			List<string> columnNames = new();
+			foreach (var column in dt.Columns)
+			{
+				columnNames.Add(column.ToString());
+			}
+
+			List<List<string>> dtItems = new();
+
+			foreach (var rowItem in  dt.AsEnumerable())
+			{
+				List<string> dtRowItems = new();
+
+				foreach (var columnName in columnNames)
+				{
+					dtRowItems.Add(rowItem[columnName].ToString());
+				}
+
+				dtItems.Add(dtRowItems);
+			}
+
+			return dtItems;
+		}
+		private (QueryType, List<string>) RowItemExcept(List<string> beforeDtRowItems, List<string> afterDtRowItems)
+		{
+			if (beforeDtRowItems is not null && afterDtRowItems is null)
+			{
+				// 編集後テーブルがnullのとき
+				return (QueryType.Delete, beforeDtRowItems);
+			}
+			else if (afterDtRowItems is not null && beforeDtRowItems is null)
+			{
+				// 編集前テーブルがnullのとき
+				return (QueryType.Insert, afterDtRowItems);
+			}
+			else if (beforeDtRowItems is null && afterDtRowItems is null)
+			{
+				// 
+				return (QueryType.None, null);
+			}
+
+			return (QueryType.Update, afterDtRowItems);
 		}
 	}
 }
