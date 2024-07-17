@@ -88,10 +88,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 		/// <param name="afterTable">編集後のDataTable</param>
 		public void TableUpDate(DataTable beforeTable, DataTable afterTable)
 		{
-			List<(string, List<string>)> queryAndValues = new();
-
-			List<List<string>> bRowItems = DatatableToList(beforeTable);
-			List<List<string>> aRowItems = DatatableToList(afterTable);
+			List<(string, List<string>)> queryAndValues = 
 
 			
 			foreach (List<string> bRowItem in bRowItems)
@@ -131,30 +128,41 @@ namespace P1XCS000086.Services.Models.CodeManager
             int a = 0;
 		}
 
-		private List<List<string>> DatatableToList(DataTable dt)
+		/// <summary>
+		/// 2種のDataTableから
+		/// </summary>
+		/// <param name="dt1"></param>
+		/// <param name="dt2"></param>
+		/// <returns></returns>
+		private List<(List<string> list1, List<string> list2)> DatatableToList(DataTable dt1, DataTable dt2)
 		{
-			List<string> columnNames = new();
-			foreach (var column in dt.Columns)
+			List<(List<string>, List<string>)> rowsValuePairs = new();
+
+			int rowsCount = dt1.Rows.Count > dt2.Rows.Count ? dt1.Rows.Count : dt2.Rows.Count;
+
+			for (int i = 0; i > rowsCount; i++)
 			{
-				columnNames.Add(column.ToString());
-			}
+				DataRow dt1Row = dt1.Rows[i], dt2Row = dt2.Rows[i];
 
-			List<List<string>> dtItems = new();
+				List<string> list1 = new(), list2 = new();
 
-			foreach (var rowItem in  dt.AsEnumerable())
-			{
-				List<string> dtRowItems = new();
-
-				foreach (var columnName in columnNames)
+				foreach (DataColumn columnName in dt1.Columns)
 				{
-					dtRowItems.Add(rowItem[columnName].ToString());
+					list1.Add(dt1Row[columnName].ToString());
+					list2.Add(dt2Row[columnName].ToString());
 				}
 
-				dtItems.Add(dtRowItems);
+				rowsValuePairs.Add((list1, list2));
 			}
 
-			return dtItems;
+			return rowsValuePairs;
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="beforeDtRowItems"></param>
+		/// <param name="afterDtRowItems"></param>
+		/// <returns></returns>
 		private (QueryType, List<string>) RowItemExcept(List<string> beforeDtRowItems, List<string> afterDtRowItems)
 		{
 			if (beforeDtRowItems is not null && afterDtRowItems is null)
