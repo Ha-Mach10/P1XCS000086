@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-
+using P1XCS000086.Services.Data;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using P1XCS000086.Services.Sql.MySql;
 
@@ -88,42 +88,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 		/// <param name="afterTable">編集後のDataTable</param>
 		public void TableUpDate(DataTable beforeTable, DataTable afterTable)
 		{
-			List<(string, List<string>)> queryAndValues = 
-
-			
-			foreach (List<string> bRowItem in bRowItems)
-			{
-
-			}
-
-			// var ssss = aRowItems.Except(bRowItems).ToList();
-			// var exceptedRowItems = aRowItems.Except().ToList();
-
-			// foreach (List<string> rowI)
-
-			/*
-            foreach (var columnName in columnNames)
-            {
-				List<string> bRow = new();
-                foreach (var rowItem in beforeTable.AsEnumerable().ToList())
-				{
-					bRow.Add(rowItem.ToString());
-				}
-
-				List<string> aRow = new();
-				foreach(var rowItem in afterTable.AsEnumerable().ToList())
-				{
-					aRow.Add(rowItem.ToString());
-				}
-
-				// 列の差分が1以上の場合、
-				if (bRow.Except(aRow).Count() >= 1)
-				{
-
-				}
-            }
-			*/
-
+			DTConverter dTConverter = new DTConverter(beforeTable, afterTable);
 
             int a = 0;
 		}

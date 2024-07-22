@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\DataTableCompalator.cs" />
     <Compile Remove="Domains\TabButton.cs" />
   </ItemGroup>
 
