@@ -45,7 +45,7 @@ namespace P1XCS000086.Services.Data
 
 			columnNames.Select(x => dt.Columns.Add(x)).ToArray();
 
-			int secondDimension = gridObjects.Length / columnNames.Count;
+			int secondDimension = gridObjects.Cast<object>().ToList().Where(x => x is not null).Count() / columnNames.Count;
 			for (int i = 0; i < secondDimension; i++)
 			{
 				DataRow dr = dt.NewRow();
