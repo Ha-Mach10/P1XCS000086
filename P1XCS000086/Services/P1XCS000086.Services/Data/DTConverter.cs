@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-
+using Org.BouncyCastle.Pqc.Crypto.Lms;
 using P1XCS000086.Services.Interfaces.Data;
 using Reactive.Bindings.Notifiers;
 
@@ -124,9 +124,6 @@ namespace P1XCS000086.Services.Data
 			}
 
 
-
-			List<(string, string)> lists = new();
-			List<List<string>> dList = new();
 			List<(List<string>, List<string>)> listPair = new();
 
 			// 2テーブルのDataRowのタプルリストを返す
@@ -150,28 +147,38 @@ namespace P1XCS000086.Services.Data
 							   .ToList();
 
 				int count = dnu2.Where(x => x.Same is false).Count();
-				
-
-				/*
-				List<string> tmpList = new();
-				foreach (var item2 in dnu2)
-				{
-					if (item2.Same is false)
-					{
-						tmpList.Add(item2.S);
-					}
-				}
-				*/
 				if (count >= 1)
 				{
 					listPair.Add((dnu2.Select(x => x.F).ToList(), dnu2.Select(x => x.S).ToList()));
 				}
 			}
 
+			GenQueryValues(columnNames, listPair);
+
 			int a = 0;
 			// if (beforeTable)
 
 			return false;
+		}
+
+		private List<(QueryType, List<string>, List<string>)> GenQueryValues
+			(List<string> columnNames, List<(List<string> beforeItems, List<string> afterItems)> tuples)
+		{
+			List<(QueryType, List<string>, List<string>)> querySameValuesTaple = new();
+			var valuePairs = tuples.Select((x, y) => x.beforeItems.Zip(x.afterItems, (before, after) => new { BeforeValue = before, AfterValue = after }).ToList()).ToList();
+
+			foreach (var pairs in valuePairs)
+			{
+				foreach (var pair in pairs)
+				{
+
+				}
+			}
+
+
+			int a = 0;
+
+			return null;
 		}
 	}
 }
