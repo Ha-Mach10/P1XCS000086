@@ -147,7 +147,7 @@ namespace P1XCS000086.Services.Data
 							   .ToList();
 
 				int count = dnu2.Where(x => x.Same is false).Count();
-				if (count >= 1)
+				if (count != 0)
 				{
 					listPair.Add((dnu2.Select(x => x.F).ToList(), dnu2.Select(x => x.S).ToList()));
 				}
@@ -161,7 +161,7 @@ namespace P1XCS000086.Services.Data
 			return false;
 		}
 
-		private List<(QueryType, List<string>, List<string>)> GenQueryValues
+		private List<(QueryType, string)> GenQueryValues
 			(List<string> columnNames, List<(List<string> beforeItems, List<string> afterItems)> tuples)
 		{
 			List<(QueryType, List<string>, List<string>)> querySameValuesTaple = new();
@@ -169,10 +169,48 @@ namespace P1XCS000086.Services.Data
 
 			foreach (var pairs in valuePairs)
 			{
-				foreach (var pair in pairs)
-				{
+				// カラム名称とBeforeValueとAfterValueのペアを取得
+				var items = pairs.Zip(columnNames, (valuePair, columnName) => new { ValuePair = valuePair, ColumnName = columnName })
+								 .ToList();
 
+				QueryType queryType = QueryType.None;
+
+				// BeforeValueが全てnullの場合（INSERTクエリ）
+				if (items.Where(x => string.IsNullOrEmpty(x.ValuePair.BeforeValue)).Count() == columnNames.Count)
+				{
+					queryType = QueryType.Insert;
+					string itemValue = $"INSERT INTO `*table*` VALUES ({string.Join(',', items.Select(x => $"'{x.ValuePair.AfterValue}'").ToArray())});";
+
+					int c = 0;
 				}
+				// AfterValueとBeforeValueの値が複数合致している場合（UPDATEクエリ）
+				else if (items.Where(x => x.ValuePair.BeforeValue == x.ValuePair.AfterValue).Count() < columnNames.Count)
+				{
+					var setValues = items.Where(x => x.ValuePair.BeforeValue != x.ValuePair.AfterValue)
+										 .Select(x => $"`{x.ColumnName}` = '{x.ValuePair.AfterValue}'")
+										 .ToList();
+					var whereValues = items.Where(x => x.ValuePair.BeforeValue == x.ValuePair.AfterValue)
+										   .Select(x => $"`{x.ColumnName}` = '{x.ValuePair.AfterValue}'")
+										   .ToList();
+
+
+					string setValue = $"SET {string.Join(',', setValues)}";
+					string whereValue = $"";
+
+					queryType = QueryType.Update;
+					string itemValue = $"UPDATE `*table*` SET { string.Join(',', setValues) } WHERE { string.Join("AND", whereValues) };";
+
+					int d = 0;
+				}
+				// AfterValueがすべてnullの場合（DELETEクエリ）
+				else if (items.Where(x => string.IsNullOrEmpty(x.ValuePair.AfterValue)).Count() == columnNames.Count)
+				{
+					queryType = QueryType.Delete;
+					string itemValue = $"DELETE FROM `*table*` WHERE {string.Join(',', string.Join("AND", items.Select(x => $"`{x.ColumnName}` = '{x.ValuePair.AfterValue}'")))}";
+				}
+
+
+				int b = 0;
 			}
 
 
