@@ -50,6 +50,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public MasterManagerViewModel(IRegionManager regionManager, IMasterManagerModel model, IDTConveter conveter)
 			: base(regionManager)
 		{
+			// インジェクションされたモデルを格納
 			_regionManager = regionManager;
 			_model = model;
 			_conveter = conveter;
@@ -160,7 +161,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			DataTable afterTable = _conveter.Convert(columnNames, sheet.GetRangeData(rp));
 
 			// 
-			_model.TableUpDate(beforeTable, afterTable);
+			_model.TableUpDate(beforeTable, afterTable, SelectedDatabaseName.Value, SelectedTableName.Value.TableName);
 
 			// サイズの再定義
 			sheet.Resize(rp.Rows, rp.Cols);

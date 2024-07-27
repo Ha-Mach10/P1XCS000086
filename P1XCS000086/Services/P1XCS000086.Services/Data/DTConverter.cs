@@ -5,7 +5,10 @@ using System.Linq;
 using System.Text;
 using Org.BouncyCastle.Pqc.Crypto.Lms;
 using P1XCS000086.Services.Interfaces.Data;
+using P1XCS000086.Services.Sql;
+using P1XCS000086.Services.Sql.MySql;
 using Reactive.Bindings.Notifiers;
+using static P1XCS000086.Services.Data.DTConverter;
 
 namespace P1XCS000086.Services.Data
 {
@@ -21,24 +24,43 @@ namespace P1XCS000086.Services.Data
 		}
 
 
+
+		// 
+		private const string c_replaceTableName = "*table*";
+
+
+
 		// 
 		private DataTable _dt1;
 		private DataTable _dt2;
+		private string _databaseName;
+		private string _tableName;
 
 
 
-		public List<(List<string> BeforeDtRowItems, List<string> AfterDtRowItems)> Lists { get; private set; }
+		public List<string> ExceptionMessages { get; private set; }
+		public List<string> ResultMessages { get; private set; }
 
 
 
-		public DTConverter(DataTable dt1, DataTable dt2)
+		public DTConverter(DataTable dt1, DataTable dt2, string datatableName, string tableName)
 		{
+			_databaseName = datatableName;
+			_tableName = tableName;
+
 			DataTablesCompatation(dt1, dt2);
 		}
 
 
 
 		// Public Methods
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="columnNames"></param>
+		/// <param name="gridObjects"></param>
+		/// <returns></returns>
 		public DataTable Convert(List<string> columnNames, object[,] gridObjects)
 		{
 			DataTable dt = new();
@@ -61,10 +83,6 @@ namespace P1XCS000086.Services.Data
 			}
 
 			return dt;
-		}
-		public List<(QueryType queryType, string query, List<string>)> QueryValues()
-		{
-			return null;
 		}
 
 
@@ -153,7 +171,7 @@ namespace P1XCS000086.Services.Data
 				}
 			}
 
-			GenQueryValues(columnNames, listPair);
+			var queryAndValuePair = GenQueryValues(columnNames, listPair);
 
 			int a = 0;
 			// if (beforeTable)
@@ -161,10 +179,16 @@ namespace P1XCS000086.Services.Data
 			return false;
 		}
 
-		private List<(QueryType, string)> GenQueryValues
-			(List<string> columnNames, List<(List<string> beforeItems, List<string> afterItems)> tuples)
+		/// <summary>
+		/// 与えられたbeforeItemsとafterItemsの比較を行い、クエリ種別とSQL文を返す
+		/// </summary>
+		/// <param name="columnNames">カラム名称一覧</param>
+		/// <param name="tuples">beforeItemsとafterItemsのタプル</param>
+		/// <returns>クエリ種別とSQL文</returns>
+		private List<string> GenQueryValues (List<string> columnNames, List<(List<string> beforeItems, List<string> afterItems)> tuples)
 		{
-			List<(QueryType, List<string>, List<string>)> querySameValuesTaple = new();
+			List<string> querys = new();
+			// List<(QueryType, string)> queryAndValuePair = new();
 			var valuePairs = tuples.Select((x, y) => x.beforeItems.Zip(x.afterItems, (before, after) => new { BeforeValue = before, AfterValue = after }).ToList()).ToList();
 
 			foreach (var pairs in valuePairs)
@@ -173,50 +197,71 @@ namespace P1XCS000086.Services.Data
 				var items = pairs.Zip(columnNames, (valuePair, columnName) => new { ValuePair = valuePair, ColumnName = columnName })
 								 .ToList();
 
-				QueryType queryType = QueryType.None;
 
 				// BeforeValueが全てnullの場合（INSERTクエリ）
 				if (items.Where(x => string.IsNullOrEmpty(x.ValuePair.BeforeValue)).Count() == columnNames.Count)
 				{
-					queryType = QueryType.Insert;
-					string itemValue = $"INSERT INTO `*table*` VALUES ({string.Join(',', items.Select(x => $"'{x.ValuePair.AfterValue}'").ToArray())});";
+					// INSERT用の配列を取得
+					string[] insertValues = items.Select(x => $"'{x.ValuePair.AfterValue}'").ToArray();
+					// 上記配列からINSERT用の文字列を取得
+					string insertValue = string.Join(',', insertValues);
 
-					int c = 0;
-				}
-				// AfterValueとBeforeValueの値が複数合致している場合（UPDATEクエリ）
-				else if (items.Where(x => x.ValuePair.BeforeValue == x.ValuePair.AfterValue).Count() < columnNames.Count)
-				{
-					var setValues = items.Where(x => x.ValuePair.BeforeValue != x.ValuePair.AfterValue)
-										 .Select(x => $"`{x.ColumnName}` = '{x.ValuePair.AfterValue}'")
-										 .ToList();
-					var whereValues = items.Where(x => x.ValuePair.BeforeValue == x.ValuePair.AfterValue)
-										   .Select(x => $"`{x.ColumnName}` = '{x.ValuePair.AfterValue}'")
-										   .ToList();
-
-
-					string setValue = $"SET {string.Join(',', setValues)}";
-					string whereValue = $"";
-
-					queryType = QueryType.Update;
-					string itemValue = $"UPDATE `*table*` SET { string.Join(',', setValues) } WHERE { string.Join("AND", whereValues) };";
-
-					int d = 0;
+					// 
+					// queryAndValuePair.Add((QueryType.Insert, $"INSERT INTO `{ c_replaceTableName }` VALUES ({insertValue});"));
+					querys.Add($"INSERT INTO `{c_replaceTableName}` VALUES ({insertValue});");
 				}
 				// AfterValueがすべてnullの場合（DELETEクエリ）
 				else if (items.Where(x => string.IsNullOrEmpty(x.ValuePair.AfterValue)).Count() == columnNames.Count)
 				{
-					queryType = QueryType.Delete;
-					string itemValue = $"DELETE FROM `*table*` WHERE {string.Join(',', string.Join("AND", items.Select(x => $"`{x.ColumnName}` = '{x.ValuePair.AfterValue}'")))}";
+					// WHERE用の値を配列で取得
+					string[] whereValues = items.Select(x => $"`{x.ColumnName}` = '{x.ValuePair.BeforeValue}'").ToArray();
+					// 上記配列からWHERE用の文字列を取得
+					string whereValue = string.Join("AND", whereValues);
+
+					// 
+					// queryAndValuePair.Add((QueryType.Delete, $"DELETE FROM `{ c_replaceTableName }` WHERE {whereValue};"));
+					querys.Add($"DELETE FROM `{c_replaceTableName}` WHERE {whereValue};");
 				}
+				// AfterValueとBeforeValueの値が複数合致している場合（UPDATEクエリ）
+				else if (items.Where(x => x.ValuePair.BeforeValue == x.ValuePair.AfterValue).Count() < columnNames.Count)
+				{
+					// SET用の値をリストで取得
+					var setValues = items.Where(x => x.ValuePair.BeforeValue != x.ValuePair.AfterValue)
+										 .Select(x => $"`{x.ColumnName}` = '{x.ValuePair.AfterValue}'")
+										 .ToList();
+					// WHERE用の値をリストで取得
+					var whereValues = items.Where(x => x.ValuePair.BeforeValue == x.ValuePair.AfterValue)
+										   .Select(x => $"`{x.ColumnName}` = '{x.ValuePair.AfterValue}'")
+										   .ToList();
 
+					// SET用の文字列を取得
+					string setValue = string.Join(',', setValues);
+					// WHERE用の文字列を取得
+					string whereValue = string.Join("AND", whereValues);
 
-				int b = 0;
+					// 
+					// queryAndValuePair.Add((QueryType.Update, $"UPDATE `{ c_replaceTableName }` SET { setValue } WHERE { whereValue };"));
+					querys.Add($"UPDATE `{c_replaceTableName}` SET {setValue} WHERE {whereValue};");
+				}
 			}
 
+			return querys;
+		}
 
-			int a = 0;
+		private void ExecuteQuery(List<string> querys)
+		{
+			var connStrings = SqlConnectionStrings.GetConnectionStrings();
+			string connStr = connStrings[_databaseName];
 
-			return null;
+			SqlExecute sqlExecute = new(connStr);
+
+			foreach (string query in querys)
+			{
+				sqlExecute.Execute(query);
+
+				ExceptionMessages.Add(sqlExecute.ExceptionMessage);
+				ResultMessages.Add(sqlExecute.ResultMessage);
+			}
 		}
 	}
 }

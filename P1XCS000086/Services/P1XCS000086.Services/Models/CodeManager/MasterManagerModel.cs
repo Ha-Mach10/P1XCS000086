@@ -11,15 +11,6 @@ namespace P1XCS000086.Services.Models.CodeManager
 {
 	public class MasterManagerModel : IMasterManagerModel
 	{
-		// Enum
-		public enum QueryType
-		{
-			None	= 0,
-			Update	= 1,
-			Insert	= 2,
-			Delete	= 3,
-		}
-
 		// Fields
 		private CommonModel _common;
 		private SqlSelect _selectManager;
@@ -86,9 +77,9 @@ namespace P1XCS000086.Services.Models.CodeManager
 		/// </summary>
 		/// <param name="beforeTable">編集前のDataTable</param>
 		/// <param name="afterTable">編集後のDataTable</param>
-		public void TableUpDate(DataTable beforeTable, DataTable afterTable)
+		public void TableUpDate(DataTable beforeTable, DataTable afterTable, string databaseName, string tableName)
 		{
-			DTConverter dTConverter = new DTConverter(beforeTable, afterTable);
+			DTConverter dTConverter = new DTConverter(beforeTable, afterTable, databaseName, tableName);
 
             int a = 0;
 		}
@@ -121,32 +112,6 @@ namespace P1XCS000086.Services.Models.CodeManager
 			}
 
 			return rowsValuePairs;
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="beforeDtRowItems"></param>
-		/// <param name="afterDtRowItems"></param>
-		/// <returns></returns>
-		private (QueryType, List<string>) RowItemExcept(List<string> beforeDtRowItems, List<string> afterDtRowItems)
-		{
-			if (beforeDtRowItems is not null && afterDtRowItems is null)
-			{
-				// 編集後テーブルがnullのとき
-				return (QueryType.Delete, beforeDtRowItems);
-			}
-			else if (afterDtRowItems is not null && beforeDtRowItems is null)
-			{
-				// 編集前テーブルがnullのとき
-				return (QueryType.Insert, afterDtRowItems);
-			}
-			else if (beforeDtRowItems is null && afterDtRowItems is null)
-			{
-				// 
-				return (QueryType.None, null);
-			}
-
-			return (QueryType.Update, afterDtRowItems);
 		}
 	}
 }

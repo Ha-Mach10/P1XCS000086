@@ -122,10 +122,6 @@ namespace P1XCS000086.Services.Sql.MySql
 						
 						var parameters = columns.Zip(values, (column, value) => new MySqlParameter(column, value)).ToArray();
 						cmd.Parameters.AddRange(parameters);
-						
-
-						// columns.Zip(values, (column, value) => cmd.Parameters.Add(new MySqlParameter(column, value)));
-						// columns.Zip(values, (column, value) => cmd.Parameters.AddWithValue(Regex.Replace(column, "^`", "`@"), value));
 
 						// トランザクションを開始
 						tran = conn.BeginTransaction();

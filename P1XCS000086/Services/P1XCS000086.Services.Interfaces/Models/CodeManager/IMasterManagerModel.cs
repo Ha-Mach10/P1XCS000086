@@ -34,6 +34,6 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 		/// </summary>
 		/// <param name="beforeTable">編集前のDataTable</param>
 		/// <param name="afterTable">編集後のDataTable</param>
-		public void TableUpDate(DataTable beforeTable, DataTable afterTable);
+		public void TableUpDate(DataTable beforeTable, DataTable afterTable, string databaseName, string tableName);
 	}
 }
