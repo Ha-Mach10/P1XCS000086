@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using P1XCS000086.Services.Data;
+using P1XCS000086.Services.Interfaces.Data;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using P1XCS000086.Services.Sql.MySql;
 
@@ -20,7 +21,6 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 		// Properties
 		public List<string> DatabaseNames { get; }
-		public List<(string, string)> TableNames { get; }
 		public List<string> UseAppMajor { get; }
 		public List<string> UseAppRange { get; }
 
@@ -77,11 +77,11 @@ namespace P1XCS000086.Services.Models.CodeManager
 		/// </summary>
 		/// <param name="beforeTable">編集前のDataTable</param>
 		/// <param name="afterTable">編集後のDataTable</param>
-		public void TableUpDate(DataTable beforeTable, DataTable afterTable, string databaseName, string tableName)
+		public void TableUpDate(IDTConveter dtConverter, DataTable beforeTable, DataTable afterTable, string databaseName, string tableName)
 		{
-			DTConverter dTConverter = new DTConverter(beforeTable, afterTable, databaseName, tableName);
-
-            int a = 0;
+			dtConverter.DataTablesCompatation(beforeTable, afterTable, databaseName, tableName);
+			var exceptionMessages = dtConverter.ExceptionMessages;
+			var resultMessages = dtConverter.ResultMessages;
 		}
 
 		/// <summary>

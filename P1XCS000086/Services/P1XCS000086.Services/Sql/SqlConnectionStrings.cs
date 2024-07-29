@@ -6,6 +6,7 @@ using System.Text;
 using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Asn1.Cms;
 using P1XCS000086.Services.IO;
+using P1XCS000086.Services.Interfaces.Sql;
 
 namespace P1XCS000086.Services.Sql
 {
@@ -22,8 +23,8 @@ namespace P1XCS000086.Services.Sql
 		private static string _database;
 		private static string _password;
 		private static bool _persistSecurityInfo;
-		
-		
+
+
 
 		/// <summary>
 		/// ユーザー名(キー)・接続文字列（値）のペアを保持する静的ディクショナリ
@@ -32,7 +33,7 @@ namespace P1XCS000086.Services.Sql
 
 
 
-		public static Dictionary<string, string> GetConnectionStrings()
+		public static Dictionary<string, string> SetConnectionStrings()
 		{
 			DataTable dt = CsvParser.ReadCsv(databaseTextFilePath, typeof(SqlConnectionStrings));
 			SetConnectionStrings(dt);

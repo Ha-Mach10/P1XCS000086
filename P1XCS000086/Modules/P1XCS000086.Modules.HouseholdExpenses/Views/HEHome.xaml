@@ -11,9 +11,9 @@
 	prism:ViewModelLocator.AutoWireViewModel="True"
 	mc:Ignorable="d">
 	<Grid>
-		<TextBlock
-			HorizontalAlignment="Center"
-			VerticalAlignment="Center"
-			Text="{Binding Message}" />
+		<Grid.RowDefinitions>
+			<RowDefinition Height="50"/>
+			<RowDefinition />
+		</Grid.RowDefinitions>
 	</Grid>
 </UserControl>

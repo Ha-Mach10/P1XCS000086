@@ -55,6 +55,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			_model = model;
 			_conveter = conveter;
 
+
 			// このビューモデルの生存
 			KeepAlive = true;
 
@@ -104,6 +105,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 				Table.Value = null;
 				return;
 			}
+			// データベースから取得した値をDataGridに設定
 			Table.Value = _model.SearchTable(SelectedDatabaseName.Value, SelectedTableName.Value.TableName);
 
 			EditTableButtonVisibility.Value = Visibility.Visible;
@@ -158,10 +160,11 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 			// DataTableを定義
 			DataTable beforeTable = Table.Value;
+			// 
 			DataTable afterTable = _conveter.Convert(columnNames, sheet.GetRangeData(rp));
 
-			// 
-			_model.TableUpDate(beforeTable, afterTable, SelectedDatabaseName.Value, SelectedTableName.Value.TableName);
+			// テーブルの変更を実行
+			_model.TableUpDate(_conveter, beforeTable, afterTable, SelectedDatabaseName.Value, SelectedTableName.Value.TableName);
 
 			// サイズの再定義
 			sheet.Resize(rp.Rows, rp.Cols);
@@ -169,12 +172,19 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			// ボタンの可視性変更
 			FixTableButtonVisibility.Value = Visibility.Collapsed;
 			EditTableButtonVisibility.Value = Visibility.Visible;
+
+			// 更新した値をデータベースから取得し、その値をDataGridに再設定
+			Table.Value = _model.SearchTable(SelectedDatabaseName.Value, SelectedTableName.Value.TableName);
 		}
 
 
 
 		// Private Methods
 
+		/// <summary>
+		/// コンボボックス用のデータベース名の一覧を列挙型で返す
+		/// </summary>
+		/// <returns></returns>
 		private IEnumerable<string> GenerateDatabaseNames()
 		{
 			foreach(var item in _model.DatabaseNames)
@@ -182,6 +192,10 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 				yield return item;
 			}
 		}
+		/// <summary>
+		/// テーブル名（論理名と物理名）の一覧を列挙型で返す
+		/// </summary>
+		/// <returns></returns>
 		private IEnumerable<TableNameListItem> GenerateTableNameListItems()
 		{
 			foreach (var item in _model.GetTableNameSets(SelectedDatabaseName.Value))

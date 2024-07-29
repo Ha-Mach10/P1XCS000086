@@ -1,4 +1,5 @@
-﻿using System;
+﻿using P1XCS000086.Services.Interfaces.Data;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
@@ -9,7 +10,6 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 	{
 		// Properties
 		public List<string> DatabaseNames { get; }
-		public List<(string, string)> TableNames { get; }
 		public List<string> UseAppMajor { get; }
 		public List<string> UseAppRange { get; }
 
@@ -34,6 +34,6 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 		/// </summary>
 		/// <param name="beforeTable">編集前のDataTable</param>
 		/// <param name="afterTable">編集後のDataTable</param>
-		public void TableUpDate(DataTable beforeTable, DataTable afterTable, string databaseName, string tableName);
+		public void TableUpDate(IDTConveter dtConverter, DataTable beforeTable, DataTable afterTable, string databaseName, string tableName);
 	}
 }

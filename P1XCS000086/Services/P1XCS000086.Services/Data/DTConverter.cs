@@ -2,53 +2,29 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using Org.BouncyCastle.Pqc.Crypto.Lms;
 using P1XCS000086.Services.Interfaces.Data;
 using P1XCS000086.Services.Sql;
 using P1XCS000086.Services.Sql.MySql;
-using Reactive.Bindings.Notifiers;
-using static P1XCS000086.Services.Data.DTConverter;
 
 namespace P1XCS000086.Services.Data
 {
 	public class DTConverter : IDTConveter
 	{
-		// Enum
-		public enum QueryType
-		{
-			None = 0,
-			Update = 1,
-			Insert = 2,
-			Delete = 3,
-		}
-
-
-
 		// 
-		private const string c_replaceTableName = "*table*";
-
-
-
-		// 
-		private DataTable _dt1;
-		private DataTable _dt2;
 		private string _databaseName;
 		private string _tableName;
 
 
 
-		public List<string> ExceptionMessages { get; private set; }
-		public List<string> ResultMessages { get; private set; }
+		// Properties
+		public List<string> ExceptionMessages { get; private set; } = new();
+		public List<string> ResultMessages { get; private set; } = new();
 
 
 
-		public DTConverter(DataTable dt1, DataTable dt2, string datatableName, string tableName)
+		public DTConverter()
 		{
-			_databaseName = datatableName;
-			_tableName = tableName;
 
-			DataTablesCompatation(dt1, dt2);
 		}
 
 
@@ -65,17 +41,27 @@ namespace P1XCS000086.Services.Data
 		{
 			DataTable dt = new();
 
+			// カラム名のリストからdtのカラム名を設定
 			columnNames.Select(x => dt.Columns.Add(x)).ToArray();
 
+			// 行数を取得
 			int secondDimension = gridObjects.Cast<object>().ToList().Where(x => x is not null).Count() / columnNames.Count;
 			for (int i = 0; i < secondDimension; i++)
 			{
+				// 新しいDataRowを定義
 				DataRow dr = dt.NewRow();
 
 				int count = 0;
 				foreach (var columnName in columnNames)
 				{
-					dr[columnName] = gridObjects[i, count].ToString();
+					if (gridObjects[i, count] is null)
+					{
+						dr[columnName] = gridObjects[i, count];
+					}
+					else
+					{
+						dr[columnName] = gridObjects[i, count].ToString();
+					}
 					count++;
 				}
 
@@ -84,12 +70,20 @@ namespace P1XCS000086.Services.Data
 
 			return dt;
 		}
-
-
-
-		// Private Methods
-		private bool DataTablesCompatation(DataTable beforeTable, DataTable afterTable)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="beforeTable"></param>
+		/// <param name="afterTable"></param>
+		/// <param name="databaseName"></param>
+		/// <param name="tableName"></param>
+		/// <returns></returns>
+		public void DataTablesCompatation(DataTable beforeTable, DataTable afterTable, string databaseName, string tableName)
 		{
+			_databaseName = databaseName;
+			_tableName = tableName;
+
+
 			// ---------------------------------------------------------------------
 			// 2テーブルの入力が適切か判定（カラム比較）
 			// ---------------------------------------------------------------------
@@ -108,7 +102,7 @@ namespace P1XCS000086.Services.Data
 			// colDnuの値と各テーブルのカラム数が合わない場合falseを返す
 			if (colDnu != beforeTable.Columns.Count || colDnu != afterTable.Columns.Count)
 			{
-				return false;
+				return;
 			}
 
 			List<string> columnNames = beforeTable.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
@@ -171,13 +165,16 @@ namespace P1XCS000086.Services.Data
 				}
 			}
 
-			var queryAndValuePair = GenQueryValues(columnNames, listPair);
+			// 生成されたクエリ文のリストを取得
+			var queryAndValuePair = GenQueryValues(columnNames, listPair, tableName);
 
-			int a = 0;
-			// if (beforeTable)
-
-			return false;
+			// 取得したクエリを実行
+			ExecuteQuery(queryAndValuePair);
 		}
+
+
+
+		// Private Methods
 
 		/// <summary>
 		/// 与えられたbeforeItemsとafterItemsの比較を行い、クエリ種別とSQL文を返す
@@ -185,7 +182,7 @@ namespace P1XCS000086.Services.Data
 		/// <param name="columnNames">カラム名称一覧</param>
 		/// <param name="tuples">beforeItemsとafterItemsのタプル</param>
 		/// <returns>クエリ種別とSQL文</returns>
-		private List<string> GenQueryValues (List<string> columnNames, List<(List<string> beforeItems, List<string> afterItems)> tuples)
+		private List<string> GenQueryValues (List<string> columnNames, List<(List<string> beforeItems, List<string> afterItems)> tuples, string tableName)
 		{
 			List<string> querys = new();
 			// List<(QueryType, string)> queryAndValuePair = new();
@@ -207,8 +204,7 @@ namespace P1XCS000086.Services.Data
 					string insertValue = string.Join(',', insertValues);
 
 					// 
-					// queryAndValuePair.Add((QueryType.Insert, $"INSERT INTO `{ c_replaceTableName }` VALUES ({insertValue});"));
-					querys.Add($"INSERT INTO `{c_replaceTableName}` VALUES ({insertValue});");
+					querys.Add($"INSERT INTO `{tableName}` VALUES ({insertValue});");
 				}
 				// AfterValueがすべてnullの場合（DELETEクエリ）
 				else if (items.Where(x => string.IsNullOrEmpty(x.ValuePair.AfterValue)).Count() == columnNames.Count)
@@ -219,8 +215,7 @@ namespace P1XCS000086.Services.Data
 					string whereValue = string.Join("AND", whereValues);
 
 					// 
-					// queryAndValuePair.Add((QueryType.Delete, $"DELETE FROM `{ c_replaceTableName }` WHERE {whereValue};"));
-					querys.Add($"DELETE FROM `{c_replaceTableName}` WHERE {whereValue};");
+					querys.Add($"DELETE FROM `{tableName}` WHERE {whereValue};");
 				}
 				// AfterValueとBeforeValueの値が複数合致している場合（UPDATEクエリ）
 				else if (items.Where(x => x.ValuePair.BeforeValue == x.ValuePair.AfterValue).Count() < columnNames.Count)
@@ -240,8 +235,7 @@ namespace P1XCS000086.Services.Data
 					string whereValue = string.Join("AND", whereValues);
 
 					// 
-					// queryAndValuePair.Add((QueryType.Update, $"UPDATE `{ c_replaceTableName }` SET { setValue } WHERE { whereValue };"));
-					querys.Add($"UPDATE `{c_replaceTableName}` SET {setValue} WHERE {whereValue};");
+					querys.Add($"UPDATE `{tableName}` SET {setValue} WHERE {whereValue};");
 				}
 			}
 
@@ -250,7 +244,7 @@ namespace P1XCS000086.Services.Data
 
 		private void ExecuteQuery(List<string> querys)
 		{
-			var connStrings = SqlConnectionStrings.GetConnectionStrings();
+			var connStrings = SqlConnectionStrings.ConnectionStrings;
 			string connStr = connStrings[_databaseName];
 
 			SqlExecute sqlExecute = new(connStr);

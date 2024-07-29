@@ -42,7 +42,7 @@ namespace P1XCS000086.Services.Models
 		public MainWindowModel()
 		{
 			// 内部リソースから接続文字列を生成
-			SqlConnectionStrings.GetConnectionStrings();
+			SqlConnectionStrings.SetConnectionStrings();
 		}
 
 
