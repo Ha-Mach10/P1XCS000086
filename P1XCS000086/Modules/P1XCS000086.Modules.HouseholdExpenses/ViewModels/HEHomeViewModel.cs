@@ -86,11 +86,11 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 			IsPaneOpen = new ReactivePropertySlim<bool>(false);
 
 			PaneLength = new ReactivePropertySlim<int>(300);
-			PriceItems = new ReactivePropertySlim<List<PriceItem>>();
+			PriceItems = new ReactivePropertySlim<List<PriceItem>>(new());
 
 
-			priceItems.Add(new PriceItem(regionManager, "", "", 0, OnPriceItemBoxKeyDown));
-			PriceItems.Value = priceItems;
+			// priceItems.Add(new PriceItem(regionManager, "", "", 0, OnPriceItemBoxKeyDown));
+			PriceItems.Value.Add(new PriceItem(regionManager, "", "", 0, OnPriceItemBoxKeyDown));
 
 
 			// 
@@ -137,8 +137,9 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 
 			if (itemTextIsNullOrEmpty || itemPriceIsNullOrEmpty || isLargerThanZero)
 			{
-				priceItems.Add(new PriceItem(_regionManager, "", "", 0, OnPriceItemBoxKeyDown));
-				PriceItems.Value = priceItems;
+				// riceItems.Add(new PriceItem(_regionManager, "", "", 0, OnPriceItemBoxKeyDown));
+				// PriceItems.Value = priceItems;
+				PriceItems.Value.Add(new PriceItem(_regionManager, "", "", 0, OnPriceItemBoxKeyDown));
 			}
 		}
 	}

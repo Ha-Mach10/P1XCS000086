@@ -137,7 +137,7 @@
 						BorderThickness="1">
 						<GroupBox
 							Background="#34495E"
-							Header="金額登録"
+							Header="購入品登録"
 							Style="{StaticResource GroupBoxTemplate}">
 							<Grid>
 								<Grid.RowDefinitions>
@@ -167,7 +167,7 @@
 										Text="数量" />
 								</Grid>
 
-								<ItemsControl Grid.Row="1" ItemsSource="{Binding PriceItems.Value}">
+								<ItemsControl Grid.Row="1" ItemsSource="{Binding PriceItems.Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
 									<ItemsControl.ItemsPanel>
 										<ItemsPanelTemplate>
 											<StackPanel Margin="4" />
