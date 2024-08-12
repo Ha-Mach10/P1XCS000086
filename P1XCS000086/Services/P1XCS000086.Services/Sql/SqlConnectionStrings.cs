@@ -7,6 +7,7 @@ using MySql.Data.MySqlClient;
 using Org.BouncyCastle.Asn1.Cms;
 using P1XCS000086.Services.IO;
 using P1XCS000086.Services.Interfaces.Sql;
+using System.Text.RegularExpressions;
 
 namespace P1XCS000086.Services.Sql
 {
@@ -55,6 +56,12 @@ namespace P1XCS000086.Services.Sql
 			// DataTableからLINQを使用し、接続文字列生成に必要な値をフィールドに格納
 			var dtItems = dt.Rows.Cast<DataRow>().Select(x =>
 			{
+				// もし、サーバー名称の頭に'*'が付属していた場合、リターンする
+				if (x["server"].ToString().First() == '*')
+				{
+					return x;
+				}
+
 				// カラムを指定して、各プロパティへ値を格納
 				_server					= x["server"].ToString();
 				_user					= x["user"].ToString();

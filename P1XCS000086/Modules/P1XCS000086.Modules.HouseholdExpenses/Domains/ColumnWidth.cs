@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace P1XCS000086.Modules.HouseholdExpenses.Domains
+{
+    internal class ColumnWidth
+    {
+        public double[] ItemWidths { get; private set; }
+
+        internal ColumnWidth(params double[] )
+        {
+
+        }
+    }
+}

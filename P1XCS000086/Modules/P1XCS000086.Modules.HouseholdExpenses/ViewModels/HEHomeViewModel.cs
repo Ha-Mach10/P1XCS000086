@@ -31,7 +31,7 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 
 		private IRegionManager _regionManager;
 
-		private List<PriceItem> priceItems;
+		private List<PriceItem> priceItems = new();
 
 
 
@@ -51,10 +51,13 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 		public ReactivePropertySlim<string> TotalPrice { get; }
 		public ReactivePropertySlim<int> PurchasedCount { get; }
 
+		// 
 		public ReactivePropertySlim<bool> IsPaneOpen { get; }
-		
 		public ReactivePropertySlim<int> PaneLength { get; }
 		public ReactivePropertySlim<List<PriceItem>> PriceItems { get; }
+		public ReactivePropertySlim<int> PriceViewColumnsCount { get; } = new ReactivePropertySlim<int>(0);
+		// カラムの幅を調整するためのプロパティ
+		public ReactivePropertySlim<double[]> ColumnWidth { get; }
 
 
 
@@ -65,10 +68,6 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 		public HEHomeViewModel(IRegionManager regionManager) : base(regionManager)
 		{
 			_regionManager = regionManager;
-
-
-			// 初期化
-			priceItems = new List<PriceItem>();
 
 
 			PaneMaxLength = new ReactivePropertySlim<int>(int.MaxValue);
@@ -86,11 +85,17 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 			IsPaneOpen = new ReactivePropertySlim<bool>(false);
 
 			PaneLength = new ReactivePropertySlim<int>(300);
-			PriceItems = new ReactivePropertySlim<List<PriceItem>>(new());
+			PriceItems = new ReactivePropertySlim<List<PriceItem>>();
+			PriceViewColumnsCount = new ReadOnlyReactivePropertySlim<int>(4).s;
 
 
+			for (int i = 0; i < 10; i++)
+			{
+				priceItems.Add(new PriceItem(regionManager, "", "", 0, OnPriceItemBoxKeyDown));
+			}
 			// priceItems.Add(new PriceItem(regionManager, "", "", 0, OnPriceItemBoxKeyDown));
-			PriceItems.Value.Add(new PriceItem(regionManager, "", "", 0, OnPriceItemBoxKeyDown));
+			PriceItems.Value = priceItems;
+			// PriceItems.Value.Add(new PriceItem(regionManager, "", "", 0, OnPriceItemBoxKeyDown));
 
 
 			// 
@@ -137,9 +142,11 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 
 			if (itemTextIsNullOrEmpty || itemPriceIsNullOrEmpty || isLargerThanZero)
 			{
-				// riceItems.Add(new PriceItem(_regionManager, "", "", 0, OnPriceItemBoxKeyDown));
-				// PriceItems.Value = priceItems;
-				PriceItems.Value.Add(new PriceItem(_regionManager, "", "", 0, OnPriceItemBoxKeyDown));
+				priceItems.Add(new PriceItem(_regionManager, "", "", 0, OnPriceItemBoxKeyDown));
+				PriceItems.Value = priceItems;
+				// PriceItems.Value.Add(new PriceItem(_regionManager, "", "", 0, OnPriceItemBoxKeyDown));
+
+				int aa = 0;
 			}
 		}
 	}

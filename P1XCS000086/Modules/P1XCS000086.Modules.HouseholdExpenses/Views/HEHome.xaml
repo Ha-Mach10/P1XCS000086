@@ -149,25 +149,27 @@
 
 								<Grid Margin="8,4,8,4">
 									<Grid.ColumnDefinitions>
-										<ColumnDefinition />
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition />
 										<ColumnDefinition Width="100" />
 										<ColumnDefinition Width="70" />
 									</Grid.ColumnDefinitions>
 
-									<TextBlock Style="{StaticResource GroupBoxHeaderTmplate}" Text="品目名称" />
+                                    <Label Content="通し番号"/>
+                                    <TextBlock Grid.Column="1" Style="{StaticResource GroupBoxHeaderTmplate}" Text="品目名称" />
 									<TextBlock
-										Grid.Column="1"
+										Grid.Column="2"
 										Margin="8,4,0,0"
 										Style="{StaticResource GroupBoxHeaderTmplate}"
 										Text="金額" />
 									<TextBlock
-										Grid.Column="2"
+										Grid.Column="3"
 										Margin="8,4,0,0"
 										Style="{StaticResource GroupBoxHeaderTmplate}"
 										Text="数量" />
 								</Grid>
 
-								<ItemsControl Grid.Row="1" ItemsSource="{Binding PriceItems.Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+								<ItemsControl Grid.Row="1" ItemsSource="{Binding PriceItems.Value, Mode=TwoWay}">
 									<ItemsControl.ItemsPanel>
 										<ItemsPanelTemplate>
 											<StackPanel Margin="4" />
