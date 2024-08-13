@@ -10,8 +10,10 @@ using System.Windows.Controls;
 
 namespace P1XCS000086.Core.Behaviors
 {
-    internal class GridBehavior : Behavior<Grid>
+    public class GridBehavior/* : Behavior<Grid>*/
     {
+        private int _columnsCount = 0;
+
         /// <summary>
         /// 依存関係プロパティ
         /// </summary>
@@ -52,24 +54,35 @@ namespace P1XCS000086.Core.Behaviors
 
             // 更新された値を取得する
             var newValue = (int)e.NewValue;
-
-
+            // element.ColumnDefinitions.Count() 
         }
 
 
-
+        /*
         protected override void OnAttached()
         {
             base.OnAttached();
 
-
+            // イベントの追加
+            AssociatedObject.Loaded += OnLoaded;
         }
 
         protected override void OnDetaching()
         {
             base.OnDetaching();
 
-
+            // イベントの削除
+            AssociatedObject.Loaded -= OnLoaded;
         }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is Grid grid)
+            {
+                _columnsCount = grid.ColumnDefinitions.Count();
+                SetColumnsCount(grid, _columnsCount);
+            }
+        }
+        */
     }
 }

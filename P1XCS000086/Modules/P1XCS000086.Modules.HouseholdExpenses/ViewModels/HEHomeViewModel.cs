@@ -11,7 +11,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Controls;
 using P1XCS000086.Modules.HouseholdExpenses.Domains;
+using System.Windows;
+using System.Collections.ObjectModel;
+using System.Reactive.Linq;
 
 namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 {
@@ -21,7 +25,7 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 		// Const Members
 		// ****************************************************************************
 
-		
+		private const string c_priceItemKey = "PriceItemRegist";
 
 
 
@@ -54,10 +58,21 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 		// 
 		public ReactivePropertySlim<bool> IsPaneOpen { get; }
 		public ReactivePropertySlim<int> PaneLength { get; }
-		public ReactivePropertySlim<List<PriceItem>> PriceItems { get; }
-		public ReactivePropertySlim<int> PriceViewColumnsCount { get; } = new ReactivePropertySlim<int>(0);
-		// カラムの幅を調整するためのプロパティ
-		public ReactivePropertySlim<double[]> ColumnWidth { get; }
+		public ReactiveCollection<PriceItem> PriceItems { get; }
+		/*
+		public ObservableCollection<PriceItem> ObPriceItems
+		{
+			get
+			{
+				if (PriceItem.PriceItemPair.Count() > 0)
+				{
+                    return new ObservableCollection<PriceItem>(PriceItem.PriceItemPair[c_priceItemKey]);
+                }
+
+				return null;
+			}
+		}
+		*/
 
 
 
@@ -85,25 +100,29 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 			IsPaneOpen = new ReactivePropertySlim<bool>(false);
 
 			PaneLength = new ReactivePropertySlim<int>(300);
-			PriceItems = new ReactivePropertySlim<List<PriceItem>>();
-			PriceViewColumnsCount = new ReadOnlyReactivePropertySlim<int>(4).s;
+            PriceItems = new ReactiveCollection<PriceItem>();
 
 
+            priceItems.Add(new PriceItem(regionManager, c_priceItemKey, "", "", 0, OnPriceItemBoxKeyDown));
+			PriceItem priceItem = new PriceItem(regionManager, c_priceItemKey, "", "", 0, OnPriceItemBoxKeyDown);
+            PriceItem.AddItem(priceItem);
+			PriceItems.AddOnScheduler(PriceItem.GetPriceItemList(c_priceItemKey).Last());
+            /*
 			for (int i = 0; i < 10; i++)
 			{
-				priceItems.Add(new PriceItem(regionManager, "", "", 0, OnPriceItemBoxKeyDown));
+				priceItems.Add(new PriceItem(regionManager, c_priceItemKey, "", "", 0, OnPriceItemBoxKeyDown));
+				PriceItem.PriceItemPair[c_priceItemKey].Add(new PriceItem(regionManager, c_priceItemKey, "", "", 0, OnPriceItemBoxKeyDown));
 			}
-			// priceItems.Add(new PriceItem(regionManager, "", "", 0, OnPriceItemBoxKeyDown));
-			PriceItems.Value = priceItems;
-			// PriceItems.Value.Add(new PriceItem(regionManager, "", "", 0, OnPriceItemBoxKeyDown));
+			*/
+            // PriceItems.Value = PriceItem.GetPriceItemList(c_priceItemKey);
 
 
-			// 
-			RegistReceipt = new();
+            // 
+            RegistReceipt = new();
 			RegistReceipt.Subscribe(OnRegistReceipt).AddTo(_disposables);
 			FixPrises = new();
 			FixPrises.Subscribe(OnFixPrises).AddTo(_disposables);
-			PriceItemBoxKeyDown = new ReactiveCommand();
+			PriceItemBoxKeyDown = new();
 			PriceItemBoxKeyDown.Subscribe(OnPriceItemBoxKeyDown).AddTo(_disposables);
 		}
 
@@ -131,20 +150,21 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 			IsPaneOpen.Value = false;
 			PaneLength.Value = 300;
 		}
-		public ReactiveCommand PriceItemBoxKeyDown { get; }
+		public ReactiveCommandSlim PriceItemBoxKeyDown { get; }
 		private void OnPriceItemBoxKeyDown()
 		{
-			var priceItem = PriceItems.Value.Last();
+			var priceFieldItem = PriceItems.Last();
 
-			bool itemTextIsNullOrEmpty = string.IsNullOrEmpty(priceItem.ItemText) is false;
-			bool itemPriceIsNullOrEmpty = string.IsNullOrEmpty(priceItem.ItemPrice) is false;
-			bool isLargerThanZero = priceItem.ItemCount > 0;
+			bool itemTextIsNullOrEmpty = string.IsNullOrEmpty(priceFieldItem.ItemText) is false;
+			bool itemPriceIsNullOrEmpty = string.IsNullOrEmpty(priceFieldItem.ItemPrice) is false;
+			bool isLargerThanZero = priceFieldItem.ItemCount > 0;
 
 			if (itemTextIsNullOrEmpty || itemPriceIsNullOrEmpty || isLargerThanZero)
 			{
-				priceItems.Add(new PriceItem(_regionManager, "", "", 0, OnPriceItemBoxKeyDown));
-				PriceItems.Value = priceItems;
-				// PriceItems.Value.Add(new PriceItem(_regionManager, "", "", 0, OnPriceItemBoxKeyDown));
+				PriceItem priceItem = new PriceItem(_regionManager, c_priceItemKey, "", "", 0, OnPriceItemBoxKeyDown);
+				PriceItem.AddItem(priceItem);
+				PriceItems.AddOnScheduler(PriceItem.GetPriceItemList(c_priceItemKey).Last());
+				var aaaa = PriceItem.GetPriceItemList(c_priceItemKey);
 
 				int aa = 0;
 			}

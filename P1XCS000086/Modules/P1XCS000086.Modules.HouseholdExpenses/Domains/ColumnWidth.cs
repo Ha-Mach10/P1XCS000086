@@ -10,9 +10,6 @@ namespace P1XCS000086.Modules.HouseholdExpenses.Domains
     {
         public double[] ItemWidths { get; private set; }
 
-        internal ColumnWidth(params double[] )
-        {
 
-        }
     }
 }
