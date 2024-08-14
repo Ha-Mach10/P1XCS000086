@@ -155,19 +155,36 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 		{
 			var priceFieldItem = PriceItems.Last();
 
-			bool itemTextIsNullOrEmpty = string.IsNullOrEmpty(priceFieldItem.ItemText) is false;
-			bool itemPriceIsNullOrEmpty = string.IsNullOrEmpty(priceFieldItem.ItemPrice) is false;
-			bool isLargerThanZero = priceFieldItem.ItemCount > 0;
+			
 
-			if (itemTextIsNullOrEmpty || itemPriceIsNullOrEmpty || isLargerThanZero)
+			int itemsCount = PriceItems.Count;
+			PriceItem lastPriceItem = PriceItems.Last();
+
+			// カウンタ変数
+			int count = 0;
+
+			foreach (PriceItem item in PriceItems)
 			{
-				PriceItem priceItem = new PriceItem(_regionManager, c_priceItemKey, "", "", 0, OnPriceItemBoxKeyDown);
-				PriceItem.AddItem(priceItem);
-				PriceItems.AddOnScheduler(PriceItem.GetPriceItemList(c_priceItemKey).Last());
-				var aaaa = PriceItem.GetPriceItemList(c_priceItemKey);
+				// すべてのフィールドが空でないかつ、数量が0より大きいとき
+                if (item == PriceItems.Last() &&
+					(string.IsNullOrEmpty(item.ItemText) is false || string.IsNullOrEmpty(item.ItemPrice) is false || int.Parse(item.ItemPrice) > 0))
+                {
+                    // 新しいPriceItemを生成して、PriceItemの内部ディクショナリに追加
+                    PriceItem priceItem = new PriceItem(_regionManager, c_priceItemKey, "", "", 0, OnPriceItemBoxKeyDown);
+                    PriceItem.AddItem(priceItem);
 
-				int aa = 0;
-			}
+                    // ReactiveCollectionに格納
+                    PriceItems.AddOnScheduler(PriceItem.GetPriceItemList(c_priceItemKey).Last());
+
+                    int aa = 0;
+					return;
+                }
+
+				
+
+				// カウンタインクリメント
+				count++;
+            }
 		}
 	}
 }
