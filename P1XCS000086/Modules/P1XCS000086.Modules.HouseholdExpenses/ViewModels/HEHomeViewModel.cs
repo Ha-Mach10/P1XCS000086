@@ -167,7 +167,7 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 			{
 				// すべてのフィールドが空でないかつ、数量が0より大きいとき
                 if (item == PriceItems.Last() &&
-					(string.IsNullOrEmpty(item.ItemText) is false || string.IsNullOrEmpty(item.ItemPrice) is false || int.Parse(item.ItemPrice) > 0))
+					(string.IsNullOrEmpty(item.ItemText) is false || string.IsNullOrEmpty(item.ItemPrice) is false || item.ItemCount > 0))
                 {
                     // 新しいPriceItemを生成して、PriceItemの内部ディクショナリに追加
                     PriceItem priceItem = new PriceItem(_regionManager, c_priceItemKey, "", "", 0, OnPriceItemBoxKeyDown);
