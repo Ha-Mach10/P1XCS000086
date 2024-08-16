@@ -1,5 +1,5 @@
 ﻿server,user,database,password,persistSecurityInfo
-*localhost,root,manager,9412cxBx25zNJ20z0,true
-*localhost,root,common_manager,9412cxBx25zNJ20z0,true
-localhost,root,manager,1234,true
-localhost,root,common_manager,1234,true
+localhost,root,manager,9412cxBx25zNJ20z0,true
+localhost,root,common_manager,9412cxBx25zNJ20z0,true
+*localhost,root,manager,1234,true
+*localhost,root,common_manager,1234,true

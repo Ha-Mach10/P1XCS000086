@@ -12,6 +12,10 @@ namespace P1XCS000086.Core.Behaviors
 {
 	public class TextBoxMoveFocusBehavior : Behavior<TextBox>
 	{
+		private static int _textBoxTabIndex;
+
+
+
 		/// <summary>
 		/// イベント登録
 		/// </summary>
@@ -19,6 +23,8 @@ namespace P1XCS000086.Core.Behaviors
 		{
 			base.OnAttached();
 
+			// 
+			AssociatedObject.Loaded += OnLoaded;
 			// TextBoxのキーダウンイベントにOnKeyDownを追加
 			AssociatedObject.PreviewKeyDown += OnPreviewKeyDown;
 			// TextBoxのフォーカス取得イベントにOnTextBoxGotFocusを追加
@@ -31,6 +37,8 @@ namespace P1XCS000086.Core.Behaviors
 		{
 			base.OnDetaching();
 
+			// 
+			AssociatedObject.Loaded -= OnLoaded;
 			// TextBoxのキーダウンイベントからOnPreviewKeyDownを削除
 			AssociatedObject.PreviewKeyDown -= OnPreviewKeyDown;
 			// TextBoxのフォーカス取得イベントからOnTextBoxGotFocusを削除
@@ -39,6 +47,21 @@ namespace P1XCS000086.Core.Behaviors
 
 
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnLoaded(object sender, RoutedEventArgs e)
+		{
+			if (sender is TextBox textBox)
+			{
+				if (textBox.TabIndex == _textBoxTabIndex)
+				{
+					textBox.Focus();
+				}
+			}
+		}
 		/// <summary>
 		/// 
 		/// </summary>
@@ -76,10 +99,14 @@ namespace P1XCS000086.Core.Behaviors
 		private void OnTextBoxGotFocus(object sender, RoutedEventArgs args)
 		{
 			// senderがTextBox以外の場合
-			if (! (sender is TextBox textBox)) { return; }
+			if (sender is TextBox textBox)
+			{
+				// コントロールを取得
+				_textBoxTabIndex = textBox.TabIndex;
 
-			// テキストを全選択
-			textBox.SelectAll();
+				// テキストを全選択
+				textBox.SelectAll();
+			}
 		}
 	}
 }

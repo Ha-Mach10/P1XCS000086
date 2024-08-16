@@ -16,10 +16,11 @@ using P1XCS000086.Modules.HouseholdExpenses.Domains;
 using System.Windows;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
+using System.Windows.Media;
 
 namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 {
-	public class HEHomeViewModel : RegionViewModelBase, INotifyPropertyChanged
+	public class HEHomeViewModel : RegionViewModelBase, INotifyPropertyChanged, IRegionMemberLifetime
 	{
 		// ****************************************************************************
 		// Const Members
@@ -34,8 +35,8 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 		// ****************************************************************************
 
 		private IRegionManager _regionManager;
-
-		private List<PriceItem> priceItems = new();
+		private int _priceItemsCount;
+		private bool alreadyChecked = false;
 
 
 
@@ -43,6 +44,7 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 		// Properties
 		// ****************************************************************************
 
+		public bool KeepAlive { get; private set; } = true;
 		public ReactivePropertySlim<int> PaneMaxLength { get; }
 
 		public ReactivePropertySlim<List<string>> ShopNames { get; }
@@ -58,21 +60,12 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 		// 
 		public ReactivePropertySlim<bool> IsPaneOpen { get; }
 		public ReactivePropertySlim<int> PaneLength { get; }
+		#nullable enable
+		public ReactivePropertySlim<bool?> IsHeaderCheckBoxChecked { get; }
 		public ReactiveCollection<PriceItem> PriceItems { get; }
-		/*
-		public ObservableCollection<PriceItem> ObPriceItems
-		{
-			get
-			{
-				if (PriceItem.PriceItemPair.Count() > 0)
-				{
-                    return new ObservableCollection<PriceItem>(PriceItem.PriceItemPair[c_priceItemKey]);
-                }
-
-				return null;
-			}
-		}
-		*/
+		public ReactiveCollection<PriceItem> ClonePI { get; }
+		public ReactivePropertySlim<int> SumPrice { get; }
+		// public ReactivePropertySlim<CheckBox> CheckBox { get; }
 
 
 
@@ -98,32 +91,58 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 			PurchasedCount = new ReactivePropertySlim<int>(0);
 
 			IsPaneOpen = new ReactivePropertySlim<bool>(false);
-
 			PaneLength = new ReactivePropertySlim<int>(300);
-            PriceItems = new ReactiveCollection<PriceItem>();
+			IsHeaderCheckBoxChecked = new ReactivePropertySlim<bool?>(false);
+            PriceItems = new ReactiveCollection<PriceItem>().AddTo(_disposables);
+			ClonePI = new ReactiveCollection<PriceItem>().AddTo(_disposables);
+			SumPrice = new ReactivePropertySlim<int>(0);
 
-
-            priceItems.Add(new PriceItem(regionManager, c_priceItemKey, "", "", 0, OnPriceItemBoxKeyDown));
-			PriceItem priceItem = new PriceItem(regionManager, c_priceItemKey, "", "", 0, OnPriceItemBoxKeyDown);
-            PriceItem.AddItem(priceItem);
-			PriceItems.AddOnScheduler(PriceItem.GetPriceItemList(c_priceItemKey).Last());
-            /*
-			for (int i = 0; i < 10; i++)
+			/*
+			// UI要素を定義
+			TextBlock textBlock = new TextBlock()
 			{
-				priceItems.Add(new PriceItem(regionManager, c_priceItemKey, "", "", 0, OnPriceItemBoxKeyDown));
-				PriceItem.PriceItemPair[c_priceItemKey].Add(new PriceItem(regionManager, c_priceItemKey, "", "", 0, OnPriceItemBoxKeyDown));
-			}
+				Text = "通し番号",
+				FontSize = 14,
+				VerticalAlignment = VerticalAlignment.Bottom,
+				HorizontalAlignment = HorizontalAlignment.Left,
+				Foreground = new SolidColorBrush(Colors.White),
+				Margin = new Thickness(0,4,0,4),
+				
+			};
+			CheckBox checkBox = new CheckBox()
+			{
+				IsThreeState = true,
+				Content = textBlock,
+				Command = HeaderCheckBoxChecked,
+				IsChecked = false,
+
+			};
+
+			CheckBox = new ReactivePropertySlim<CheckBox>(checkBox).AddTo(_disposables);
 			*/
-            // PriceItems.Value = PriceItem.GetPriceItemList(c_priceItemKey);
+
+			PriceItem.AddItem(new PriceItem(regionManager, c_priceItemKey, "", OnPriceItemBoxKeyDown, OnDeleteItem, OnCheckedChangedItem));
+			ReFleshPriceItems();
 
 
             // 
-            RegistReceipt = new();
-			RegistReceipt.Subscribe(OnRegistReceipt).AddTo(_disposables);
+            ReceiptRegist = new();
+			ReceiptRegist.Subscribe(OnRegistReceipt).AddTo(_disposables);
+
+			HeaderCheckBoxChecked = new();
+			HeaderCheckBoxChecked.Subscribe(OnHeaderCheckBoxChecked).AddTo(_disposables);
+
+			Delete = new();
+			Delete.Subscribe(OnDelete).AddTo(_disposables);
+
+			Reload = new();
+			Reload.Subscribe(OnReload).AddTo(_disposables);
+
 			FixPrises = new();
 			FixPrises.Subscribe(OnFixPrises).AddTo(_disposables);
-			PriceItemBoxKeyDown = new();
-			PriceItemBoxKeyDown.Subscribe(OnPriceItemBoxKeyDown).AddTo(_disposables);
+
+			CancelPrices = new();
+			CancelPrices.Subscribe(OnCancelPrices).AddTo(_disposables);
 		}
 
 
@@ -135,17 +154,87 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 		public ReactiveCommandSlim ShopNameSelectionChanged { get; }
 		private void OnShopNameSelectionChanged()
 		{
-
+			ReFleshPriceItems();
 		}
 
-		public ReactiveCommandSlim RegistReceipt { get; }
+		public ReactiveCommandSlim ReceiptRegist { get; }
 		private void OnRegistReceipt()
 		{
 			IsPaneOpen.Value = true;
 			PaneLength.Value = 1200;
 		}
+		public ReactiveCommand HeaderCheckBoxChecked { get; }
+		private void OnHeaderCheckBoxChecked()
+		{
+			if (alreadyChecked is true)
+			{
+				IsHeaderCheckBoxChecked.Value = false;
+			}
+
+			foreach (var item in PriceItems)
+			{
+				item.IsChecked = (bool)IsHeaderCheckBoxChecked.Value;
+				if (item == PriceItems.Last())
+				{
+					item.IsChecked = false;
+				}
+			}
+
+			ReFleshPriceItems();
+
+			if (IsHeaderCheckBoxChecked.Value == true &&
+				alreadyChecked is true)
+			{
+				alreadyChecked = false;
+			}
+			else if (IsHeaderCheckBoxChecked.Value == false &&
+				alreadyChecked is true)
+			{
+				alreadyChecked = false;
+			}
+			else
+			{
+				alreadyChecked = true;
+			}
+		}
+		public ReactiveCommandSlim Reload { get; }
+		private void OnReload()
+		{
+			ReFleshPriceItems();
+		}
+		public ReactiveCommandSlim Delete { get; }
+		private void OnDelete()
+		{
+			foreach (var item in PriceItems)
+			{
+				if (item.IsChecked is true)
+				{
+					PriceItem.DeleteItem(item);
+				}
+			}
+
+			ReFleshPriceItems();
+		}
 		public ReactiveCommandSlim FixPrises { get; }
 		private void OnFixPrises()
+		{
+			// Paneを閉じる
+			ChangeClosePane();
+		}
+		public ReactiveCommandSlim CancelPrices { get; }
+		private void OnCancelPrices()
+		{
+			// Paneを閉じる
+			ChangeClosePane();
+
+			PriceItem.ClearItems(c_priceItemKey);
+			PriceItem.AddItem(new PriceItem(_regionManager, c_priceItemKey, "", OnPriceItemBoxKeyDown, OnDeleteItem, OnCheckedChangedItem));
+			ReFleshPriceItems();
+		}
+		/// <summary>
+		/// Paneを閉じる動作を表現
+		/// </summary>
+		private void ChangeClosePane()
 		{
 			IsPaneOpen.Value = false;
 			PaneLength.Value = 300;
@@ -153,38 +242,144 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 		public ReactiveCommandSlim PriceItemBoxKeyDown { get; }
 		private void OnPriceItemBoxKeyDown()
 		{
-			var priceFieldItem = PriceItems.Last();
+			int sameCount = 0;
 
-			
+			foreach (var item in ClonePI.Zip(PriceItems, (a, b) => new { A = a, B = b }))
+			{
+				bool sameIP = item.A.ItemPrice == item.B.ItemPrice;
+				bool sameIC = item.A.ItemCount == item.B.ItemCount;
 
-			int itemsCount = PriceItems.Count;
-			PriceItem lastPriceItem = PriceItems.Last();
+				if (sameIP || sameIC)
+				{
+					sameCount++;
+				}
 
-			// カウンタ変数
-			int count = 0;
+				if (sameCount > 0)
+				{
+					// クローン用コレクションをクリア
+					ClonePI.Clear();
+					return;
+				}
+			}
+
+			ClonePI.AddRangeOnScheduler(PriceItems);
+
+
+			bool isHit = false;
 
 			foreach (PriceItem item in PriceItems)
 			{
 				// すべてのフィールドが空でないかつ、数量が0より大きいとき
-                if (item == PriceItems.Last() &&
-					(string.IsNullOrEmpty(item.ItemText) is false || string.IsNullOrEmpty(item.ItemPrice) is false || item.ItemCount > 0))
-                {
-                    // 新しいPriceItemを生成して、PriceItemの内部ディクショナリに追加
-                    PriceItem priceItem = new PriceItem(_regionManager, c_priceItemKey, "", "", 0, OnPriceItemBoxKeyDown);
-                    PriceItem.AddItem(priceItem);
+				if (item == PriceItems.Last() &&
+					(string.IsNullOrEmpty(item.ItemText) is false || item.ItemPrice > 0 || item.ItemCount > 0))
+				{
+					// 新しいアイテムを生成し追加
+					PriceItem.AddItem(new PriceItem(_regionManager, c_priceItemKey, "", OnPriceItemBoxKeyDown, OnDeleteItem, OnCheckedChangedItem));
 
-                    // ReactiveCollectionに格納
-                    PriceItems.AddOnScheduler(PriceItem.GetPriceItemList(c_priceItemKey).Last());
+					// コレクションをリフレッシュ
+					// ReFleshPriceItems();
+					isHit = true;
 
-                    int aa = 0;
-					return;
-                }
+					break;
+				}
+				else if (item != PriceItems.Last() &&
+					(string.IsNullOrEmpty(item.ItemText) && item.ItemPrice == 0 && item.ItemCount == 0))
+				{
+					// 指定したアイテムを削除
+					PriceItem.DeleteItem(item);
 
-				
+					// コレクションをリフレッシュ
+					// ReFleshPriceItems();
+					isHit = true;
 
-				// カウンタインクリメント
-				count++;
-            }
+					break;
+				}
+				else if (item.ItemPrice > 0 && item.ItemCount > 0)
+				{
+					isHit = true;
+				}
+			}
+
+
+			if (isHit)
+			{
+				// コレクションをリフレッシュ
+				ReFleshPriceItems();
+			}
+		}
+		public ReactiveCommandSlim<string> DeleteItem { get; }
+		private void OnDeleteItem(string paramIndex)
+		{
+			int index = int.Parse(paramIndex);
+
+			if (index >= 1)
+			{
+				PriceItem item = PriceItem.GetPriceItemList(c_priceItemKey).ElementAt(index - 1);
+				PriceItem.DeleteItem(item);
+				ReFleshPriceItems();
+			}
+		}
+		private void OnCheckedChangedItem(string paramIndex)
+		{
+			int index = int.Parse(paramIndex);
+
+			int trueCount = 0;
+			int falseCount = 0;
+
+			foreach (var item in PriceItem.GetPriceItemList(c_priceItemKey))
+			{
+				if (item != PriceItems.Last())
+				{
+					if (item.IsChecked is true)
+					{
+						trueCount++;
+					}
+					else if (item.IsChecked is false)
+					{
+						falseCount++;
+					}
+				}
+			}
+
+			// 全てのチェックボックスがTrueの場合
+			if (trueCount > 0 && falseCount == 0)
+			{
+				IsHeaderCheckBoxChecked.Value = true;
+			}
+			// 全てのチェックボックスがFalseの場合
+			else if (trueCount == 0 && falseCount > 0)
+			{
+				IsHeaderCheckBoxChecked.Value = false;
+			}
+			else if (trueCount > 0 && falseCount > 0)
+			{
+				// CheckBox.Value.IsChecked = null;
+				IsHeaderCheckBoxChecked.Value = null;
+			}
+		}
+
+		private void ReFleshPriceItems()
+		{
+			// ReactiveCollectionをクリア
+			PriceItems.Clear();
+			// SumPriceの値を0にする
+			SumPrice.Value = 0;
+
+			foreach (var item in PriceItem.GetPriceItemList(c_priceItemKey))
+			{
+				PriceItems.AddOnScheduler(item);
+				SumPrice.Value = SumPrice.Value + item.SumPrice;
+
+				item.TextBlockVisibility = Visibility.Collapsed;
+				item.CheckBoxVisibility = Visibility.Visible;
+				item.ButtonVisibility = Visibility.Visible;
+				if (item == PriceItem.GetPriceItemList(c_priceItemKey).Last())
+				{
+					item.TextBlockVisibility = Visibility.Visible;
+					item.CheckBoxVisibility |= Visibility.Collapsed;
+					item.ButtonVisibility = Visibility.Collapsed;
+				}
+			}
 		}
 	}
 }

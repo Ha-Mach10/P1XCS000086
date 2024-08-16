@@ -78,6 +78,16 @@
 					<Setter Property="HorizontalAlignment" Value="Left" />
 				</Style.Setters>
 			</Style>
+			<Style
+				x:Key="ButtonStyle01"
+				BasedOn="{StaticResource MahApps.Styles.Button.VisualStudio}"
+				TargetType="Button">
+				<Style.Setters>
+					<Setter Property="Width" Value="90" />
+					<Setter Property="Height" Value="50" />
+					<Setter Property="Margin" Value="0,0,8,0" />
+				</Style.Setters>
+			</Style>
 			<!--ContextMenu x:Key="DataGridContextMenu">
 				<MenuItem
 					Command="{Binding Path=ContextMenuOpenParentFolder, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"
@@ -123,7 +133,7 @@
 							<Separator Margin="0,16,0,16" />
 							<Button
 								Margin="0,0,0,8"
-								Command="{Binding RegistReceipt}"
+								Command="{Binding ReceiptRegist}"
 								Content="レシート登録" />
 						</StackPanel>
 					</GroupBox>
@@ -139,107 +149,227 @@
 							Background="#34495E"
 							Header="購入品登録"
 							Style="{StaticResource GroupBoxTemplate}">
-                            <Grid>
-                                <Grid.RowDefinitions>
+							<Grid>
+								<Grid.RowDefinitions>
 									<RowDefinition Height="35" />
 									<RowDefinition />
+									<RowDefinition Height="25" />
+									<RowDefinition Height="60" />
 									<RowDefinition Height="25" />
 									<RowDefinition Height="40" />
 								</Grid.RowDefinitions>
 
-								<Grid Margin="8,4,8,4">
+								<Grid Margin="4">
 									<Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="80"/>
-                                        <ColumnDefinition />
+										<ColumnDefinition Width="100" />
+										<ColumnDefinition />
 										<ColumnDefinition Width="100" />
 										<ColumnDefinition Width="70" />
+										<ColumnDefinition Width="120" />
+										<ColumnDefinition Width="40" />
 									</Grid.ColumnDefinitions>
 
-                                    <Label Content="通し番号"/>
-                                    <TextBlock Grid.Column="1" Style="{StaticResource GroupBoxHeaderTmplate}" Text="品目名称" />
+									<!--  ContentControl Content="{Binding CheckBox.Value}"/  -->
+									<CheckBox
+										Command="{Binding HeaderCheckBoxChecked}"
+										IsChecked="{Binding IsHeaderCheckBoxChecked.Value}"
+										IsThreeState="True">
+										<TextBlock
+											Margin="8,0,0,0"
+											Foreground="White"
+											Style="{StaticResource GroupBoxHeaderTmplate}"
+											Text="通し番号" />
+									</CheckBox>
+									<TextBlock
+										Grid.Column="1"
+										Margin="4,4,0,0"
+										Style="{StaticResource GroupBoxHeaderTmplate}"
+										Text="品目名称" />
 									<TextBlock
 										Grid.Column="2"
-										Margin="8,4,0,0"
+										Margin="4,4,0,0"
 										Style="{StaticResource GroupBoxHeaderTmplate}"
 										Text="金額" />
 									<TextBlock
 										Grid.Column="3"
-										Margin="8,4,0,0"
+										Margin="4,4,0,0"
 										Style="{StaticResource GroupBoxHeaderTmplate}"
 										Text="数量" />
+									<TextBlock
+										Grid.Column="4"
+										Margin="4,4,0,0"
+										Style="{StaticResource GroupBoxHeaderTmplate}"
+										Text="小計" />
 								</Grid>
 
-								<ItemsControl
-                                    KeyboardNavigation.ControlTabNavigation="Cycle"
-                                    KeyboardNavigation.TabNavigation="Cycle"
-                                    Grid.Row="1"
-                                    ItemsSource="{Binding PriceItems}">
-									<ItemsControl.ItemsPanel>
-										<ItemsPanelTemplate>
-											<StackPanel Orientation="Vertical" Margin="4" />
-										</ItemsPanelTemplate>
-									</ItemsControl.ItemsPanel>
+								<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+									<ItemsControl
+										ItemsSource="{Binding PriceItems, UpdateSourceTrigger=PropertyChanged}"
+										KeyboardNavigation.ControlTabNavigation="Cycle"
+										KeyboardNavigation.TabNavigation="Cycle">
+										<ItemsControl.ItemsPanel>
+											<ItemsPanelTemplate>
+												<StackPanel Margin="4" Orientation="Vertical" />
+											</ItemsPanelTemplate>
+										</ItemsControl.ItemsPanel>
 
-									<ItemsControl.ItemTemplate>
-										<DataTemplate>
-											<Grid>
-												<Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="80"/>
-													<ColumnDefinition />
-													<ColumnDefinition Width="100" />
-													<ColumnDefinition Width="70" />
-												</Grid.ColumnDefinitions>
+										<ItemsControl.ItemTemplate>
+											<DataTemplate>
+												<Grid Margin="0,0,0,8">
+													<Grid.ColumnDefinitions>
+														<ColumnDefinition Width="100" />
+														<ColumnDefinition />
+														<ColumnDefinition Width="100" />
+														<ColumnDefinition Width="70" />
+														<ColumnDefinition Width="120" />
+														<ColumnDefinition Width="40" />
+													</Grid.ColumnDefinitions>
 
-                                                <Label Content="{Binding Index}"/>
-                                                <TextBox
-                                                    Grid.Column="1"
-													Style="{StaticResource TextBoxEnumerableItem}"
-													TabIndex="{Binding ItemTextTabIndex}"
-													Text="{Binding ItemText}">
-													<i:Interaction.Behaviors>
-														<b:TextBoxMoveFocusBehavior />
-													</i:Interaction.Behaviors>
-													<i:Interaction.Triggers>
-														<i:EventTrigger EventName="LostFocus">
-															<prism:InvokeCommandAction Command="{Binding AddCommand}" />
-														</i:EventTrigger>
-													</i:Interaction.Triggers>
-												</TextBox>
-												<TextBox
-													Grid.Column="2"
-													Style="{StaticResource TextBoxEnumerableItem}"
-													TabIndex="{Binding ItemPriceTabIndex}"
-													Text="{Binding ItemPrice}">
-													<i:Interaction.Behaviors>
-														<b:TextBoxMoveFocusBehavior />
-													</i:Interaction.Behaviors>
-													<i:Interaction.Triggers>
-														<i:EventTrigger EventName="LostFocus">
-															<prism:InvokeCommandAction Command="{Binding AddCommand}" />
-														</i:EventTrigger>
-													</i:Interaction.Triggers>
-												</TextBox>
-												<TextBox
-													Grid.Column="3"
-													Style="{StaticResource TextBoxEnumerableItem}"
-													TabIndex="{Binding ItemCountTabIndex}"
-													Text="{Binding ItemCount}">
-													<i:Interaction.Behaviors>
-														<b:TextBoxMoveFocusBehavior />
-													</i:Interaction.Behaviors>
-													<i:Interaction.Triggers>
-														<i:EventTrigger EventName="LostFocus">
-															<prism:InvokeCommandAction Command="{Binding AddCommand}" />
-														</i:EventTrigger>
-													</i:Interaction.Triggers>
-												</TextBox>
-											</Grid>
-										</DataTemplate>
-									</ItemsControl.ItemTemplate>
-								</ItemsControl>
 
-								<Separator Grid.Row="2" />
+													<CheckBox
+														Command="{Binding CheckedChangedCommand}"
+														CommandParameter="{Binding Index}"
+														IsChecked="{Binding IsChecked}"
+														Visibility="{Binding CheckBoxVisibility}">
+														<CheckBox.Content>
+															<TextBlock
+																Margin="8,0,0,0"
+																Foreground="White"
+																Text="{Binding Index}" />
+														</CheckBox.Content>
+													</CheckBox>
+													<TextBlock
+														Margin="32,0,0,0"
+														VerticalAlignment="Center"
+														Text="{Binding Index}"
+														Visibility="{Binding TextBlockVisibility}" />
+													<TextBox
+														Grid.Column="1"
+														Style="{StaticResource TextBoxEnumerableItem}"
+														TabIndex="{Binding ItemTextTabIndex}"
+														Text="{Binding ItemText}">
+														<i:Interaction.Behaviors>
+															<b:TextBoxMoveFocusBehavior />
+														</i:Interaction.Behaviors>
+														<i:Interaction.Triggers>
+															<i:EventTrigger EventName="LostFocus">
+																<prism:InvokeCommandAction Command="{Binding AddCommand}" />
+															</i:EventTrigger>
+														</i:Interaction.Triggers>
+													</TextBox>
+													<TextBox
+														Grid.Column="2"
+														Style="{StaticResource TextBoxEnumerableItem}"
+														TabIndex="{Binding ItemPriceTabIndex}"
+														Text="{Binding ItemPrice}">
+														<i:Interaction.Behaviors>
+															<b:TextBoxMoveFocusBehavior />
+														</i:Interaction.Behaviors>
+														<i:Interaction.Triggers>
+															<i:EventTrigger EventName="LostFocus">
+																<prism:InvokeCommandAction Command="{Binding AddCommand}" />
+															</i:EventTrigger>
+														</i:Interaction.Triggers>
+													</TextBox>
+													<TextBox
+														Grid.Column="3"
+														Style="{StaticResource TextBoxEnumerableItem}"
+														TabIndex="{Binding ItemCountTabIndex}"
+														Text="{Binding ItemCount}">
+														<i:Interaction.Behaviors>
+															<b:TextBoxMoveFocusBehavior />
+														</i:Interaction.Behaviors>
+														<i:Interaction.Triggers>
+															<i:EventTrigger EventName="LostFocus">
+																<prism:InvokeCommandAction Command="{Binding AddCommand}" />
+															</i:EventTrigger>
+														</i:Interaction.Triggers>
+													</TextBox>
+													<Grid Grid.Column="4" VerticalAlignment="Center">
+														<Grid.ColumnDefinitions>
+															<ColumnDefinition Width="20" />
+															<ColumnDefinition />
+														</Grid.ColumnDefinitions>
+														<TextBlock Text="  \" />
+														<TextBox
+															Grid.Column="1"
+															Background="Transparent"
+															IsReadOnly="True"
+															Text="{Binding SumPrice, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+													</Grid>
+													<Button
+														Grid.Column="5"
+														Command="{Binding DeleteCommand}"
+														CommandParameter="{Binding Index}"
+														Visibility="{Binding ButtonVisibility}">
+														<Button.Content>
+															<mahIcons:Material Height="12" Kind="TrashCanOutline" />
+														</Button.Content>
+													</Button>
+												</Grid>
+											</DataTemplate>
+										</ItemsControl.ItemTemplate>
+									</ItemsControl>
+								</ScrollViewer>
+
+								<Separator Grid.Row="2" Margin="8" />
 								<Grid Grid.Row="3">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition />
+									</Grid.ColumnDefinitions>
+
+									<StackPanel Margin="8,0,0,0" Orientation="Horizontal">
+										<Button
+											Command="{Binding Reload}"
+											Style="{StaticResource ButtonStyle01}"
+											ToolTip="金額を更新">
+											<Button.Content>
+												<StackPanel Orientation="Horizontal">
+													<mahIcons:Material Kind="Reload" />
+													<TextBlock Margin="8,0,0,0" Text="更新" />
+												</StackPanel>
+											</Button.Content>
+										</Button>
+										<Button
+											Command="{Binding Delete}"
+											Style="{StaticResource ButtonStyle01}"
+											ToolTip="チェックボックスで選択した項目を削除">
+											<Button.Content>
+												<StackPanel Orientation="Horizontal">
+													<mahIcons:PackIconMaterial Kind="TrashCanOutline" />
+													<TextBlock Margin="8,0,0,0" Text="削除" />
+												</StackPanel>
+											</Button.Content>
+										</Button>
+									</StackPanel>
+
+									<StackPanel
+										Grid.Column="1"
+										Margin="8,0,24,0"
+										HorizontalAlignment="Right"
+										VerticalAlignment="Top"
+										Orientation="Horizontal">
+										<TextBlock
+											VerticalAlignment="Center"
+											FontSize="20"
+											Text="総合計" />
+										<TextBlock
+											VerticalAlignment="Center"
+											FontSize="30"
+											Text=" \ " />
+										<TextBox
+											Padding="0"
+											VerticalAlignment="Center"
+											VerticalContentAlignment="Center"
+											Background="Transparent"
+											FontSize="30"
+											IsReadOnly="True"
+											Text="{Binding SumPrice.Value}" />
+									</StackPanel>
+								</Grid>
+								<Separator Grid.Row="4" />
+								<Grid Grid.Row="5">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition />
 										<ColumnDefinition Width="Auto" />
@@ -253,7 +383,7 @@
 											Style="{StaticResource EditButton}" />
 										<Button
 											Margin="0,0,8,8"
-											Command="{Binding}"
+											Command="{Binding CancelPrices}"
 											Content="キャンセル"
 											Style="{StaticResource EditButton}" />
 									</StackPanel>

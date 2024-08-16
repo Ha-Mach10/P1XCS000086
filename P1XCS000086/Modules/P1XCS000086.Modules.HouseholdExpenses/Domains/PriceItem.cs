@@ -1,45 +1,70 @@
 ﻿using P1XCS000086.Core.Mvvm;
 using Prism.Regions;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace P1XCS000086.Modules.HouseholdExpenses.Domains
 {
-    public class PriceItem : RegionViewModelBase
+    public class PriceItem : RegionViewModelBase, INotifyPropertyChanged, IRegionMemberLifetime
     {
         private static int tabIndex = 0;
+        public static Dictionary<string, ReactiveCollection<PriceItem>> PriceItemPair { get; set; } = new();
 
-        public static Dictionary<string, List<PriceItem>> PriceItemPair = new();
 
+
+        private int sumPrice = 0;
+
+
+        // Properties
+        public bool KeepAlive { get; } = false;
         public string Key { get; }
-
-        public int Index { get; set; }
+        public bool IsChecked { get; set; } = false;
+        public Visibility TextBlockVisibility { get; set; } = Visibility.Visible;
+		public Visibility CheckBoxVisibility { get; set; } = Visibility.Collapsed;
+        public Visibility ButtonVisibility { get; set; } = Visibility.Collapsed;
+        public string Index { get; set; }
         public string ItemText { get; set; }
-        public string ItemPrice { get; set; }
-        public int ItemCount { get; set; }
+        public int ItemPrice { get; set; } = 0;
+        public int ItemCount { get; set; } = 0;
+        public int SumPrice
+        {
+            get => PriceItemSum();
+        }
 
         public string ItemTextTabIndex { get; set; }
 		public string ItemPriceTabIndex { get; set; }
 		public string ItemCountTabIndex { get; set; }
 
+        // Command Properties
+		public ReactiveCommandSlim AddCommand { get; }
+		public ReactiveCommandSlim<string> DeleteCommand { get; }
+        public ReactiveCommandSlim<string> CheckedChangedCommand { get; }
 
 
-		public PriceItem(IRegionManager regionManager, string keyName, string itemText, string itemPrice, int itemCount, Action action)
+
+		public PriceItem(IRegionManager regionManager, string keyName, string itemText, Action addAction, Action<string> deleteAction, Action<string> checkedChangedAction)
             :base(regionManager)
         {
             Key = keyName;
-
             ItemText = itemText;
-            ItemPrice = itemPrice;
-            ItemCount = itemCount;
             
-            AddCommand = new ReactiveCommandSlim();
-            AddCommand.Subscribe(action);
+
+            AddCommand = new();
+            AddCommand.Subscribe(addAction).AddTo(_disposables);
+
+            DeleteCommand = new();
+            DeleteCommand.Subscribe(param => deleteAction(param)).AddTo(_disposables);
+
+            CheckedChangedCommand = new();
+            CheckedChangedCommand.Subscribe(param => checkedChangedAction(param)).AddTo(_disposables);
 
             // タブインデックスの追加
             TabIndexIncriment();
@@ -58,7 +83,9 @@ namespace P1XCS000086.Modules.HouseholdExpenses.Domains
             if (PriceItemPair.ContainsKey(item.Key))
             {
                 int count = PriceItemPair[item.Key].Count();
-                item.Index = ++count;
+                ++count;
+
+                item.Index = count.ToString();
 
                 PriceItemPair[item.Key].Add(item);
             }
@@ -77,15 +104,21 @@ namespace P1XCS000086.Modules.HouseholdExpenses.Domains
         /// <param name="item"></param>
         public static void DeleteItem(PriceItem item)
         {
-            List<PriceItem> items = PriceItemPair[item.Key];
+            // 引数のitemよりKeyを取得して指定したKeyに対応するListを取得
+            ReactiveCollection<PriceItem> items = PriceItemPair[item.Key];
             items.Remove(item);
 
-            for (int i = 1; i >= items.Count; i++)
+            // インデックスを振り直す
+            for (int i = 0; i < items.Count; i++)
             {
-                items[i].Index = i;
+                items[i].Index = (i+1).ToString();
             }
         }
-        public static List<PriceItem> GetPriceItemList(string key)
+        public static void ClearItems(string key)
+        {
+            PriceItemPair[key].Clear();
+        }
+        public static ReactiveCollection<PriceItem> GetPriceItemList(string key)
         {
             return PriceItemPair[key];
         }
@@ -101,9 +134,9 @@ namespace P1XCS000086.Modules.HouseholdExpenses.Domains
             // 
             tabIndex = tabIndex + 3;
         }
-
-
-
-        public ReactiveCommandSlim AddCommand { get; }
+        private int PriceItemSum()
+        {
+            return ItemPrice * ItemCount;
+        }
     }
 }
