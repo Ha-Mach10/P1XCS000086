@@ -113,10 +113,13 @@
 				PanePlacement="Right">
 
 				<StackPanel Width="300" Margin="4">
+					<GroupBox Header="店舗形態選択" Style="{StaticResource GroupBoxTemplate}">
+						<ComboBox ItemsSource="{Binding ShopTypes.Value}" SelectedValue="{Binding SelectedShopName.Value}" />
+					</GroupBox>
 					<GroupBox Header="店舗選択" Style="{StaticResource GroupBoxTemplate}">
 						<ComboBox ItemsSource="{Binding ShopNames.Value}" SelectedValue="{Binding SelectedShopName.Value}" />
 					</GroupBox>
-					<GroupBox Header="レシート情報" Style="{StaticResource GroupBoxTemplate}">
+					<GroupBox Header="レシート情報入力" Style="{StaticResource GroupBoxTemplate}">
 						<StackPanel Margin="4,0,4,4">
 							<TextBlock Style="{StaticResource ContentText}" Text="係員名" />
 							<TextBox Text="{Binding AttendantName.Value}" />
