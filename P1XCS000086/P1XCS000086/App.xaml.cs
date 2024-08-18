@@ -23,6 +23,8 @@ using Prism.DryIoc;
 using P1XCS000086.Modules.HouseholdExpenses;
 using P1XCS000086.Services.Interfaces.Data;
 using P1XCS000086.Services.Data;
+using P1XCS000086.Services.Interfaces.Models.HouseholdExpenses;
+using P1XCS000086.Services.Models.HouseholdExpenses;
 
 namespace P1XCS000086
 {
@@ -53,6 +55,8 @@ namespace P1XCS000086
 			// # CodeManageMaster
 			containerRegistry.RegisterSingleton<ICodeRegisterModel, CodeRegisterModel>();
 			containerRegistry.RegisterSingleton<IMasterManagerModel, MasterManagerModel>();
+			// # HouseholdExpenses
+			containerRegistry.RegisterSingleton<IHEHomeModel, HEHomeModel>();
 			// # Common Models
 			containerRegistry.RegisterSingleton<IDTConveter, DTConverter>();
 

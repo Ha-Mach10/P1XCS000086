@@ -61,6 +61,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 		public DataTable Table { get; private set; }
 
 
+
 		// *****************************************************************************
 		// Contructor
 		// *****************************************************************************
@@ -69,6 +70,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 		{
 			RefreshValue();
 		}
+
 
 
 		// *****************************************************************************

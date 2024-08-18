@@ -114,10 +114,25 @@
 
 				<StackPanel Width="300" Margin="4">
 					<GroupBox Header="店舗形態選択" Style="{StaticResource GroupBoxTemplate}">
-						<ComboBox ItemsSource="{Binding ShopTypes.Value}" SelectedValue="{Binding SelectedShopName.Value}" />
+						<ComboBox x:Name="ShopTypeNameCombo" ItemsSource="{Binding ShopTypeNames.Value}">
+							<i:Interaction.Triggers>
+								<i:EventTrigger EventName="SelectionChanged">
+									<prism:InvokeCommandAction Command="{Binding ShopTypeNameSelectionChanged}" CommandParameter="{Binding SelectedValue, ElementName=ShopTypeNameCombo}" />
+								</i:EventTrigger>
+							</i:Interaction.Triggers>
+						</ComboBox>
 					</GroupBox>
 					<GroupBox Header="店舗選択" Style="{StaticResource GroupBoxTemplate}">
-						<ComboBox ItemsSource="{Binding ShopNames.Value}" SelectedValue="{Binding SelectedShopName.Value}" />
+						<ComboBox
+							x:Name="ShopNameCombo"
+							ItemsSource="{Binding ShopNames.Value}"
+							SelectedValue="{Binding SelectedShopName.Value}">
+							<i:Interaction.Triggers>
+								<i:EventTrigger EventName="SelectionChanged">
+									<prism:InvokeCommandAction Command="{Binding ShopNameSelectionChanged}" />
+								</i:EventTrigger>
+							</i:Interaction.Triggers>
+						</ComboBox>
 					</GroupBox>
 					<GroupBox Header="レシート情報入力" Style="{StaticResource GroupBoxTemplate}">
 						<StackPanel Margin="4,0,4,4">
@@ -129,10 +144,10 @@
 							<TextBox Text="{Binding ReceiptNumber.Value}" />
 							<TextBlock Style="{StaticResource ContentText}" Text="発行日付" />
 							<mah:DateTimePicker SelectedDateTime="{Binding IssuedDate.Value}" />
-							<TextBlock Style="{StaticResource ContentText}" Text="合計金額" />
+							<!--TextBlock Style="{StaticResource ContentText}" Text="合計金額" />
 							<TextBox Text="{Binding TotalPrice.Value}" />
-							<TextBlock Style="{StaticResource ContentText}" Text="合計金額" />
-							<mah:NumericUpDown Minimum="1" Value="{Binding PurchasedCount.Value}" />
+							<TextBlock Style="{StaticResource ContentText}" Text="合計点数" />
+							<mah:NumericUpDown Minimum="1" Value="{Binding PurchasedCount.Value}" /-->
 							<Separator Margin="0,16,0,16" />
 							<Button
 								Margin="0,0,0,8"
@@ -168,6 +183,8 @@
 										<ColumnDefinition />
 										<ColumnDefinition Width="100" />
 										<ColumnDefinition Width="70" />
+										<ColumnDefinition Width="100" />
+										<ColumnDefinition Width="70" />
 										<ColumnDefinition Width="120" />
 										<ColumnDefinition Width="40" />
 									</Grid.ColumnDefinitions>
@@ -192,14 +209,24 @@
 										Grid.Column="2"
 										Margin="4,4,0,0"
 										Style="{StaticResource GroupBoxHeaderTmplate}"
-										Text="金額" />
+										Text="内容量" />
 									<TextBlock
 										Grid.Column="3"
 										Margin="4,4,0,0"
 										Style="{StaticResource GroupBoxHeaderTmplate}"
-										Text="数量" />
+										Text="単位" />
 									<TextBlock
 										Grid.Column="4"
+										Margin="4,4,0,0"
+										Style="{StaticResource GroupBoxHeaderTmplate}"
+										Text="金額" />
+									<TextBlock
+										Grid.Column="5"
+										Margin="4,4,0,0"
+										Style="{StaticResource GroupBoxHeaderTmplate}"
+										Text="数量" />
+									<TextBlock
+										Grid.Column="6"
 										Margin="4,4,0,0"
 										Style="{StaticResource GroupBoxHeaderTmplate}"
 										Text="小計" />
@@ -222,6 +249,8 @@
 													<Grid.ColumnDefinitions>
 														<ColumnDefinition Width="100" />
 														<ColumnDefinition />
+														<ColumnDefinition Width="100" />
+														<ColumnDefinition Width="70" />
 														<ColumnDefinition Width="100" />
 														<ColumnDefinition Width="70" />
 														<ColumnDefinition Width="120" />
@@ -263,6 +292,21 @@
 													<TextBox
 														Grid.Column="2"
 														Style="{StaticResource TextBoxEnumerableItem}"
+														TabIndex="{Binding ItemValueTabIndex}"
+														Text="{Binding ItemValue}">
+														<i:Interaction.Behaviors>
+															<b:TextBoxMoveFocusBehavior />
+														</i:Interaction.Behaviors>
+														<i:Interaction.Triggers>
+															<i:EventTrigger EventName="LostFocus">
+																<prism:InvokeCommandAction Command="{Binding AddCommand}" />
+															</i:EventTrigger>
+														</i:Interaction.Triggers>
+													</TextBox>
+													<ComboBox Grid.Column="3" ItemsSource="{Binding Units}" />
+													<TextBox
+														Grid.Column="4"
+														Style="{StaticResource TextBoxEnumerableItem}"
 														TabIndex="{Binding ItemPriceTabIndex}"
 														Text="{Binding ItemPrice}">
 														<i:Interaction.Behaviors>
@@ -275,7 +319,7 @@
 														</i:Interaction.Triggers>
 													</TextBox>
 													<TextBox
-														Grid.Column="3"
+														Grid.Column="5"
 														Style="{StaticResource TextBoxEnumerableItem}"
 														TabIndex="{Binding ItemCountTabIndex}"
 														Text="{Binding ItemCount}">
@@ -288,7 +332,7 @@
 															</i:EventTrigger>
 														</i:Interaction.Triggers>
 													</TextBox>
-													<Grid Grid.Column="4" VerticalAlignment="Center">
+													<Grid Grid.Column="6" VerticalAlignment="Center">
 														<Grid.ColumnDefinitions>
 															<ColumnDefinition Width="20" />
 															<ColumnDefinition />
@@ -301,7 +345,7 @@
 															Text="{Binding SumPrice, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
 													</Grid>
 													<Button
-														Grid.Column="5"
+														Grid.Column="7"
 														Command="{Binding DeleteCommand}"
 														CommandParameter="{Binding Index}"
 														Visibility="{Binding ButtonVisibility}">
@@ -356,6 +400,19 @@
 										<TextBlock
 											VerticalAlignment="Center"
 											FontSize="20"
+											Text="購入点数" />
+										<TextBox
+											Padding="0"
+											VerticalAlignment="Center"
+											VerticalContentAlignment="Center"
+											Background="Transparent"
+											FontSize="30"
+											IsReadOnly="True"
+											Margin="8,0,64,0"
+											Text="{Binding PurchasedCount.Value}" />
+										<TextBlock
+											VerticalAlignment="Center"
+											FontSize="20"
 											Text="総合計" />
 										<TextBlock
 											VerticalAlignment="Center"
@@ -403,6 +460,69 @@
 				<RowDefinition Height="120" />
 				<RowDefinition />
 			</Grid.RowDefinitions>
+
+			<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible">
+				<ListView ItemsSource="{Binding}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<Expander Style="{StaticResource MahApps.Styles.Expander.VisualStudio}">
+								<Expander.Header>
+									<Grid>
+										<Grid.RowDefinitions>
+											<RowDefinition Height="40"/>
+											<RowDefinition Height="80"/>
+											<RowDefinition Height="30"/>
+										</Grid.RowDefinitions>
+
+										<Grid>
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition />
+												<ColumnDefinition Width="380"/>
+											</Grid.ColumnDefinitions>
+
+											<TextBlock Text="{Binding }" FontSize="30" />
+											<TextBlock Text="{Binding }" Grid.Column="1" />
+										</Grid>
+										<StackPanel Grid.Row="1" Margin="16,0,32,0" HorizontalAlignment="Left">
+											<TextBlock Text="購入点数" Margin="0,0,32,0" FontSize="20"/>
+											<TextBlock Text="{Binding }" FontSize="20"/>
+											<TextBlock Text="合計金額　￥" Margin="56,0,32,0" FontSize="20"/>
+											<TextBlock Text="{Binding }" FontSize="20"/>
+										</StackPanel>
+										<Grid Grid.Row="2">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="300"/>
+												<ColumnDefinition />
+											</Grid.ColumnDefinitions>
+
+											<StackPanel Margin="16,0,16,0" Orientation="Horizontal">
+												<TextBlock Text="処理日付："/>
+												<TextBlock Text="{Binding }"/>
+											</StackPanel>
+											<StackPanel Grid.Column="1" Margin="16,0,16,0" Orientation="Horizontal">
+												<TextBlock Text="レジ番号："/>
+												<TextBlock Text="{Binding }"/>
+												<TextBlock Text="責任者"/>
+												<TextBlock Text="{Binding }"/>
+												<TextBlock Text="領収書番号："/>
+												<TextBlock Text="{Binding }"/>
+											</StackPanel>
+										</Grid>
+									</Grid>
+								</Expander.Header>
+
+								<Grid/>
+							</Expander>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ListView>
+			</ScrollViewer>
 		</Grid>
 	</Grid>
 </UserControl>

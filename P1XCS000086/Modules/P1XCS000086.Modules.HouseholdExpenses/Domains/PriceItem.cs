@@ -32,6 +32,11 @@ namespace P1XCS000086.Modules.HouseholdExpenses.Domains
         public Visibility ButtonVisibility { get; set; } = Visibility.Collapsed;
         public string Index { get; set; }
         public string ItemText { get; set; }
+        public int ItemValue { get; set; }
+        public List<string> Units { get; set; } = new()
+        {
+            "個", "g", "ml", "箱", "缶"
+        };
         public int ItemPrice { get; set; } = 0;
         public int ItemCount { get; set; } = 0;
         public int SumPrice
@@ -40,6 +45,7 @@ namespace P1XCS000086.Modules.HouseholdExpenses.Domains
         }
 
         public string ItemTextTabIndex { get; set; }
+		public string ItemValueTabIndex { get; set; }
 		public string ItemPriceTabIndex { get; set; }
 		public string ItemCountTabIndex { get; set; }
 
@@ -128,11 +134,12 @@ namespace P1XCS000086.Modules.HouseholdExpenses.Domains
         private void TabIndexIncriment()
         {
             ItemTextTabIndex = (tabIndex + 1).ToString();
-            ItemPriceTabIndex = (tabIndex + 2).ToString();
-            ItemCountTabIndex = (tabIndex + 3).ToString();
+			ItemValueTabIndex = (tabIndex + 2).ToString();
+			ItemPriceTabIndex = (tabIndex + 3).ToString();
+            ItemCountTabIndex = (tabIndex + 4).ToString();
 
             // 
-            tabIndex = tabIndex + 3;
+            tabIndex = tabIndex + 4;
         }
         private int PriceItemSum()
         {

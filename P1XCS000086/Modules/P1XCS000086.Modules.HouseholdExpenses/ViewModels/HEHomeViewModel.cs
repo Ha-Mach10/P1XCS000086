@@ -17,6 +17,7 @@ using System.Windows;
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Windows.Media;
+using P1XCS000086.Services.Interfaces.Models.HouseholdExpenses;
 
 namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 {
@@ -35,6 +36,8 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 		// ****************************************************************************
 
 		private IRegionManager _regionManager;
+		private IHEHomeModel _model;
+
 		private int _priceItemsCount;
 		private bool alreadyChecked = false;
 
@@ -47,6 +50,7 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 		public bool KeepAlive { get; private set; } = true;
 		public ReactivePropertySlim<int> PaneMaxLength { get; }
 
+		public ReactivePropertySlim<List<string>> ShopTypeNames { get; }
 		public ReactivePropertySlim<List<string>> ShopNames { get; }
 		public ReactivePropertySlim<string> SelectedShopName { get; }
 
@@ -65,7 +69,6 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 		public ReactiveCollection<PriceItem> PriceItems { get; }
 		public ReactiveCollection<PriceItem> ClonePI { get; }
 		public ReactivePropertySlim<int> SumPrice { get; }
-		// public ReactivePropertySlim<CheckBox> CheckBox { get; }
 
 
 
@@ -73,14 +76,16 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 		// Properties
 		// ****************************************************************************
 
-		public HEHomeViewModel(IRegionManager regionManager) : base(regionManager)
+		public HEHomeViewModel(IRegionManager regionManager, IHEHomeModel model) : base(regionManager)
 		{
 			_regionManager = regionManager;
+			_model = model;
 
 
 			PaneMaxLength = new ReactivePropertySlim<int>(int.MaxValue);
 
-			ShopNames = new ReactivePropertySlim<List<string>>().AddTo(_disposables);
+			ShopTypeNames = new ReactivePropertySlim<List<string>>(_model.ShopTypeNames).AddTo(_disposables);
+			ShopNames = new ReactivePropertySlim<List<string>>(new()).AddTo(_disposables);
 			SelectedShopName = new ReactivePropertySlim<string>(string.Empty);
 
 			AttendantName = new ReactivePropertySlim<string>(string.Empty);
@@ -97,36 +102,19 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 			ClonePI = new ReactiveCollection<PriceItem>().AddTo(_disposables);
 			SumPrice = new ReactivePropertySlim<int>(0);
 
-			/*
-			// UI要素を定義
-			TextBlock textBlock = new TextBlock()
-			{
-				Text = "通し番号",
-				FontSize = 14,
-				VerticalAlignment = VerticalAlignment.Bottom,
-				HorizontalAlignment = HorizontalAlignment.Left,
-				Foreground = new SolidColorBrush(Colors.White),
-				Margin = new Thickness(0,4,0,4),
-				
-			};
-			CheckBox checkBox = new CheckBox()
-			{
-				IsThreeState = true,
-				Content = textBlock,
-				Command = HeaderCheckBoxChecked,
-				IsChecked = false,
-
-			};
-
-			CheckBox = new ReactivePropertySlim<CheckBox>(checkBox).AddTo(_disposables);
-			*/
 
 			PriceItem.AddItem(new PriceItem(regionManager, c_priceItemKey, "", OnPriceItemBoxKeyDown, OnDeleteItem, OnCheckedChangedItem));
 			ReFleshPriceItems();
 
 
-            // 
-            ReceiptRegist = new();
+			// 
+			ShopTypeNameSelectionChanged = new();
+			ShopTypeNameSelectionChanged.Subscribe(OnShopTypeNameSelectionChanged).AddTo(_disposables);
+
+			ShopNameSelectionChanged = new();
+			ShopNameSelectionChanged.Subscribe(OnShopNameSelectionChanged).AddTo(_disposables);
+
+			ReceiptRegist = new();
 			ReceiptRegist.Subscribe(OnRegistReceipt).AddTo(_disposables);
 
 			HeaderCheckBoxChecked = new();
@@ -151,10 +139,25 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 		// Commands
 		// ****************************************************************************
 
+		public ReactiveCommandSlim<string> ShopTypeNameSelectionChanged { get; }
+		private void OnShopTypeNameSelectionChanged(string param)
+		{
+			if (ShopNames.Value.Count > 0)
+			{
+				ShopNames.Value.Clear();
+			}
+
+			ShopNames.Value = _model.GetShopNames(param);
+		}
 		public ReactiveCommandSlim ShopNameSelectionChanged { get; }
 		private void OnShopNameSelectionChanged()
 		{
-			ReFleshPriceItems();
+			if (string.IsNullOrEmpty(SelectedShopName.Value) == true)
+			{
+				return;
+			}
+
+
 		}
 
 		public ReactiveCommandSlim ReceiptRegist { get; }
@@ -212,6 +215,8 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 					PriceItem.DeleteItem(item);
 				}
 			}
+
+			IsHeaderCheckBoxChecked.Value = false;
 
 			ReFleshPriceItems();
 		}
@@ -364,11 +369,13 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 			PriceItems.Clear();
 			// SumPriceの値を0にする
 			SumPrice.Value = 0;
+			PurchasedCount.Value = 0;
 
 			foreach (var item in PriceItem.GetPriceItemList(c_priceItemKey))
 			{
 				PriceItems.AddOnScheduler(item);
 				SumPrice.Value = SumPrice.Value + item.SumPrice;
+				PurchasedCount.Value = PurchasedCount.Value + item.ItemCount;
 
 				item.TextBlockVisibility = Visibility.Collapsed;
 				item.CheckBoxVisibility = Visibility.Visible;
