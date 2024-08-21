@@ -16,6 +16,7 @@ using System.Net.Http;
 using System.Data;
 using System.ComponentModel.DataAnnotations;
 using System.Windows.Controls;
+using System.Windows;
 
 namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 {
@@ -62,7 +63,23 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 		public ReactivePropertySlim<string> OpenDirHeaderContent { get; }
 		public ReactivePropertySlim<string> OpenFileHeaderContent { get; }
-		
+
+		public ReactivePropertySlim<Visibility> ContentVisibility { get; }
+		public ReactivePropertySlim<Visibility> ContentInitialVisibility { get; }
+
+		// Propertiy View ReadOnly
+		public ReactivePropertySlim<string> PropDevNumber { get; }
+		public ReactivePropertySlim<string> PropDevName { get; }
+		public ReactivePropertySlim<string> PropFramework { get; }
+		public ReactivePropertySlim<string> PropCodeName { get; }
+		public ReactivePropertySlim<string> PropCreatedOn { get; }
+		public ReactivePropertySlim<string> PropReleasedOn { get; }
+		public ReactivePropertySlim<string> PropUseApplication { get; }
+		public ReactivePropertySlim<string> PropVersion { get; }
+		public ReactivePropertySlim<string> PropDiversionNumber { get; }
+		public ReactivePropertySlim<string> PropExplanation { get; }
+		public ReactivePropertySlim<string> PropSummary { get; }
+
 		#endregion
 
 
@@ -115,13 +132,28 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 			OpenDirHeaderContent = new ReactivePropertySlim<string>(string.Empty);
 			OpenFileHeaderContent = new ReactivePropertySlim<string>(string.Empty);
+			ContentVisibility = new ReactivePropertySlim<Visibility>(Visibility.Collapsed);
+			ContentInitialVisibility = new ReactivePropertySlim<Visibility>(Visibility.Visible);
 
-			#endregion
 
-			// 
+			// Propertiy View ReadOnly
+			PropDevNumber = new ReactivePropertySlim<string>(string.Empty);
+			PropDevName = new ReactivePropertySlim<string>(string.Empty);
+			PropFramework = new ReactivePropertySlim<string>(string.Empty);
+			PropCodeName = new ReactivePropertySlim<string>(string.Empty);
+			PropCreatedOn = new ReactivePropertySlim<string>(string.Empty);
+			PropReleasedOn = new ReactivePropertySlim<string>(string.Empty);
+			PropUseApplication = new ReactivePropertySlim<string>(string.Empty);
+			PropVersion = new ReactivePropertySlim<string>(string.Empty);
+			PropDiversionNumber = new ReactivePropertySlim<string>(string.Empty);
+			PropExplanation = new ReactivePropertySlim<string>(string.Empty);
+			PropSummary = new ReactivePropertySlim<string>(string.Empty);
+		#endregion
 
-			// Commands
-			LangTypeSelectionChanged = new ReactiveCommandSlim();
+		// 
+
+		// Commands
+		LangTypeSelectionChanged = new ReactiveCommandSlim();
 			LangTypeSelectionChanged.Subscribe(OnLangTypeSelectionChanged).AddTo(_disposables);
 			DevTypeSelectionChanged = new ReactiveCommandSlim();
 			DevTypeSelectionChanged.Subscribe(OnDevTypeSelectionChanged).AddTo(_disposables);
@@ -148,18 +180,43 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 				{
 					Row = dataRowView.Row;
 					(string developNumber, string _) = GetSelectedDevelopNumber(Row);
-					OpenDirHeaderContent.Value = $"{developNumber}フォルダをエクスプローラーで開く";
-					OpenFileHeaderContent.Value = $"{developNumber}プロジェクトを開く";
-				}				
+					if (string.IsNullOrEmpty(developNumber) is true)
+					{
+						ContentVisibility.Value = Visibility.Collapsed;
+						ContentInitialVisibility.Value = Visibility.Visible;
+					}
+					else
+					{
+						OpenDirHeaderContent.Value = $"{developNumber}フォルダをエクスプローラーで開く";
+						OpenFileHeaderContent.Value = $"{developNumber}プロジェクトを開く";
+
+						ContentVisibility.Value = Visibility.Visible;
+						ContentInitialVisibility.Value = Visibility.Collapsed;
+					}
+				}
+
+				// 選択行の値をプロパティ用のプロパティに設定
+				PropDevNumber.Value = dataRowView["develop_number"].ToString();
+				PropDevName.Value = dataRowView["develop_name"].ToString();
+				PropFramework.Value = dataRowView["ui_framework"].ToString();
+				PropCodeName.Value = dataRowView["code_name"].ToString();
+				PropCreatedOn.Value = dataRowView["created_on"].ToString();
+				PropReleasedOn.Value = dataRowView["released_on"].ToString();
+				PropUseApplication.Value = dataRowView["use_applications"].ToString();
+				PropVersion.Value = dataRowView["version"].ToString();
+				PropDiversionNumber.Value = dataRowView["diversion_number"].ToString();
+				PropExplanation.Value = dataRowView["explanation"].ToString();
+				PropSummary.Value = dataRowView["summary"].ToString();
 			});
-			// DataGridRowSelectionChanged.Subscribe(OnDataGridRowSelectionChanged).AddTo(_disposables);
-			// 
+
 			ContextMenuOpenParentFolder = new ReactiveCommandSlim();
 			ContextMenuOpenParentFolder.Subscribe(OnContextMenuOpenParentFolder).AddTo(_disposables);
 			ContextMenuOpenProjectFolder = new ReactiveCommandSlim();
 			ContextMenuOpenProjectFolder.Subscribe(OnContextMenuOpenProjectFolder).AddTo(_disposables);
 			ContextMenuOpenProject = new ReactiveCommandSlim();
 			ContextMenuOpenProject.Subscribe(OnContextMenuOpenProject).AddTo(_disposables);
+			ContextMenuAwakeVS = new();
+			ContextMenuAwakeVS.Subscribe(OnContextMenuAwakeVS).AddTo(_disposables);
 		}
 
 
@@ -222,6 +279,11 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		{
 			(string developNumber, string dirFileName) = GetSelectedDevelopNumber(Row);
 			_model.OpenProjectFile(developNumber, dirFileName, SelectedLangType.Value);
+		}
+		public ReactiveCommand ContextMenuAwakeVS { get; }
+		private void OnContextMenuAwakeVS()
+		{
+			_model.AwakeVS();
 		}
 
 

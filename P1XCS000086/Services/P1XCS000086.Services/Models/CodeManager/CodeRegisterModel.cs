@@ -50,6 +50,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 		// Properties
 		// *****************************************************************************
 
+		public Dictionary<string, string> ConnStrings { get; }
 		public string CodeDevType { get; private set; }
 
 		public List<string> LangTypes { get; private set; }
@@ -68,6 +69,9 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 		public CodeRegisterModel()
 		{
+			// 接続文字列のリストをDictionaryから生成
+			ConhStrings = SqlConnectionStrings.ConnectionStrings;
+
 			RefreshValue();
 		}
 
@@ -257,6 +261,10 @@ namespace P1XCS000086.Services.Models.CodeManager
 			};
 
 			Process.Start(startInfo);
+		}
+		public void AwakeVS()
+		{
+			Process.Start(@"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe");
 		}
 
 

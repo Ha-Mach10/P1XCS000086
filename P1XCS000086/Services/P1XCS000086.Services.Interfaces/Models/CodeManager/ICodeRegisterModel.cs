@@ -12,6 +12,7 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 		// Properties
 		// *****************************************************************************
 
+		public Dictionary<string, string> ConnStrings { get; }
 		public string CodeDevType { get; }
 
 		public List<string> LangTypes { get; }
@@ -56,5 +57,10 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 		/// <param name="dirFilePath">開発ファイル名</param>
 		/// <param name="langType">言語名称</param>
 		public void OpenProjectFile(string developNumber, string dirFilePath, string langType);
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		public void AwakeVS();
 	}
 }

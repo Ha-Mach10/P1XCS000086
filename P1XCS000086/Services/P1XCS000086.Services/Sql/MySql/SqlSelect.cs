@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Pqc.Crypto.Lms;
 using P1XCS000086.Services.Interfaces.Sql;
 
 namespace P1XCS000086.Services.Sql.MySql
@@ -56,6 +57,16 @@ namespace P1XCS000086.Services.Sql.MySql
 		{
 			return SelectExecute(command, _connStr);
 		}
+		/// <summary>
+		/// SELECTクエリを実行する
+		/// </summary>
+		/// <param name="connStr">接続文字列</param>
+		/// <param name="command">クエリ文</param>
+		/// <returns>SELECTされたDataTable</returns>
+		public DataTable Select(string connStr, string command)
+		{
+			return SelectExecute(command, connStr);
+		}
 
 		/// <summary>
 		/// SELECTクエリを実行する
@@ -69,106 +80,22 @@ namespace P1XCS000086.Services.Sql.MySql
 			return SelectExecute(command, _connStr, columnNames, values);
 		}
 
-		/*
 		/// <summary>
 		/// SELECTクエリを実行する
 		/// </summary>
-		/// <param name="whereColumn"></param>
-		/// <param name="whereValue"></param>
+		/// <param name="command">クエリ文</param>
+		/// <param name="columnNames">カラム名のリスト</param>
+		/// <param name="values">値のリスト</param>
 		/// <returns>SELECTされたDataTable</returns>
-		public DataTable Select(string whereColumn, string whereValue)
+		public DataTable Select(string connStr, string command, List<string> columnNames, List<string> values)
 		{
-			DataTable dt = new DataTable();
-
-			try
-			{
-				using (MySqlConnection conn = new MySqlConnection(_connStr))
-				{
-					conn.Open();
-
-					// 
-					using (MySqlCommand command = conn.CreateCommand())
-					{
-						command.CommandText = _command;
-
-						// パラメータクエリのパラメータを取得する
-						// 「@[A-z]{1,100}」は@から始まり、A~Z,a~zまでのいずれかの文字が1~100回繰り返されることを示す
-						string whereValueStr = Regex.Match(_command, @"@[A-z]{1,100}").ToString();
-
-						command.Parameters.Add(new MySqlParameter(whereValueStr, whereValue));
-
-						// アダプターを生成
-						using (MySqlDataAdapter adapter = new MySqlDataAdapter(command))
-						{
-							// SELECTクエリで取得したテーブルを格納
-							adapter.Fill(dt);
-						}
-					}
-				}
-			}
-			catch (MySqlException ex)
-			{
-				Debug.WriteLine(ex.Message);
-			}
-
-			return dt;
+			return SelectExecute(command, connStr, columnNames, values);
 		}
-
-		/// <summary>
-		/// SELECTクエリを実行する
-		/// </summary>
-		/// <param name="whereColumns"></param>
-		/// <param name="whereValues"></param>
-		/// <returns>SELECTされたDataTable</returns>
-		public DataTable Select(List<string> whereColumns, List<string> whereValues)
-		{
-			DataTable dt = new DataTable();
-
-			try
-			{
-				using (MySqlConnection conn = new MySqlConnection(_connStr))
-				{
-					conn.Open();
-
-					// 
-					using (MySqlCommand command = conn.CreateCommand())
-					{
-						command.CommandText = _command;
-
-						// パラメータクエリのパラメータを取得する
-						// 「@[A-z]{1,100}」は@から始まり、A~Z,a~zまでのいずれかの文字が1~100回繰り返されることを示す
-						var matches = Regex.Matches(_command, @"@[A-z]{1,100}");
-						int count = 0;
-						// 複数のマッチからループ処理を行う
-						foreach (Match match in matches)
-						{
-							// コマンドパラメータを設定
-							command.Parameters.Add(new MySqlParameter(match.ToString(), whereValues[count]));
-							// インクリメント
-							count++;
-						}
-
-						// アダプターを生成
-						using (MySqlDataAdapter adapter = new MySqlDataAdapter(command))
-						{
-							// SELECTクエリで取得したテーブルを格納
-							adapter.Fill(dt);
-						}
-					}
-				}
-			}
-			catch (MySqlException ex)
-			{
-				Debug.WriteLine(ex.Message);
-			}
-
-			return dt;
-		}
-		*/
-
 
 		/// <summary>
 		/// 接続文字列を内部変数へ登録
+		/// 
+		/// ※使用しない
 		/// </summary>
 		/// <param name="sqlConnStr">IMySqlConnectionStringインターフェース</param>
 		public void SetConnectionString(IMySqlConnectionString sqlConnStr)
@@ -181,6 +108,8 @@ namespace P1XCS000086.Services.Sql.MySql
 
 		/// <summary>
 		/// プレースホルダ用のカラム名と値のリストを登録
+		/// 
+		/// ※使用しない
 		/// </summary>
 		/// <param name="columnNames">カラム名のリスト</param>
 		/// <param name="values">値のリスト</param>
@@ -245,25 +174,22 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <returns>リスト化された値</returns>
 		public List<string> SelectedColumnToList(string columnName, string query)
 		{
-			// 接続文字列が空の場合、「Non Items」の文字列のみ格納したリストを返す
-			if (_connStr == string.Empty)
+			return SelectedColumnToList(_connStr, columnName, query);
+		}
+		/// <summary>
+		/// クエリを実行し、取得した列をリストへ格納
+		/// </summary>
+		/// <param name="columnName">カラム名</param>
+		/// <param name="query">クエリ</param>
+		/// <returns>リスト化された値</returns>
+		public List<string> SelectedColumnToList(string connStr, string columnName, string query)
+		{
+			if (IsExistConnectionString(connStr, out List<string> failList))
 			{
-				return new List<string>() { "Non Items" };
+				return failList;
 			}
 
-			DataTable dt = Select(query);
-
-			// 戻り値用リストを生成
-			List<string> items = new List<string>();
-
-			// LINQで「dt」から指定のカラムのEnumerableRowCollection<DataRow>を取得し、foreachでリストへ格納
-			var rowItems = dt.AsEnumerable().Select(x => x[columnName]).ToList();
-			foreach (var rowItem in rowItems)
-			{
-				items.Add(rowItem.ToString());
-			}
-
-			return items;
+			return DataTableToList(Select(connStr, query), columnName);
 		}
 		/// <summary>
 		/// クエリを実行し、取得した列をリストへ格納
@@ -275,26 +201,27 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <returns>リスト化された値</returns>
 		public List<string> SelectedColumnToList(string columnName, string query, List<string> columnNames, List<string> values)
 		{
-			// 接続文字列が空の場合、「Non Items」の文字列のみ格納したリストを返す
-			if (_connStr == string.Empty)
-			{
-				return new List<string>() { "Non Items" };
-			}
-
-			DataTable dt = Select(query, columnNames, values);
-
-			// 戻り値用リストを生成
-			List<string> items = new List<string>();
-
-			// LINQで「dt」から指定のカラムのEnumerableRowCollection<DataRow>を取得し、foreachでリストへ格納
-			var rowItems = dt.AsEnumerable().Select(x => x[columnName]).ToList();
-			foreach (var rowItem in rowItems)
-			{
-				items.Add(rowItem.ToString());
-			}
-
-			return items;
+			return SelectedColumnToList(_connStr, columnName, query, columnNames, values);
 		}
+		/// <summary>
+		/// クエリを実行し、取得した列をリストへ格納
+		/// </summary>
+		/// <param name="connStr">接続文字列</param>
+		/// <param name="columnName">カラム名</param>
+		/// <param name="query">クエリ</param>
+		/// <param name="columnNames">パラメータ用のカラム名リスト</param>
+		/// <param name="values">パラメータ用の値リスト</param>
+		/// <returns>リスト化された値</returns>
+		public List<string> SelectedColumnToList(string connStr, string columnName, string query, List<string> columnNames, List<string> values)
+		{
+			if (IsExistConnectionString(connStr, out List<string> failList))
+			{
+				return failList;
+			}
+
+			return DataTableToList(Select(connStr, query, columnNames, values), columnName);
+		}
+
 
 
 		// ****************************************************************************
@@ -371,6 +298,47 @@ namespace P1XCS000086.Services.Sql.MySql
 			}
 
 			return dt;
+		}
+
+		/// <summary>
+		/// DataTableから指定したカラム名の列からList<string>へ変換する
+		/// </summary>
+		/// <param name="dt">リストへ変換するDataTable</param>
+		/// <param name="columnName">取得したDataTableのカラム名</param>
+		/// <returns></returns>
+		private List<string> DataTableToList(DataTable dt, string columnName)
+		{
+			// 戻り値用リストを生成
+			List<string> items = new List<string>();
+
+			// LINQで「dt」から指定のカラムのEnumerableRowCollection<DataRow>を取得し、foreachでリストへ格納
+			var rowItems = dt.AsEnumerable().Select(x => x[columnName]).ToList();
+			foreach (var rowItem in rowItems)
+			{
+				items.Add(rowItem.ToString());
+			}
+
+			return items;
+		}
+
+		/// <summary>
+		/// 接続文字列のnull/空文字列チェック
+		/// </summary>
+		/// <param name="connStr">判定する接続文字列</param>
+		/// <param name="failList">成功時/失敗時の値を格納するリスト</param>
+		/// <returns>空文字列またはnullでないtrue. それ以外false.</returns>
+		private bool IsExistConnectionString(string connStr, out List<string> failList)
+		{
+			// 接続文字列が空またはnullの場合、「Non Items」の文字列のみ格納したリストを返す
+			if (string.IsNullOrEmpty(connStr))
+			{
+				failList = new List<string>() { "Non Items" };
+				return false;
+			}
+
+			// null を返す
+			failList = null;
+			return true;
 		}
 	}
 }
