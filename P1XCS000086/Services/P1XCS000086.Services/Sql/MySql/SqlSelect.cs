@@ -184,7 +184,7 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <returns>リスト化された値</returns>
 		public List<string> SelectedColumnToList(string connStr, string columnName, string query)
 		{
-			if (IsExistConnectionString(connStr, out List<string> failList))
+			if (IsNotExistConnectionString(connStr, out List<string> failList))
 			{
 				return failList;
 			}
@@ -214,7 +214,7 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <returns>リスト化された値</returns>
 		public List<string> SelectedColumnToList(string connStr, string columnName, string query, List<string> columnNames, List<string> values)
 		{
-			if (IsExistConnectionString(connStr, out List<string> failList))
+			if (IsNotExistConnectionString(connStr, out List<string> failList))
 			{
 				return failList;
 			}
@@ -327,18 +327,18 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <param name="connStr">判定する接続文字列</param>
 		/// <param name="failList">成功時/失敗時の値を格納するリスト</param>
 		/// <returns>空文字列またはnullでないtrue. それ以外false.</returns>
-		private bool IsExistConnectionString(string connStr, out List<string> failList)
+		private bool IsNotExistConnectionString(string connStr, out List<string> failList)
 		{
 			// 接続文字列が空またはnullの場合、「Non Items」の文字列のみ格納したリストを返す
 			if (string.IsNullOrEmpty(connStr))
 			{
-				failList = new List<string>() { "Non Items" };
-				return false;
+				failList = new List<string>() { "None Items" };
+				return true;
 			}
 
 			// null を返す
 			failList = null;
-			return true;
+			return false;
 		}
 	}
 }

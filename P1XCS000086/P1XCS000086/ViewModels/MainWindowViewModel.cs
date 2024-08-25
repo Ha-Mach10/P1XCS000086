@@ -14,6 +14,7 @@ using System.ComponentModel;
 using System.Windows.Controls;
 using System.Linq;
 using P1XCS000086.Modules.CodeManagerView.Views;
+using System;
 
 
 namespace P1XCS000086.ViewModels
@@ -53,7 +54,8 @@ namespace P1XCS000086.ViewModels
 		/// 
 		/// </summary>
 		/// <param name="regionManager"></param>
-		public MainWindowViewModel(IRegionManager regionManager, IMainWindowModel model, IMergeModel mergeModel) : base(regionManager)
+		public MainWindowViewModel(IRegionManager regionManager, IMainWindowModel model, IMergeModel mergeModel)
+			: base(regionManager)
 		{
 			// インジェクションされたモデルを設定
 			_regionManager = regionManager;

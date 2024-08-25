@@ -1,30 +1,23 @@
-﻿using P1XCS000086.Services;
-using P1XCS000086.Services.Interfaces;
-using P1XCS000086.Services.Interfaces.IO;
-using P1XCS000086.Services.Interfaces.Models;
-using P1XCS000086.Services.Interfaces.Objects;
-using P1XCS000086.Services.Interfaces.Sql;
-using P1XCS000086.Services.IO;
-using P1XCS000086.Services.Models;
-using P1XCS000086.Services.Objects;
-using P1XCS000086.Services.Sql.MySql;
+﻿using P1XCS000086.Modules.CodeManagerView;
 using P1XCS000086.Modules.HomeView;
-using P1XCS000086.Modules.CodeManagerView;
+using P1XCS000086.Modules.HouseholdExpenses;
+using P1XCS000086.Services;
+using P1XCS000086.Services.Data;
+using P1XCS000086.Services.Interfaces;
+using P1XCS000086.Services.Interfaces.Data;
+using P1XCS000086.Services.Interfaces.Models;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
+using P1XCS000086.Services.Interfaces.Models.HouseholdExpenses;
+using P1XCS000086.Services.Models;
 using P1XCS000086.Services.Models.CodeManager;
-
+using P1XCS000086.Services.Models.HouseholdExpenses;
 using P1XCS000086.Views;
 
+using Prism.DryIoc;
 using Prism.Ioc;
 using Prism.Modularity;
 
 using System.Windows;
-using Prism.DryIoc;
-using P1XCS000086.Modules.HouseholdExpenses;
-using P1XCS000086.Services.Interfaces.Data;
-using P1XCS000086.Services.Data;
-using P1XCS000086.Services.Interfaces.Models.HouseholdExpenses;
-using P1XCS000086.Services.Models.HouseholdExpenses;
 
 namespace P1XCS000086
 {

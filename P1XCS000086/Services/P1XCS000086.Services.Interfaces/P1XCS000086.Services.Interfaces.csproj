@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="DbExtensions" Version="6.3.0" />
-    <PackageReference Include="ReactiveProperty.Core" Version="9.5.0" />
+    <PackageReference Include="ReactiveProperty.Core" Version="9.6.0" />
   </ItemGroup>
 
 </Project>

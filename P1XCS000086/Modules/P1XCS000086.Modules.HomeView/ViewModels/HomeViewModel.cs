@@ -105,6 +105,7 @@ namespace P1XCS000086.Modules.HomeView.ViewModels
 		private IEnumerable<TransitionButton> GenerateCodeManagerButtons()
 		{
 			yield return new TransitionButton(nameof(CodeRegister), "コード登録", "TextBoxPlus", OnViewTransiton);
+			// yield return new TransitionButton(nameof(CodeRegisterEsc), "コード登録", "TextBoxPlus", OnViewTransiton);
 			yield return new TransitionButton(nameof(CodeManager), "コード管理", "Table", OnViewTransiton);
 			yield return new TransitionButton(nameof(MasterManager), "マスタ管理", "TableEdit", OnViewTransiton);
 		}

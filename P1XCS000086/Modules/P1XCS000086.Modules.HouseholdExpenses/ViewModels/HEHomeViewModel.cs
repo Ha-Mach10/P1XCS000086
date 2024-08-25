@@ -1,23 +1,18 @@
 ﻿using P1XCS000086.Core.Mvvm;
-using Prism.Commands;
-using Prism.Mvvm;
+using P1XCS000086.Modules.HouseholdExpenses.Domains;
+using P1XCS000086.Services.Interfaces.Models.HouseholdExpenses;
+
 using Prism.Regions;
+
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Windows.Controls;
-using P1XCS000086.Modules.HouseholdExpenses.Domains;
-using System.Windows;
-using System.Collections.ObjectModel;
 using System.Reactive.Linq;
-using System.Windows.Media;
-using P1XCS000086.Services.Interfaces.Models.HouseholdExpenses;
+using System.Windows;
 
 namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 {

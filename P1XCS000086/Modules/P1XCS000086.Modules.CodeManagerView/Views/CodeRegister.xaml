@@ -64,12 +64,7 @@
 					<Setter Property="BorderThickness" Value="1"/>
 				</Style.Setters>
 			</Style>
-			<!--ContextMenu x:Key="DataGridContextMenu">
-				<MenuItem
-					Command="{Binding Path=ContextMenuOpenParentFolder, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"
-					CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"
-					Header="親フォルダを開く" />
-			</ContextMenu-->
+
 		</ResourceDictionary>
 	</UserControl.Resources>
 
@@ -247,11 +242,19 @@
 						</i:EventTrigger>
 					</i:Interaction.Triggers>
 					<DataGrid.ContextMenu>
-						<ContextMenu>
-							<MenuItem Command="{Binding ContextMenuOpenParentFolder}" Header="親フォルダ―を開く" />
-							<MenuItem Command="{Binding ContextMenuOpenProjectFolder}" Header="{Binding OpenDirHeaderContent.Value}" Visibility="{Binding ContentVisibility.Value}" />
-							<MenuItem Command="{Binding ContextMenuOpenProject}" Header="{Binding OpenFileHeaderContent.Value}" Visibility="{Binding ContentVisibility.Value}" />
-							<MenuItem Command="{Binding ContextMenuAwakeVS}" Header="Visual Studioを起動" Visibility="{Binding ContentInitialVisibility.Value}"/>
+						<ContextMenu >
+							<ItemsControl ItemsSource="{Binding ContextMenuItems, UpdateSourceTrigger=PropertyChanged}">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<StackPanel />
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<MenuItem Command="{Binding ItemCommand}" Header="{Binding Header}"/>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
 						</ContextMenu>
 					</DataGrid.ContextMenu>
 				</DataGrid>
@@ -324,38 +327,27 @@
 			Width="350"
 			Header="プロパティ"
 			Visibility="{Binding Path=IsChecked, ElementName=PropertyToggleButton, Converter={StaticResource BooleanToVisibilityConverter}}">
-			<StackPanel Margin="8">
-				<TextBlock Text="開発番号" />
-				<TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding PropDevNumber.Value}" />
-				<TextBlock Text="開発番号" />
-				<TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding PropDevName.Value}" />
-				<TextBlock Text="UIフレームワーク" />
-				<TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding PropFramework.Value}" />
-				<TextBlock Text="コードネーム" />
-				<TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding PropCodeName.Value}" />
-				<TextBlock Text="作成日" />
-				<TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding PropCreatedOn.Value}" />
-				<TextBlock Text="リリース日" />
-				<TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding PropReleasedOn.Value}" />
-				<TextBlock Text="使用用途" />
-				<TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding PropUseApplication.Value}" />
-				<TextBlock Text="バージョン" />
-				<TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding PropVersion.Value}" />
-				<TextBlock Text="流用番号" />
-				<TextBox Style="{StaticResource ReadOnlyTextBox}" Text="{Binding PropDiversionNumber.Value}" />
-				<TextBlock Text="説明" />
-				<TextBox
-					Height="150"
-					Text="{Binding PropExplanation.Value}"
-					BorderBrush="White"
-					BorderThickness="1"
-					TextWrapping="Wrap" />
-				<TextBlock Text="適用" />
-				<TextBox
-					Height="150"
-					Text="{Binding PropSummary.Value}"
-					TextWrapping="Wrap" />
-			</StackPanel>
+			<ItemsControl ItemsSource="{Binding SelectedRowPropertyFieldItems, UpdateSourceTrigger=PropertyChanged}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Margin="8"/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition />
+								<RowDefinition />
+							</Grid.RowDefinitions>
+
+							<GroupBox Header="{Binding TextBlockValue, Mode=OneWay}">
+								<TextBox Grid.Row="1" Text="{Binding TextBoxValue, Mode=OneWay}" Style="{StaticResource ReadOnlyTextBox}"/>
+							</GroupBox>
+						</Grid>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
 		</GroupBox>
 	</Grid>
 </UserControl>

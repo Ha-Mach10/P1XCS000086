@@ -24,5 +24,8 @@ namespace P1XCS000086.Modules.CodeManagerView.Views
 		{
 			InitializeComponent();
 		}
+
+		// Event
+
 	}
 }

@@ -18,9 +18,9 @@ namespace P1XCS000086.Modules.CodeManagerView.Views
 	/// <summary>
 	/// Interaction logic for ViewA.xaml
 	/// </summary>
-	public partial class CodeRegister : UserControl
+	public partial class CodeRegisterEsc : UserControl
 	{
-		public CodeRegister()
+		public CodeRegisterEsc()
 		{
 			InitializeComponent();
 		}

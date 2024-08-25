@@ -402,13 +402,13 @@
 											FontSize="20"
 											Text="購入点数" />
 										<TextBox
+											Margin="8,0,64,0"
 											Padding="0"
 											VerticalAlignment="Center"
 											VerticalContentAlignment="Center"
 											Background="Transparent"
 											FontSize="30"
 											IsReadOnly="True"
-											Margin="8,0,64,0"
 											Text="{Binding PurchasedCount.Value}" />
 										<TextBlock
 											VerticalAlignment="Center"
@@ -465,7 +465,7 @@
 				<ListView ItemsSource="{Binding}">
 					<ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
-							<StackPanel/>
+							<StackPanel />
 						</ItemsPanelTemplate>
 					</ItemsControl.ItemsPanel>
 
@@ -475,49 +475,61 @@
 								<Expander.Header>
 									<Grid>
 										<Grid.RowDefinitions>
-											<RowDefinition Height="40"/>
-											<RowDefinition Height="80"/>
-											<RowDefinition Height="30"/>
+											<RowDefinition Height="40" />
+											<RowDefinition Height="80" />
+											<RowDefinition Height="30" />
 										</Grid.RowDefinitions>
 
 										<Grid>
 											<Grid.ColumnDefinitions>
 												<ColumnDefinition />
-												<ColumnDefinition Width="380"/>
+												<ColumnDefinition Width="380" />
 											</Grid.ColumnDefinitions>
 
-											<TextBlock Text="{Binding }" FontSize="30" />
-											<TextBlock Text="{Binding }" Grid.Column="1" />
+											<TextBlock FontSize="30" Text="{Binding}" />
+											<TextBlock Grid.Column="1" Text="{Binding}" />
 										</Grid>
-										<StackPanel Grid.Row="1" Margin="16,0,32,0" HorizontalAlignment="Left">
-											<TextBlock Text="購入点数" Margin="0,0,32,0" FontSize="20"/>
-											<TextBlock Text="{Binding }" FontSize="20"/>
-											<TextBlock Text="合計金額　￥" Margin="56,0,32,0" FontSize="20"/>
-											<TextBlock Text="{Binding }" FontSize="20"/>
+										<StackPanel
+											Grid.Row="1"
+											Margin="16,0,32,0"
+											HorizontalAlignment="Left">
+											<TextBlock
+												Margin="0,0,32,0"
+												FontSize="20"
+												Text="購入点数" />
+											<TextBlock FontSize="20" Text="{Binding}" />
+											<TextBlock
+												Margin="56,0,32,0"
+												FontSize="20"
+												Text="合計金額　￥" />
+											<TextBlock FontSize="20" Text="{Binding}" />
 										</StackPanel>
 										<Grid Grid.Row="2">
 											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="300"/>
+												<ColumnDefinition Width="300" />
 												<ColumnDefinition />
 											</Grid.ColumnDefinitions>
 
 											<StackPanel Margin="16,0,16,0" Orientation="Horizontal">
-												<TextBlock Text="処理日付："/>
-												<TextBlock Text="{Binding }"/>
+												<TextBlock Text="処理日付：" />
+												<TextBlock Text="{Binding}" />
 											</StackPanel>
-											<StackPanel Grid.Column="1" Margin="16,0,16,0" Orientation="Horizontal">
-												<TextBlock Text="レジ番号："/>
-												<TextBlock Text="{Binding }"/>
-												<TextBlock Text="責任者"/>
-												<TextBlock Text="{Binding }"/>
-												<TextBlock Text="領収書番号："/>
-												<TextBlock Text="{Binding }"/>
+											<StackPanel
+												Grid.Column="1"
+												Margin="16,0,16,0"
+												Orientation="Horizontal">
+												<TextBlock Text="レジ番号：" />
+												<TextBlock Text="{Binding}" />
+												<TextBlock Text="責任者" />
+												<TextBlock Text="{Binding}" />
+												<TextBlock Text="領収書番号：" />
+												<TextBlock Text="{Binding}" />
 											</StackPanel>
 										</Grid>
 									</Grid>
 								</Expander.Header>
 
-								<Grid/>
+								<Grid />
 							</Expander>
 						</DataTemplate>
 					</ItemsControl.ItemTemplate>

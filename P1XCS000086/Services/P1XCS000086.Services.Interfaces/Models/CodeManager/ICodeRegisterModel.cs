@@ -36,7 +36,14 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 		public DataTable SetTable(string selectedLangType, string selectedDevType);
 		public string SetUseApplication(string useApplication);
 		public void InsertCodeManager(string devNum, string devName, string uiFramework, string date, string useApp, string explanation = "", string summary = "");
-		
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="selectedRow"></param>
+		/// <returns></returns>
+		public List<(string columnNames, string propertyText)> GetSelectedRowPropertyFieldItem(DataRowView selectedRow);
+
 		/// <summary>
 		/// 指定した言語からその言語の開発ディレクトリの親ディレクトリをエクスプローラーで開く
 		/// </summary>
@@ -57,10 +64,15 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 		/// <param name="dirFilePath">開発ファイル名</param>
 		/// <param name="langType">言語名称</param>
 		public void OpenProjectFile(string developNumber, string dirFilePath, string langType);
-		
+
 		/// <summary>
 		/// 
 		/// </summary>
-		public void AwakeVS();
+		public void AwakeVS2019();
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public void AwakeVS2022();
 	}
 }

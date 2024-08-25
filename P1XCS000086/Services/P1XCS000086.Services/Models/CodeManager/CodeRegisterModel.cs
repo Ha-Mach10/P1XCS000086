@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -70,7 +71,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 		public CodeRegisterModel()
 		{
 			// 接続文字列のリストをDictionaryから生成
-			ConhStrings = SqlConnectionStrings.ConnectionStrings;
+			ConnStrings = SqlConnectionStrings.ConnectionStrings;
 
 			RefreshValue();
 		}
@@ -81,6 +82,9 @@ namespace P1XCS000086.Services.Models.CodeManager
 		// Publick Methods
 		// *****************************************************************************
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public void RefreshValue()
 		{
 			// 共通モデルを生成
@@ -102,6 +106,12 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			int a = 0;
 		}
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="selectedValue"></param>
+		/// <returns></returns>
 		public List<string> SetDevType(string selectedValue)
 		{
 			string subQuery = "SELECT `script_type` FROM `manager_language_type` WHERE `language_type` = @language_type;";
@@ -120,6 +130,12 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			return devTypes;
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="selectedLangValue"></param>
+		/// <returns></returns>
 		public List<string> SetFrameworkName(string selectedLangValue)
 		{
 			_columns = new List<string> { "target_language" };
@@ -132,6 +148,13 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			return UiFramework;
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="selectedLangType"></param>
+		/// <param name="selectedDevType"></param>
+		/// <returns></returns>
 		public DataTable SetTable(string selectedLangType, string selectedDevType)
 		{
 			StringBuilder sb = new StringBuilder();
@@ -178,6 +201,17 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			return result;
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="devNum"></param>
+		/// <param name="devName"></param>
+		/// <param name="uiFramework"></param>
+		/// <param name="date"></param>
+		/// <param name="useApp"></param>
+		/// <param name="explanation"></param>
+		/// <param name="summary"></param>
 		public void InsertCodeManager(string devNum, string devName, string uiFramework, string date, string useApp, string explanation = "", string summary = "")
 		{
 			_columns = new List<string>
@@ -215,6 +249,35 @@ namespace P1XCS000086.Services.Models.CodeManager
 			// 
 			ResetQueryFieldValiable();
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="selectedRow"></param>
+		/// <returns></returns>
+		public List<(string columnNames, string propertyText)> GetSelectedRowPropertyFieldItem(DataRowView selectedRow)
+		{
+			string queryPhysical = "SELECT `column_name` FROM `database_structure` WHERE `type` = 'column' AND `table_name` = 'manager_register_code';";
+			string queryLogical = "SELECT `logical_name` FROM `database_structure` WHERE `type` = 'column' AND `table_name` = 'manager_register_code';";
+
+			// 物理名のリストを取得
+			List<string> columnNamesPhysical = _select.SelectedColumnToList(SqlConnectionStrings.ConnectionStrings["common_manager"], "column_name", queryPhysical);
+			// 論理名のリストを取得
+			List<string> columnNamesLogical = _select.SelectedColumnToList(SqlConnectionStrings.ConnectionStrings["common_manager"], "logical_name", queryLogical);
+
+			var items = columnNamesLogical
+				.Select((columnNameLogical, index) => new { ColumnName = columnNameLogical, PropertyText = selectedRow[index].ToString() })
+				.ToList();
+
+			List<(string, string)> propertyItems = new();
+			foreach (var item in items)
+			{
+				propertyItems.Add(new(item.ColumnName, item.PropertyText.ToString()));
+			}
+
+			return propertyItems;
+		}
+
 		/// <summary>
 		/// 指定した言語からその言語の開発ディレクトリの親ディレクトリをエクスプローラーで開く
 		/// </summary>
@@ -226,6 +289,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			Process.Start(s_explorer, parentDirPath);
 		}
+
 		/// <summary>
 		/// 指定した言語から、その言語の指定された開発番号の親ディレクトリをエクスプローラーで開く
 		/// </summary>
@@ -240,6 +304,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			Process.Start(s_explorer, path);
 		}
+
 		/// <summary>
 		/// 指定した言語から、その言語の開発用ファイルを規定のソフトウェアで開く
 		/// </summary>
@@ -262,7 +327,15 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			Process.Start(startInfo);
 		}
-		public void AwakeVS()
+
+		public void AwakeVS2019()
+		{
+			Process.Start(@"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.exe");
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		public void AwakeVS2022()
 		{
 			Process.Start(@"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe");
 		}
@@ -292,6 +365,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			return langTypeCode;
 		}
+
 		/// <summary>
 		/// 開発種別を取得
 		/// </summary>
@@ -311,6 +385,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			return devTypeCode;
 		}
+
 		/// <summary>
 		/// 指定言語のプロジェクトを格納した親ディレクトリを取得
 		/// </summary>
@@ -330,6 +405,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			return languageDirctry;
 		}
+
 		/// <summary>
 		/// DataTableのカラム名を翻訳する
 		/// </summary>

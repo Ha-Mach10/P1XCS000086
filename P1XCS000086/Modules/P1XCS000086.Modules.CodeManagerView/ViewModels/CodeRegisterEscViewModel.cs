@@ -1,5 +1,4 @@
 ﻿using P1XCS000086.Core.Mvvm;
-using P1XCS000086.Modules.CodeManagerView.Domains;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using P1XCS000086.Services.Interfaces.Sql;
 
@@ -13,16 +12,17 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
-using System.Linq;
 using System.Windows;
 
 namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 {
-	public class CodeRegisterViewModel : RegionViewModelBase, INotifyPropertyChanged, IRegionMemberLifetime
+	public class CodeRegisterEscViewModel : RegionViewModelBase, INotifyPropertyChanged/*, IRegionMemberLifetime*/
 	{
+		/*
 		// Fields
 		private IRegionManager _regionManager;
 		private ICodeRegisterModel _model;
+		private ISqlSelect _select;
 
 
 
@@ -60,20 +60,26 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public ReactivePropertySlim<DataTable> Table { get; }
 		public DataRow Row { get; private set; }
 
-		public ReactiveCollection<ContextMenuItem> ContextMenuItems { get; }
+		public ReactivePropertySlim<string> OpenDirHeaderContent { get; }
+		public ReactivePropertySlim<string> OpenFileHeaderContent { get; }
 
-		public ReactiveCollection<SelectedRowPropertyField> SelectedRowPropertyFieldItems { get; }
+		public ReactivePropertySlim<Visibility> ContentVisibility { get; }
+		public ReactivePropertySlim<Visibility> ContentInitialVisibility { get; }
+
+		// public ReactiveCollection<SelectedRowPropertyField> SelectedRowPropertyFieldItems { get; }
 
 		#endregion
+		*/
 
 
-
-		public CodeRegisterViewModel(IRegionManager regionManager, ICodeRegisterModel model)
+		public CodeRegisterEscViewModel(IRegionManager regionManager, ICodeRegisterModel model, ISqlSelect select)
 			: base(regionManager)
 		{
+			/*
 			// インジェクション
 			_regionManager = regionManager;
 			_model = model;
+			_select = select;
 
 
 			// このビューモデルの生存
@@ -114,17 +120,12 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 			Table = new ReactivePropertySlim<DataTable>(null).AddTo(_disposables);
 
-			List<ContextMenuItem> menuItems = new()
-			{
-				new ContextMenuItem(_regionManager, "親フォルダ―を開く", OnContextMenuOpenParentFolder, true),
-				new ContextMenuItem(_regionManager, "Visual Studio 2019を起動", OnContextMenuAwakeVS2019, true),
-				new ContextMenuItem(_regionManager, "Visual Studio 2022を起動", OnContextMenuAwakeVS2022, true)
-			};
-			ContextMenuItem.AddRangeItems(menuItems);
-			ContextMenuItems = new ReactiveCollection<ContextMenuItem>().AddTo(_disposables);
-			ContextMenuItems.AddRangeOnScheduler(ContextMenuItem.Items);
+			OpenDirHeaderContent = new ReactivePropertySlim<string>(string.Empty);
+			OpenFileHeaderContent = new ReactivePropertySlim<string>(string.Empty);
+			ContentVisibility = new ReactivePropertySlim<Visibility>(Visibility.Collapsed);
+			ContentInitialVisibility = new ReactivePropertySlim<Visibility>(Visibility.Visible);
 
-			SelectedRowPropertyFieldItems = new ReactiveCollection<SelectedRowPropertyField>().AddTo(_disposables);
+			// SelectedRowPropertyFieldItems = new ReactiveCollection<SelectedRowPropertyField>().AddTo(_disposables);
 
 		#endregion
 
@@ -151,70 +152,32 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			RegistCodeNumber.Subscribe(OnRegistCodeNumber).AddTo(_disposables);
 
 			// 
-			DataGridRowSelectionChanged = new ReactiveCommandSlim();
-			DataGridRowSelectionChanged.Subscribe(param =>
-			{
+			DataGridRowSelectionChanged = new ReactiveCommandSlim<DataRowView>();
+			DataGridRowSelectionChanged.Subscribe(_ => OnDataGridRowSelectionChanged(_)).AddTo(_disposables);
 
-				// コマンドパラメータから受け取った値をキャスト
-				DataRowView dataRowView = param as DataRowView;
+			ContextMenuOpenParentFolder = new();
+			ContextMenuOpenParentFolder.Subscribe(OnContextMenuOpenParentFolder).AddTo(_disposables);
 
-				if (dataRowView is not null)
-				{
-					var items = _model.GetSelectedRowPropertyFieldItem(dataRowView)
-								  .Select(item => new SelectedRowPropertyField(_regionManager, item.columnNames, item.propertyText))
-								  .ToList();
-					SelectedRowPropertyFieldItems.Clear();
-					SelectedRowPropertyFieldItems.AddRangeOnScheduler(items);
+			ContextMenuOpenProjectFolder = new();
+			ContextMenuOpenProjectFolder.Subscribe(OnContextMenuOpenProjectFolder).AddTo(_disposables);
 
+			ContextMenuOpenProject = new();
+			ContextMenuOpenProject.Subscribe(OnContextMenuOpenProject).AddTo(_disposables);
 
-					Row = dataRowView.Row;
-					(string developNumber, string dirFileName) = GetSelectedDevelopNumber(Row);
-
-					if (string.IsNullOrEmpty(developNumber) is true)
-					{
-						ContextMenuItems.Clear();
-						ContextMenuItem.ClearItem();
-
-					}
-					else
-					{
-						if (string.IsNullOrEmpty(dirFileName))
-						{
-							ContextMenuItems.Clear();
-							ContextMenuItem.ClearItem();
-							ContextMenuItems.AddRangeOnScheduler(ContextMenuItem.Items);
-
-							return;
-						}
-
-						List<ContextMenuItem> menuItems = new()
-						{
-							new ContextMenuItem(_regionManager, $"{developNumber}フォルダをエクスプローラーで開く", OnContextMenuOpenProjectFolder),
-							new ContextMenuItem(_regionManager, $"{developNumber}プロジェクトを開く", OnContextMenuOpenProject)
-						};
-						ContextMenuItem.ClearItem();
-						ContextMenuItem.AddRangeItems(menuItems);
-
-						ContextMenuItems.Clear();
-						ContextMenuItems.AddRangeOnScheduler(ContextMenuItem.Items);
-					}
-				}
-			}).AddTo(_disposables);
+			ContextMenuAwakeVS = new();
+			ContextMenuAwakeVS.Subscribe(OnContextMenuAwakeVS).AddTo(_disposables);
+			*/
 		}
 
 
 
+		/*
 		/// <summary>
 		/// 
 		/// </summary>
 		public ReactiveCommandSlim LangTypeSelectionChanged { get; }
 		private void OnLangTypeSelectionChanged()
 		{
-			// コレクションをクリア（例外回避）
-			SelectedRowPropertyFieldItems.Clear();
-			ContextMenuItems.Clear();
-
-
 			// 開発種別を選択するコンボボックス用Listに格納
 			DevTypes.Value = _model.SetDevType(SelectedLangType.Value);
 			SelectedIndexDevType.Value = -1;
@@ -269,44 +232,76 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		/// <summary>
 		/// 
 		/// </summary>
-		public ReactiveCommandSlim DataGridRowSelectionChanged { get; }
+		public ReactiveCommandSlim<DataRowView> DataGridRowSelectionChanged { get; }
+		private void OnDataGridRowSelectionChanged(DataRowView param)
+		{
+			// コマンドパラメータから受け取った値をキャスト
+			DataRowView dataRowView = param as DataRowView;
+
+
+			if (dataRowView is not null)
+			{
+				var items = _model.GetSelectedRowPropertyFieldItem(dataRowView)
+							  .Select(item => new SelectedRowPropertyField(_regionManager, item.columnNames, item.propertyText))
+							  .ToList();
+				SelectedRowPropertyField.AddRangeItem(items);
+				SelectedRowPropertyFieldItems.AddRangeOnScheduler(items);
+
+
+				Row = dataRowView.Row;
+				(string developNumber, string _) = GetSelectedDevelopNumber(Row);
+				if (string.IsNullOrEmpty(developNumber) is true)
+				{
+					ContentVisibility.Value = Visibility.Collapsed;
+					ContentInitialVisibility.Value = Visibility.Visible;
+				}
+				else
+				{
+					OpenDirHeaderContent.Value = $"{developNumber}フォルダをエクスプローラーで開く";
+					OpenFileHeaderContent.Value = $"{developNumber}プロジェクトを開く";
+
+					ContentVisibility.Value = Visibility.Visible;
+					ContentInitialVisibility.Value = Visibility.Collapsed;
+				}
+			}
+		}
 
 		/// <summary>
 		/// 
 		/// </summary>
+		public ReactiveCommandSlim ContextMenuOpenParentFolder { get; }
 		private void OnContextMenuOpenParentFolder()
 		{
 			_model.OpenProjectParentDirectry(SelectedLangType.Value);
 		}
+
 		/// <summary>
 		/// 
 		/// </summary>
+		public ReactiveCommandSlim ContextMenuOpenProjectFolder { get; }
 		private void OnContextMenuOpenProjectFolder()
 		{
 			(string developNumber, string _) = GetSelectedDevelopNumber(Row);
 			_model.OpenProjectDirectry(developNumber, SelectedLangType.Value);
 		}
+
 		/// <summary>
 		/// 
 		/// </summary>
+		public ReactiveCommandSlim ContextMenuOpenProject { get; }
 		private void OnContextMenuOpenProject()
 		{
 			(string developNumber, string dirFileName) = GetSelectedDevelopNumber(Row);
 			_model.OpenProjectFile(developNumber, dirFileName, SelectedLangType.Value);
 		}
+
 		/// <summary>
 		/// 
 		/// </summary>
-		private void OnContextMenuAwakeVS2019()
+		public ReactiveCommand ContextMenuAwakeVS { get; }
+		private void OnContextMenuAwakeVS()
 		{
-			_model.AwakeVS2019();
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		private void OnContextMenuAwakeVS2022()
-		{
-			_model.AwakeVS2022();
+			_model.AwakeVS();
 		}
 
 
@@ -321,12 +316,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			string devNumber = selectedRow["develop_number"].ToString();
 			string dirFileName = selectedRow["dir_file_name"].ToString();
 
-			if (string.IsNullOrEmpty(dirFileName))
-			{
-				return (devNumber, "");
-			}
-
 			return (devNumber, dirFileName);
 		}
+		*/
 	}
 }

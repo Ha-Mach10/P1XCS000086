@@ -59,7 +59,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 		/// <returns></returns>
 		public DataTable SearchTable(string databaseName, string tableName)
 		{
-			string query = $"SELECT * FROM `{tableName}`";
+			string query = $"SELECT * FROM `{tableName}`;";
 
 			switch (databaseName)
 			{
