@@ -15,6 +15,7 @@
     <PackageReference Include="ReactiveProperty.WPF" Version="9.6.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Modules\P1XCS000086.Modules.AutomationView\P1XCS000086.Modules.AutomationView.csproj" />
     <ProjectReference Include="..\Modules\P1XCS000086.Modules.CodeManagerView\P1XCS000086.Modules.CodeManagerView.csproj" />
     <ProjectReference Include="..\Modules\P1XCS000086.Modules.HomeView\P1XCS000086.Modules.HomeView.csproj" />
     <ProjectReference Include="..\Modules\P1XCS000086.Modules.HouseholdExpenses\P1XCS000086.Modules.HouseholdExpenses.csproj" />

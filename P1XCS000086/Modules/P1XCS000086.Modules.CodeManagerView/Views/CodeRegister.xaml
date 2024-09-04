@@ -58,10 +58,10 @@
 				TargetType="TextBox">
 				<Style.Setters>
 					<Setter Property="IsReadOnly" Value="True" />
-					<Setter Property="Height" Value="25"/>
-					<Setter Property="VerticalContentAlignment" Value="Center"/>
-					<Setter Property="BorderBrush" Value="White"/>
-					<Setter Property="BorderThickness" Value="1"/>
+					<Setter Property="Height" Value="25" />
+					<Setter Property="VerticalContentAlignment" Value="Center" />
+					<Setter Property="BorderBrush" Value="White" />
+					<Setter Property="BorderThickness" Value="1" />
 				</Style.Setters>
 			</Style>
 
@@ -242,7 +242,7 @@
 						</i:EventTrigger>
 					</i:Interaction.Triggers>
 					<DataGrid.ContextMenu>
-						<ContextMenu >
+						<ContextMenu>
 							<ItemsControl ItemsSource="{Binding ContextMenuItems, UpdateSourceTrigger=PropertyChanged}">
 								<ItemsControl.ItemsPanel>
 									<ItemsPanelTemplate>
@@ -251,7 +251,7 @@
 								</ItemsControl.ItemsPanel>
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
-										<MenuItem Command="{Binding ItemCommand}" Header="{Binding Header}"/>
+										<MenuItem Command="{Binding ItemCommand}" Header="{Binding Header}" />
 									</DataTemplate>
 								</ItemsControl.ItemTemplate>
 							</ItemsControl>
@@ -330,7 +330,7 @@
 			<ItemsControl ItemsSource="{Binding SelectedRowPropertyFieldItems, UpdateSourceTrigger=PropertyChanged}">
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
-						<StackPanel Margin="8"/>
+						<StackPanel Margin="8" />
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
 				<ItemsControl.ItemTemplate>
@@ -342,7 +342,10 @@
 							</Grid.RowDefinitions>
 
 							<GroupBox Header="{Binding TextBlockValue, Mode=OneWay}">
-								<TextBox Grid.Row="1" Text="{Binding TextBoxValue, Mode=OneWay}" Style="{StaticResource ReadOnlyTextBox}"/>
+								<TextBox
+									Grid.Row="1"
+									Style="{StaticResource ReadOnlyTextBox}"
+									Text="{Binding TextBoxValue, Mode=OneWay}" />
 							</GroupBox>
 						</Grid>
 					</DataTemplate>

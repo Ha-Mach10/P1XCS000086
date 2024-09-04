@@ -4,6 +4,7 @@ using P1XCS000086.Modules.HouseholdExpenses.Views;
 using P1XCS000086.Modules.HomeView.Domains;
 using P1XCS000086.Services.Interfaces.Domains;
 using P1XCS000086.Services.Interfaces.Models;
+using P1XCS000086.Modules.AutomationView.Views;
 
 using Prism.Regions;
 
@@ -97,6 +98,7 @@ namespace P1XCS000086.Modules.HomeView.ViewModels
 		{
 			yield return new TileContainer<TransitionButton>("コード管理", true, GenerateCodeManagerButtons());
 			yield return new TileContainer<TransitionButton>("家計管理", true, GenerateHouseholdExpensesButtons());
+			yield return new TileContainer<TransitionButton>("自動化", true, GenerateAutomationButtons());
 		}
 		/// <summary>
 		/// コード管理用の画面遷移用のボタン列挙用
@@ -105,7 +107,6 @@ namespace P1XCS000086.Modules.HomeView.ViewModels
 		private IEnumerable<TransitionButton> GenerateCodeManagerButtons()
 		{
 			yield return new TransitionButton(nameof(CodeRegister), "コード登録", "TextBoxPlus", OnViewTransiton);
-			// yield return new TransitionButton(nameof(CodeRegisterEsc), "コード登録", "TextBoxPlus", OnViewTransiton);
 			yield return new TransitionButton(nameof(CodeManager), "コード管理", "Table", OnViewTransiton);
 			yield return new TransitionButton(nameof(MasterManager), "マスタ管理", "TableEdit", OnViewTransiton);
 		}
@@ -116,6 +117,14 @@ namespace P1XCS000086.Modules.HomeView.ViewModels
 		private IEnumerable<TransitionButton> GenerateHouseholdExpensesButtons()
 		{
 			yield return new TransitionButton(nameof(HEHome), "購入品目登録", "TextBoxPlus", OnViewTransiton);
+		}
+		/// <summary>
+		/// 家計管理用の画面遷移用のボタン列挙用
+		/// </summary>
+		/// <returns>列挙された遷移用ボタン</returns>
+		private IEnumerable<TransitionButton> GenerateAutomationButtons()
+		{
+			yield return new TransitionButton(nameof(PixivData), "Pixiv作品", "FileImageOutline", OnViewTransiton);
 		}
 	}
 }

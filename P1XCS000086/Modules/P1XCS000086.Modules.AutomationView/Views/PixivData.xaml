@@ -1,0 +1,62 @@
+﻿<UserControl x:Class="P1XCS000086.Modules.AutomationView.Views.PixivData"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:P1XCS000086.Modules.AutomationView.Views"
+			 xmlns:core="clr-namespace:P1XCS000086.Core;assembly=P1XCS000086.Core"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+			 xmlns:mahIcons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+			 xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+			 xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="600"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True" >
+
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Controls.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Colors.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+			
+			
+		</ResourceDictionary>
+	</UserControl.Resources>
+
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition Width="25"/>
+			<ColumnDefinition />
+		</Grid.ColumnDefinitions>
+		<ScrollViewer VerticalScrollBarVisibility="Auto" Width="175">
+			<ItemsControl ItemsSource="{Binding }">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition/>
+							</Grid.ColumnDefinitions>
+							<TextBlock Grid.Column="1" Text="{Binding Name}"/>
+						</Grid>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+				<i:Interaction.Triggers>
+					<i:EventTrigger EventName="SelectionChanged">
+						<prism:InvokeCommandAction Command="{Binding TransitionCommand}" CommandParameter="{Binding ViewName}" />
+					</i:EventTrigger>
+				</i:Interaction.Triggers>
+			</ItemsControl>
+		</ScrollViewer>
+		<ToggleButton Grid.Column="1"/>
+		<ContentControl Grid.Column="2" prism:RegionManager.RegionName="{x:Static core:RegionNames.AutomationLoginSendParamaterRegion}"/>
+	</Grid>
+</UserControl>

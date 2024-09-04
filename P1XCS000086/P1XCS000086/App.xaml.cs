@@ -1,14 +1,17 @@
 ﻿using P1XCS000086.Modules.CodeManagerView;
 using P1XCS000086.Modules.HomeView;
 using P1XCS000086.Modules.HouseholdExpenses;
+using P1XCS000086.Modules.AutomationView;
 using P1XCS000086.Services;
 using P1XCS000086.Services.Data;
 using P1XCS000086.Services.Interfaces;
 using P1XCS000086.Services.Interfaces.Data;
 using P1XCS000086.Services.Interfaces.Models;
+using P1XCS000086.Services.Interfaces.Models.Automation;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using P1XCS000086.Services.Interfaces.Models.HouseholdExpenses;
 using P1XCS000086.Services.Models;
+using P1XCS000086.Services.Models.Automation;
 using P1XCS000086.Services.Models.CodeManager;
 using P1XCS000086.Services.Models.HouseholdExpenses;
 using P1XCS000086.Views;
@@ -52,6 +55,8 @@ namespace P1XCS000086
 			containerRegistry.RegisterSingleton<IHEHomeModel, HEHomeModel>();
 			// # Common Models
 			containerRegistry.RegisterSingleton<IDTConveter, DTConverter>();
+			// # Automation
+			containerRegistry.RegisterSingleton<IPixivDataModel, PixivDataModel>();
 
 		}
 		// モジュールカタログの設定
@@ -63,6 +68,8 @@ namespace P1XCS000086
 			moduleCatalog.AddModule<CodeManagerViewModule>();
 			// 
 			moduleCatalog.AddModule<HouseholdExpensesModule>();
+			//
+			moduleCatalog.AddModule<AutomationViewModule>();
 		}
 	}
 }

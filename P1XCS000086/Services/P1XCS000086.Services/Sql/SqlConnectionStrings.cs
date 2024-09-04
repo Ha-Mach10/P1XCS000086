@@ -30,7 +30,9 @@ namespace P1XCS000086.Services.Sql
 		/// <summary>
 		/// ユーザー名(キー)・接続文字列（値）のペアを保持する静的ディクショナリ
 		/// </summary>
-		public static Dictionary<string, string> ConnectionStrings { get; private set; } = new Dictionary<string, string>();
+		public static Dictionary<string, string> ConnectionStrings { get; private set; } = new();
+
+		public static Dictionary<string, SqlConnStringParamerers> DatabaseNameAndParameterDictionary { get; private set; } = new();
 
 
 
@@ -96,6 +98,10 @@ namespace P1XCS000086.Services.Sql
 
 			// データベース名,接続文字列のペアを追加
 			ConnectionStrings.Add(_database, builder.ConnectionString);
+
+			// データベース名と接続文字列の各パラメータを紐づける
+			SqlConnStringParamerers parameter = new(_server, _user, _database, _password, _persistSecurityInfo);
+			DatabaseNameAndParameterDictionary.Add(_database, parameter);
 		}
 		#endregion
 	}
