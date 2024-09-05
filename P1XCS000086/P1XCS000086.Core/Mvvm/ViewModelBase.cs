@@ -10,7 +10,7 @@ namespace P1XCS000086.Core.Mvvm
 	{
 		protected CompositeDisposable _disposables;
 
-		public bool KeepAlive { get; private set; } = false;
+		public bool KeepAlive { get; set; } = false;
 
 		protected ViewModelBase()
 		{

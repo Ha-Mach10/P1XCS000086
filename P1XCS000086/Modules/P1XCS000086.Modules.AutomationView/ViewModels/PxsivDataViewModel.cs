@@ -82,7 +82,7 @@ namespace P1XCS000086.Modules.AutomationView.ViewModels
 		public ReactiveCommandSlim Login { get; }
 		private async void OnLogin()
 		{
-			await _model.PixivLogin("gunhounan@gmail.com", "S#f-59Xr6q3YY4C");
+			// await _model.PixivLogin();
 		}
 
 
