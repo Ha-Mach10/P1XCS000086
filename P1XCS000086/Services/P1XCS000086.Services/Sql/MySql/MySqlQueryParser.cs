@@ -87,47 +87,21 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <returns></returns>
 		private void GetColumnNames(string query, QueryType queryType)
 		{
-			query = query.ToUpper();
+			// 
+			const string from = "FROM";
 
-			// 引数のクエリタイプから取得カラムの位置のインデックスを取得
-			int startIndex = query.IndexOf(queryType.ToString());
-			int endIndex = 0;
-
-			// クエリ毎の次回予約語（FROM, INTO,等）の頭までのインデックスを取得
-			switch (queryType)
-			{
-				case QueryType.SELECT:
-					endIndex = query.IndexOf("FROM");
-					break;
-
-				case QueryType.INSERT:	// 不要かも
-					endIndex = query.IndexOf("INTO");
-					break;
-
-				case QueryType.UPDATE:
-					endIndex = query.IndexOf("SET");
-					break;
-
-				case QueryType.DELETE:
-					endIndex = query.IndexOf("FROM");
-					break;
-			}
-
-			// 文字列切り取り時の長さを取得
-			int length = endIndex - startIndex;
-
-			// 文字列の開始位置と長さでカラム名を切り取る
-			string columnsStr = query.Substring(startIndex, length).Replace(" ", "");
+			// 
+			string selectColumns = GetPhrase(QueryType.SELECT.ToString(), query, from).Replace(" ", "");
 
 			// カラム名指示に「`（バッククォート）」が使用されているか判別
 			// 使用されていた場合は除去
-			if (columnsStr.Contains('`'))
+			if (selectColumns.Contains('`'))
 			{
-				columnsStr = columnsStr.Replace("`", "");
+				selectColumns = selectColumns.Replace("`", "");
 			}
 
 			// カラム名を区切るカンマを基点に文字列を分割し、カラム名リストのプロパティへ格納
-			ColumnNames = columnsStr.Split(',').ToList();
+			ColumnNames = selectColumns.Split(',').ToList();
 		}
 
 		/// <summary>
@@ -139,20 +113,41 @@ namespace P1XCS000086.Services.Sql.MySql
 			// 
 			const string where = "WHERE";
 			const string and = "AND";
+			// 
+			const string orderBy = "ORDER BY";
+			const string limit = "LIMIT";
+
+			string whereColumnValue = string.Empty;
 
 			// WHEREが含まれていない場合は処理を抜ける
 			if (query.Contains(where) is false) return;
+			else if (query.Contains(orderBy))
+			{
+				whereColumnValue = GetPhrase(where, query, orderBy);
+			}
+			else if (query.Contains(limit))
+			{
+				whereColumnValue = GetPhrase(where, query, limit);
+			}
 
+			// カラム名のバッククォート(`)を空文字に置換
+			whereColumnValue.Replace("`", "");
+			// カラム名のシングルクォート(')を空文字に置換
+			whereColumnValue.Replace("'", "");
+			// 空白文字列を空文字列に置換
+			whereColumnValue.Replace(" ", "");
+			/*
 			// 「WHERE」以降の文字列のインデックスを取得
 			int whereValuePosition = query.IndexOf("WHERE") + where.Length;
 			// 「WHERE」以降の文字列を取得
 			string whereKeywordAfter = query.Substring(whereValuePosition);
+			*/
 
 			// 正規表現
-			Regex regexColumn = new Regex("`([A-z]+)`");
 			Regex regexValue = new Regex("`([A-z0-9_]+)` *= *(.+)");
 
-			var columnAndValues = whereKeywordAfter.Split("AND")
+			// "AND"を基点に切り取る
+			var columnAndValues = whereColumnValue.Split("AND")
 				.Where(x => regexValue.IsMatch(x))
 				.Select(x => regexValue.Replace(x, "$1,$2"));
 
@@ -163,6 +158,27 @@ namespace P1XCS000086.Services.Sql.MySql
 
 				ColumnValues.Add(columnValue[0], columnValue[1]);
 			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="keyword"></param>
+		/// <param name="query"></param>
+		/// <param name="nextKeyword"></param>
+		/// <returns></returns>
+		private string GetPhrase(string keyword, string query, string nextKeyword)
+		{
+			// キーワード以後の文字列のインデックスを取得
+			int startIndex = query.IndexOf(keyword) + keyword.Length;
+
+			// 次に出現するキーワードまでの文字列の長さを取得
+			int lastLength = query.IndexOf(nextKeyword);
+
+			// 取得したインデックス位置と文字長さからテーブルやカラム名等を取得する
+			string resultString = query.Substring(startIndex, lastLength);
+
+			return resultString;
 		}
 	}
 }
