@@ -7,10 +7,11 @@
 	xmlns:local="clr-namespace:P1XCS000086.Modules.CodeManagerView.Views"
 	xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
 	xmlns:mahIcons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+	xmlns:material="http://materialdesigninxaml.net/winfx/xaml/themes"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:prism="http://prismlibrary.com/"
 	d:DesignHeight="1000"
-	d:DesignWidth="1000"
+	d:DesignWidth="1500"
 	prism:ViewModelLocator.AutoWireViewModel="True"
 	mc:Ignorable="d">
 
@@ -225,43 +226,57 @@
 					</ToggleButton.Style>
 				</ToggleButton>
 
-				<DataGrid
-					x:Name="ViewGrid"
-					Grid.Column="1"
-					Margin="4"
-					EnableColumnVirtualization="True"
-					EnableRowVirtualization="True"
-					IsReadOnly="True"
-					ItemsSource="{Binding Table.Value}"
-					SelectionUnit="FullRow"
-					VirtualizingPanel.IsVirtualizing="True"
-					VirtualizingPanel.VirtualizationMode="Recycling">
-					<i:Interaction.Triggers>
-						<i:EventTrigger EventName="SelectionChanged">
-							<prism:InvokeCommandAction Command="{Binding DataGridRowSelectionChanged}" CommandParameter="{Binding ElementName=ViewGrid, Path=SelectedItem}" />
-						</i:EventTrigger>
-					</i:Interaction.Triggers>
-					<DataGrid.ContextMenu>
-						<ContextMenu>
-							<ItemsControl ItemsSource="{Binding ContextMenuItems, UpdateSourceTrigger=PropertyChanged}">
-								<ItemsControl.ItemsPanel>
-									<ItemsPanelTemplate>
-										<StackPanel />
-									</ItemsPanelTemplate>
-								</ItemsControl.ItemsPanel>
-								<ItemsControl.ItemTemplate>
-									<DataTemplate>
-										<MenuItem Command="{Binding ItemCommand}" Header="{Binding Header}" />
-									</DataTemplate>
-								</ItemsControl.ItemTemplate>
-							</ItemsControl>
-						</ContextMenu>
-					</DataGrid.ContextMenu>
-				</DataGrid>
+				<Grid Grid.Column="1">
+					<Grid.RowDefinitions>
+						<RowDefinition />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+
+					<DataGrid
+						x:Name="ViewGrid"
+						Margin="4"
+						EnableColumnVirtualization="True"
+						EnableRowVirtualization="True"
+						IsReadOnly="True"
+						ItemsSource="{Binding Table.Value}"
+						SelectionUnit="FullRow"
+						VirtualizingPanel.IsVirtualizing="True"
+						VirtualizingPanel.VirtualizationMode="Recycling">
+						<i:Interaction.Triggers>
+							<i:EventTrigger EventName="SelectionChanged">
+								<prism:InvokeCommandAction Command="{Binding DataGridRowSelectionChanged}" CommandParameter="{Binding ElementName=ViewGrid, Path=SelectedItem}" />
+							</i:EventTrigger>
+						</i:Interaction.Triggers>
+						<DataGrid.ContextMenu>
+							<ContextMenu>
+								<ItemsControl ItemsSource="{Binding ContextMenuItems, UpdateSourceTrigger=PropertyChanged}">
+									<ItemsControl.ItemsPanel>
+										<ItemsPanelTemplate>
+											<StackPanel />
+										</ItemsPanelTemplate>
+									</ItemsControl.ItemsPanel>
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<MenuItem Command="{Binding ItemCommand}" Header="{Binding Header}" />
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</ContextMenu>
+						</DataGrid.ContextMenu>
+					</DataGrid>
+
+					<material:Snackbar HorizontalAlignment="Stretch" IsActive="{Binding SnackbarIsActive.Value}">
+						<material:SnackbarMessage
+							ActionCommand="{Binding CloseSnackbar}"
+							ActionContent="{mahIcons:Material Kind=Close}"
+							Content="{Binding ResultMessage.Value}" />
+					</material:Snackbar>
+
+				</Grid>
 			</Grid>
 		</mah:SplitView>
 
-		<ToggleButton x:Name="PropertyToggleButton" Grid.Column="1">
+		<ToggleButton x:Name="PropertyToggleButton" Grid.Column="1" IsChecked="True">
 			<ToggleButton.Template>
 				<ControlTemplate TargetType="ToggleButton">
 					<Grid Margin="0,8,0,0">

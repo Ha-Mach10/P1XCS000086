@@ -85,23 +85,32 @@ namespace P1XCS000086.Services.Models.CodeManager
 		}
 
 		/// <summary>
+		/// *******************************************
+		/// ※ 使用していないため、不要 ※
+		/// *******************************************
+		/// 
 		/// 2種のDataTableから
 		/// </summary>
-		/// <param name="dt1"></param>
-		/// <param name="dt2"></param>
+		/// <param name="dt1">比較のための１件目のDataTable</param>
+		/// <param name="dt2">比較のための２件目のDataTable</param>
 		/// <returns></returns>
 		private List<(List<string> list1, List<string> list2)> DatatableToList(DataTable dt1, DataTable dt2)
 		{
+			// 差分タプルリストを生成
 			List<(List<string>, List<string>)> rowsValuePairs = new();
 
+			// 引数の2つのデータテーブルから、大きいほうの行を取得する
 			int rowsCount = dt1.Rows.Count > dt2.Rows.Count ? dt1.Rows.Count : dt2.Rows.Count;
+
 
 			for (int i = 0; i > rowsCount; i++)
 			{
+				// カラム列
 				DataRow dt1Row = dt1.Rows[i], dt2Row = dt2.Rows[i];
 
 				List<string> list1 = new(), list2 = new();
 
+				// カラム名ごとに
 				foreach (DataColumn columnName in dt1.Columns)
 				{
 					list1.Add(dt1Row[columnName].ToString());

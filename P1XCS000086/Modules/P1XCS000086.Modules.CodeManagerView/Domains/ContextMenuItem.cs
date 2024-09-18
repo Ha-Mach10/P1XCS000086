@@ -33,7 +33,7 @@ namespace P1XCS000086.Modules.CodeManagerView.Domains
             ItemCommand.Subscribe(action).AddTo(_disposables);
 
             IsDefaultItem = isDefaultItem;
-        }
+		}
 
 
         public static void AddItem(ContextMenuItem item)
@@ -45,7 +45,7 @@ namespace P1XCS000086.Modules.CodeManagerView.Domains
             Items.AddRange(items);
         }
 
-        public static void ClearItem()
+        public static void ClearParticalItem()
         {
 			var deletedItems = Items.Where(x => x.IsDefaultItem is false).ToList();
 

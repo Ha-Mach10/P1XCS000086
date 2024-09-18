@@ -10,7 +10,18 @@ namespace P1XCS000086.Services.Data
 {
 	public class DTConverter : IDTConveter
 	{
+		// Comment
+		// <<DTConverter.cs について>>
+		// コメント：2024/09/16(Mon)
+		// 差分のアップデート機能を付けたつもりだが、いろいろ足りない部分が見つかったため、近いうちに修正する予定である。
+		// まずデータベースの差分を見分ける機能だが、現在の条件は行が1行以上、更新の条件が1行以上の追加あるいは1行以上の削除をトリガとしている。
+		// これからの更新内容としては、行の増減を行わない更新内容のデータベースへの反映機能の追加およびデータの無いデータベース（行数が0）への項目追加機能の追加を目標とする。
 		// 
+		// （※注記）更新が完了次第、上記は削除のこと。
+
+
+
+		// Fields
 		private string _databaseName;
 		private string _tableName;
 
@@ -88,7 +99,7 @@ namespace P1XCS000086.Services.Data
 			// 2テーブルの入力が適切か判定（カラム比較）
 			// ---------------------------------------------------------------------
 
-			// 「beforeTable」「afterTable」両方のカラム文字列を比較し、合致している個数を返す
+			// 「beforeTable」「afterTable」両方のカラム文字列を比較し、合致している個数を取得
 			var colDnu = beforeTable.Columns
 								   .Cast<DataColumn>()
 								   .Select(x => x.ColumnName)
@@ -99,7 +110,7 @@ namespace P1XCS000086.Services.Data
 								   .Where(x => x.Result == true)
 								   .Count();
 
-			// colDnuの値と各テーブルのカラム数が合わない場合falseを返す
+			// colDnuの値と各テーブルのカラム数が合わない場合処理を抜ける
 			if (colDnu != beforeTable.Columns.Count || colDnu != afterTable.Columns.Count)
 			{
 				return;
@@ -120,7 +131,7 @@ namespace P1XCS000086.Services.Data
 			// （今回は複製を行わない："Clone()" or "Copy()"）
 			DataTable alterTable = fRowsCount < sRowsCount ? beforeTable : afterTable;
 
-			// 各テーブルの行数の差分の絶対値を試行回数とする
+			// 各テーブルの行数の差分の絶対値を取り、試行回数とする
 			for (int i = 0; i < Math.Abs(fRowsCount - sRowsCount); i++)
 			{
 				// 新しい行を定義
@@ -138,8 +149,8 @@ namespace P1XCS000086.Services.Data
 
 			List<(List<string>, List<string>)> listPair = new();
 
-			// 2テーブルのDataRowのタプルリストを返す
-			var dnu = beforeTable.AsEnumerable()
+			// 2テーブルのDataRowをまとめたリストの取得
+			var dualDtRows = beforeTable.AsEnumerable()
 								.Zip(
 									afterTable.AsEnumerable(),
 									(first, second) => new { First = first, Second = second }
@@ -147,9 +158,9 @@ namespace P1XCS000086.Services.Data
 								.ToList();
 
 			// 
-			foreach (var item in dnu)
+			foreach (var item in dualDtRows)
 			{
-				// 行の配列を要素ごとに比較し、
+				// 各行を比較した結果とその値のリストを取得 (Same & FiestTableRow & SecondTableRow)
 				var dnu2 = item.First
 							   .ItemArray
 							   .Zip(
@@ -158,9 +169,13 @@ namespace P1XCS000086.Services.Data
 								)
 							   .ToList();
 
+				// 上記で取得したオブジェクトより"Same"の値がFalse(2つのRowの値が等しくない)である個数を取得
 				int count = dnu2.Where(x => x.Same is false).Count();
+
+				// 上記よりカウントが0でない場合
 				if (count != 0)
 				{
+					// 
 					listPair.Add((dnu2.Select(x => x.F).ToList(), dnu2.Select(x => x.S).ToList()));
 				}
 			}

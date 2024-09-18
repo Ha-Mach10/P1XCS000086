@@ -7,7 +7,8 @@ namespace P1XCS000086.Core
 		public const string ContentRegion = "ContentRegion";
 		public const string HomeRegion = "HomeRegion";
 		public const string CodeManagerRegion = "CodeManagerRegion";
-		
+
+		public const string AutomationWebViewRegion = "AutomationWebViewRegion";
 		public const string AutomationLoginSendParamaterRegion = "AutomationLoginSendParamaterRegion";
     }
 }

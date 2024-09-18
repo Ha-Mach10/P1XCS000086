@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 {
@@ -23,6 +24,8 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 		public List<string> UiFramework { get; }
 
 		public DataTable Table { get; }
+
+		public string ResultMessage { get; }
 
 
 
@@ -74,5 +77,10 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 		/// 
 		/// </summary>
 		public void AwakeVS2022();
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public Task A();
 	}
 }

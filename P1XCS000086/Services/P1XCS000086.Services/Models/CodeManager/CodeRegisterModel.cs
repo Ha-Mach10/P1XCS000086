@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
+using P1XCS000086.Services.Processes;
 using P1XCS000086.Services.Sql;
 using P1XCS000086.Services.Sql.MySql;
 
@@ -61,6 +64,8 @@ namespace P1XCS000086.Services.Models.CodeManager
 		public List<string> UiFramework { get; private set; }
 
 		public DataTable Table { get; private set; }
+
+		public string ResultMessage { get; private set; }
 
 
 
@@ -222,7 +227,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 				"created_on",
 				"use_applications",
 				"explanation",
-				"summary"
+				"summary",
 			};
 			_values = new List<string>
 			{
@@ -232,7 +237,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 				date,
 				useApp,
 				explanation,
-				summary
+				summary,
 			};
 
 			var parametors = _columns.Select(x => $"?{x}").ToList();
@@ -245,6 +250,8 @@ namespace P1XCS000086.Services.Models.CodeManager
 			string query = sb.ToString();
 
 			_insert.Insert(query, _columns, _values);
+
+			ResultMessage = _insert.ResultMessage;
 
 			// 
 			ResetQueryFieldValiable();
@@ -328,16 +335,42 @@ namespace P1XCS000086.Services.Models.CodeManager
 			Process.Start(startInfo);
 		}
 
+		/// <summary>
+		/// Visal Studio 2019を起動する
+		/// </summary>
 		public void AwakeVS2019()
 		{
 			Process.Start(@"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.exe");
 		}
+
 		/// <summary>
-		/// 
+		/// Visal Studio 2022を起動する
 		/// </summary>
 		public void AwakeVS2022()
 		{
 			Process.Start(@"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe");
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public async Task A()
+		{
+			// Visual Studio 2022を起動する
+			AwakeVS2022();
+
+			// Visual Studio 2022のプロセス名とウィンドウタイトルを定数で宣言
+			const string ProcessName = "devenv";
+			const string WindowTitle = "Microsoft Visual Studio";
+
+			// クラス名、ウィンドウタイトル、タイトルの長さを取得
+			int textLen = ProcessUser32.GetWindowTitleLen(ProcessName, WindowTitle);
+
+
+			var windowHandle = Process.GetProcessesByName(ProcessName)[].MainWindowHandle;
+
+			int a = 0;
 		}
 
 

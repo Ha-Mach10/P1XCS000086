@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace P1XCS000086.Modules.AutomationView.Domains
 {
-	public class LoginButtonItem : RegionViewModelBase, INotifyPropertyChanged, IRegionMemberLifetime
+	public class ServiceButtonItem : RegionViewModelBase, INotifyPropertyChanged, IRegionMemberLifetime
 	{
 		// ********************************************************
 		// Properties
@@ -33,7 +33,7 @@ namespace P1XCS000086.Modules.AutomationView.Domains
 
 
 
-		public LoginButtonItem(IRegionManager regionManager, string name, string imageKind, string viewName, Action<string> transitionAction)
+		public ServiceButtonItem(IRegionManager regionManager, string name, string imageKind, string viewName, Action<string> transitionAction)
 			: base(regionManager)
 		{
 			KeepAlive = false;

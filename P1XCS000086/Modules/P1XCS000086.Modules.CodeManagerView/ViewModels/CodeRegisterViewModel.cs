@@ -1,4 +1,5 @@
-﻿using P1XCS000086.Core.Mvvm;
+﻿using MaterialDesignThemes.Wpf;
+using P1XCS000086.Core.Mvvm;
 using P1XCS000086.Modules.CodeManagerView.Domains;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using P1XCS000086.Services.Interfaces.Sql;
@@ -14,7 +15,10 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
+using System.Xml;
 
 namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 {
@@ -59,6 +63,9 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 		public ReactivePropertySlim<DataTable> Table { get; }
 		public DataRow Row { get; private set; }
+
+		public ReactivePropertySlim<bool> SnackbarIsActive { get; }
+		public ReactivePropertySlim<string> ResultMessage { get; }
 
 		public ReactiveCollection<ContextMenuItem> ContextMenuItems { get; }
 
@@ -105,7 +112,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			SelectedUseAppRange = new ReactivePropertySlim<string>(string.Empty);
 			SelectedIndexUseAppRange = new ReactivePropertySlim<int>(-1);
 
-			UiFramework = new ReactivePropertySlim<List<string>>(null).AddTo(_disposables);
+			UiFramework = new ReactivePropertySlim<List<string>>(new()).AddTo(_disposables);
 			SelectedUiFramework = new ReactivePropertySlim<string>(string.Empty);
 			SelectedIndexUiFramework = new ReactivePropertySlim<int>(0);
 
@@ -113,6 +120,9 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			Summary = new ReactivePropertySlim<string>(string.Empty);
 
 			Table = new ReactivePropertySlim<DataTable>(null).AddTo(_disposables);
+
+			SnackbarIsActive = new ReactivePropertySlim<bool>(false);
+			ResultMessage = new ReactivePropertySlim<string>(string.Empty);
 
 			List<ContextMenuItem> menuItems = new()
 			{
@@ -152,12 +162,13 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 			// 
 			DataGridRowSelectionChanged = new ReactiveCommandSlim();
-			DataGridRowSelectionChanged.Subscribe(param =>
+			DataGridRowSelectionChanged.Subscribe(async param =>
 			{
 
 				// コマンドパラメータから受け取った値をキャスト
 				DataRowView dataRowView = param as DataRowView;
 
+				// nullでない場合
 				if (dataRowView is not null)
 				{
 					var items = _model.GetSelectedRowPropertyFieldItem(dataRowView)
@@ -170,19 +181,23 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 					Row = dataRowView.Row;
 					(string developNumber, string dirFileName) = GetSelectedDevelopNumber(Row);
 
+					// 「developNumber」がnullまたはstring.Emptyになっている
 					if (string.IsNullOrEmpty(developNumber) is true)
 					{
 						ContextMenuItems.Clear();
-						ContextMenuItem.ClearItem();
+						ContextMenuItem.ClearParticalItem();
 
 					}
 					else
 					{
+						// 「dirFileName」がnullまたはstring.Emptyである場合
 						if (string.IsNullOrEmpty(dirFileName))
 						{
 							ContextMenuItems.Clear();
-							ContextMenuItem.ClearItem();
+
+							ContextMenuItem.ClearParticalItem();
 							ContextMenuItems.AddRangeOnScheduler(ContextMenuItem.Items);
+							ContextMenuItems.AddOnScheduler(new ContextMenuItem(_regionManager, $"{developNumber}を作成する", OnContextMenuCreateProject));
 
 							return;
 						}
@@ -192,7 +207,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 							new ContextMenuItem(_regionManager, $"{developNumber}フォルダをエクスプローラーで開く", OnContextMenuOpenProjectFolder),
 							new ContextMenuItem(_regionManager, $"{developNumber}プロジェクトを開く", OnContextMenuOpenProject)
 						};
-						ContextMenuItem.ClearItem();
+						ContextMenuItem.ClearParticalItem();
 						ContextMenuItem.AddRangeItems(menuItems);
 
 						ContextMenuItems.Clear();
@@ -263,7 +278,16 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 			_model.InsertCodeManager(developNumber, developName, uiFramework, createdOn, useApplication, explanation, summary);
 
+			SnackbarIsActive.Value = true;
+			ResultMessage.Value = _model.ResultMessage;
+
 			Table.Value = _model.SetTable(SelectedLangType.Value, SelectedDevType.Value);
+		}
+
+		public ReactiveCommandSlim CloseSnackbar { get; }
+		private void OnCloseSnackbar()
+		{
+			SnackbarIsActive.Value = false;
 		}
 
 		/// <summary>
@@ -272,14 +296,14 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public ReactiveCommandSlim DataGridRowSelectionChanged { get; }
 
 		/// <summary>
-		/// 
+		/// 現在指定しているプロジェクト番号のプロジェクトが存在する親フォルダをエクスプローラーで開く
 		/// </summary>
 		private void OnContextMenuOpenParentFolder()
 		{
 			_model.OpenProjectParentDirectry(SelectedLangType.Value);
 		}
 		/// <summary>
-		/// 
+		/// 現在指定しているプロジェクト番号のプロジェクトフォルダをエクスプローラーで開く
 		/// </summary>
 		private void OnContextMenuOpenProjectFolder()
 		{
@@ -287,7 +311,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			_model.OpenProjectDirectry(developNumber, SelectedLangType.Value);
 		}
 		/// <summary>
-		/// 
+		/// 現在指定しているプロジェクト番号のプロジェクトファイルを開く
 		/// </summary>
 		private void OnContextMenuOpenProject()
 		{
@@ -295,27 +319,33 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			_model.OpenProjectFile(developNumber, dirFileName, SelectedLangType.Value);
 		}
 		/// <summary>
-		/// 
+		/// Visual Studio 2019 を起動
 		/// </summary>
 		private void OnContextMenuAwakeVS2019()
 		{
 			_model.AwakeVS2019();
 		}
 		/// <summary>
-		/// 
+		/// Visual Studio 2022 を起動
 		/// </summary>
 		private void OnContextMenuAwakeVS2022()
 		{
 			_model.AwakeVS2022();
 		}
+		private void OnContextMenuCreateProject()
+		{
+			_model.A();
+
+			System.Windows.MessageBox.Show("現在作成中");
+		}
 
 
 
 		/// <summary>
-		/// 
+		/// DataGridの現在指定している行から開発番号と開発ファイル名をタプルで取得するメソッド
 		/// </summary>
-		/// <param name="selectedRow"></param>
-		/// <returns></returns>
+		/// <param name="selectedRow">選択行</param>
+		/// <returns>開発番号および開発ファイル名</returns>
 		private (string, string) GetSelectedDevelopNumber(DataRow selectedRow)
 		{
 			string devNumber = selectedRow["develop_number"].ToString();

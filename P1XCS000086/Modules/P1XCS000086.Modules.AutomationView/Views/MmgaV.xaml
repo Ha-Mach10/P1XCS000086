@@ -1,8 +1,7 @@
-﻿<UserControl x:Class="P1XCS000086.Modules.AutomationView.Views.PixivData"
+﻿<UserControl x:Class="P1XCS000086.Modules.AutomationView.Views.MmgaV"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:P1XCS000086.Modules.AutomationView.Views"
-			 xmlns:core="clr-namespace:P1XCS000086.Core;assembly=P1XCS000086.Core"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
 			 xmlns:mahIcons="http://metro.mahapps.com/winfx/xaml/iconpacks"
@@ -14,6 +13,12 @@
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True" >
 
+	<i:Interaction.Triggers>
+		<i:EventTrigger EventName="Loaded">
+			<prism:InvokeCommandAction Command="{Binding MetroWindowLoaded}"/>
+		</i:EventTrigger>
+	</i:Interaction.Triggers>
+	
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -26,17 +31,28 @@
 	</UserControl.Resources>
 
 	<Grid>
-		<Border Margin="10,10,0,10" BorderBrush="{DynamicResource MahApps.Brushes.Gray7}" BorderThickness="1">
-			<mah:HamburgerMenu
-				DisplayMode="CompactOverlay"
-				VerticalScrollBarOnLeftSide="False"
-				ItemsSource="{Binding MenuItems}">
-				<mah:HamburgerMenu.HamburgerMenuHeaderTemplate>
-					<DataTemplate>
-						<TextBlock Text="MmgaView" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16"/>
-					</DataTemplate>
-				</mah:HamburgerMenu.HamburgerMenuHeaderTemplate>
-			</mah:HamburgerMenu>
-		</Border>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto"/>
+			<ColumnDefinition />
+		</Grid.ColumnDefinitions>
+
+		<StackPanel Width="200">
+			
+		</StackPanel>
+		<Grid Grid.Column="1">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="40"/>
+				<RowDefinition />
+			</Grid.RowDefinitions>
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+				<Border BorderBrush="White" BorderThickness="1" CornerRadius="16" Margin="4">
+					<StackPanel Orientation="Horizontal" Margin="16,0,16,0">
+						<mahIcons:PackIconMaterial Kind="Magnify" VerticalAlignment="Center" Foreground="White"/>
+						<TextBox Text="{Binding A.Value}" Width="300" Background="Transparent" mah:TextBoxHelper.AutoWatermark="True" mah:TextBoxHelper.Watermark="検索"/>
+					</StackPanel>
+				</Border>
+			</StackPanel>
+			<wv2:WebView2 Grid.Row="1" Source="{Binding Uri.Value}"/>
+		</Grid>
 	</Grid>
 </UserControl>
