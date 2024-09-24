@@ -22,6 +22,9 @@ namespace P1XCS000086.Services.Processes
 		// Title : Windowsで他プロセスを操る(Qiita)
 		// Url   : https://qiita.com/kumaS-kumachan/items/8ff65a7215ff21ed15f5
 
+		// Title : UI AutomationでWindowsプログラムの自動化などしてみる
+		// Url   : https://qiita.com/ken_hamada/items/501b164374667319d270
+
 
 
 
@@ -29,12 +32,21 @@ namespace P1XCS000086.Services.Processes
 		// Constants
 		// *********************************************************************
 
-		// user32.dll 操作メッセージの定数値
-		// 参考サイト：
-
+		// 説明：操作メッセージの定数値
+		
 		// マウスボタン操作のメッセージ
+
+		/// <summary>
+		/// マウス左ボタンの押下
+		/// </summary>
 		public const int WM_LBUTTONDOWN = 0x201;
+		/// <summary>
+		/// マウス左ボタンを離す
+		/// </summary>
 		public const int WM_LBUTTONUP = 0x202;
+		/// <summary>
+		/// マウス左ボタン
+		/// </summary>
 		public const int MK_LBUTTON = 0x0001;
 
 
@@ -129,8 +141,8 @@ namespace P1XCS000086.Services.Processes
 		/// <summary>
 		/// 指定のウィンドウハンドルへメッセージを送信する
 		/// </summary>
-		/// <param name="hWnd"></param>
-		/// <param name="Msg"></param>
+		/// <param name="hWnd">指定のウィンドウハンドル</param>
+		/// <param name="Msg">メッセージ</param>
 		/// <param name="wParam"></param>
 		/// <param name="lParam"></param>
 		/// <returns></returns>
@@ -160,6 +172,7 @@ namespace P1XCS000086.Services.Processes
 		// Public Methods
 		// *********************************************************************
 
+		/*
 		/// <summary>
 		/// クラス名とそのウィンドウタイトルのタプルリストを取得
 		/// </summary>
@@ -172,6 +185,7 @@ namespace P1XCS000086.Services.Processes
 			// 
 			return ProcessValues;
 		}
+		
 		public static int GetWindowTitleLen(string processName, string windowTitle)
 		{
 			GetEnumWindowAndClassNames();
@@ -184,29 +198,56 @@ namespace P1XCS000086.Services.Processes
 
 			return 0;
 		}
+		*/
+
+		/// <summary>
+		/// 親ウィンドウから子ウィンドウを取得
+		/// </summary>
+		/// <param name="parent">親ウィンドウ</param>
+		/// <param name="dest"></param>
+		/// <returns></returns>
 		public static List<Window> GetAllChildWindows(Window parent, List<Window> dest)
 		{
 			dest.Add(parent);
+
+			// 再帰で全ての子ウィンドウをリストへ格納
 			EnumChildWindows(parent.hWnd).ToList().ForEach(x => GetAllChildWindows(x, dest));
 			
 			return dest;
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="hParentWindow"></param>
+		/// <returns></returns>
 		public static IEnumerable<Window> EnumChildWindows(IntPtr hParentWindow)
 		{
 			// null
 			IntPtr hWnd = IntPtr.Zero;
+
+			// 子要素の列挙が終わるまで繰り返し処理
 			while ((hWnd = FindWindowEx(hParentWindow, hWnd, null, null)) != IntPtr.Zero)
 			{
+				// ウィンドウハンドルを返す
 				yield return GetWindow(hWnd);
 			}
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="hWnd"></param>
+		/// <returns></returns>
 		public static Window GetWindow(IntPtr hWnd)
 		{
 			int textLen = GetWindowTextLength(hWnd);
 			string windowText = null;
             if (0 < textLen)
             {
+				// 文字列ビルダでバッファを生成
 				StringBuilder windowTextBuffer = new(textLen + 1);
+				// 目的のハンドルのテキストを取得
 				GetWindowText(hWnd, windowTextBuffer, windowTextBuffer.Capacity);
 				windowText = windowTextBuffer.ToString();
             }

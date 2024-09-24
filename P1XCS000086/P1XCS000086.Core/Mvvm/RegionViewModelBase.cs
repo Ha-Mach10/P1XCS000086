@@ -14,7 +14,7 @@ namespace P1XCS000086.Core.Mvvm
 
 			RegionManager = regionManager;
 		}
-
+	
 		public virtual void ConfirmNavigationRequest(NavigationContext navigationContext, Action<bool> continuationCallback)
 		{
 			continuationCallback(true);

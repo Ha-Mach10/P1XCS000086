@@ -5,7 +5,7 @@ using System.Text;
 
 namespace P1XCS000086.Services.Processes
 {
-    internal struct Window
+    public struct Window
 	{
 		public string ClassName;
 		public string Title;

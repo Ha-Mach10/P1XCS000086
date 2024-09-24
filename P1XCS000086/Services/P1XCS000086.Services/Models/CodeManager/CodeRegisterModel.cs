@@ -3,14 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows;
+using System.Xml.Linq;
+using System.Xml.Serialization;
+using OpenQA.Selenium.DevTools.V125.Runtime;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
+using P1XCS000086.Services.IO;
 using P1XCS000086.Services.Processes;
 using P1XCS000086.Services.Sql;
 using P1XCS000086.Services.Sql.MySql;
@@ -66,6 +73,8 @@ namespace P1XCS000086.Services.Models.CodeManager
 		public DataTable Table { get; private set; }
 
 		public string ResultMessage { get; private set; }
+
+		// public List<dynamic> Windows { get; private set; }
 
 
 
@@ -264,6 +273,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 		/// <returns></returns>
 		public List<(string columnNames, string propertyText)> GetSelectedRowPropertyFieldItem(DataRowView selectedRow)
 		{
+			// クエリ
 			string queryPhysical = "SELECT `column_name` FROM `database_structure` WHERE `type` = 'column' AND `table_name` = 'manager_register_code';";
 			string queryLogical = "SELECT `logical_name` FROM `database_structure` WHERE `type` = 'column' AND `table_name` = 'manager_register_code';";
 
@@ -272,9 +282,11 @@ namespace P1XCS000086.Services.Models.CodeManager
 			// 論理名のリストを取得
 			List<string> columnNamesLogical = _select.SelectedColumnToList(SqlConnectionStrings.ConnectionStrings["common_manager"], "logical_name", queryLogical);
 
+			// 物理名と論理名をプロパティとして持つオブジェクトリストを取得
 			var items = columnNamesLogical
 				.Select((columnNameLogical, index) => new { ColumnName = columnNameLogical, PropertyText = selectedRow[index].ToString() })
 				.ToList();
+
 
 			List<(string, string)> propertyItems = new();
 			foreach (var item in items)
@@ -355,22 +367,44 @@ namespace P1XCS000086.Services.Models.CodeManager
 		/// 
 		/// </summary>
 		/// <returns></returns>
-		public async Task A()
+		public async Task<IntPtr> FindProcessMainwindowHandle(int delayTicks)
 		{
 			// Visual Studio 2022を起動する
 			AwakeVS2022();
+
+			// 起動後待機（ミリ秒）
+			await Task.Delay(delayTicks);
 
 			// Visual Studio 2022のプロセス名とウィンドウタイトルを定数で宣言
 			const string ProcessName = "devenv";
 			const string WindowTitle = "Microsoft Visual Studio";
 
-			// クラス名、ウィンドウタイトル、タイトルの長さを取得
-			int textLen = ProcessUser32.GetWindowTitleLen(ProcessName, WindowTitle);
+			List<Window> allElements = new();
 
+			IEnumerable<Window> windows = Process.GetProcessesByName(ProcessName)
+				.Select(x => x.MainWindowHandle)
+				.Select(x => ProcessUser32.GetWindow(x));
 
-			var windowHandle = Process.GetProcessesByName(ProcessName)[].MainWindowHandle;
+			foreach (Window window in windows)
+			{
+				// 指定のクラス名、タイトルでない場合はコンティニュー
+				if (window.ClassName != ProcessName && window.Title != WindowTitle) { continue; }
 
-			int a = 0;
+				while (true)
+				{
+					// 指定したウィンドウのハンドルが存在するか
+					if (ProcessUser32.IsWindow(window.hWnd))
+					{
+						// 要素を全て取得し、処理を抜ける
+						allElements = ProcessUser32.GetAllChildWindows(window, allElements);
+						break;
+					}
+				}
+			}
+
+			A();
+
+			return allElements.Select(x => x.hWnd).Last();
 		}
 
 
@@ -484,6 +518,29 @@ namespace P1XCS000086.Services.Models.CodeManager
 			_columnName = string.Empty;
 			_columns = null;
 			_values = null;
+		}
+
+		private void A()
+		{
+			var tmps = Directory.EnumerateFiles(Paths.VSProjectTemplateDirectoryPath, $"*{Paths.ExtentionVSTemplate}", SearchOption.AllDirectories);
+			var ptmps = Directory.EnumerateFiles(Paths.VSProjectTemplateDirectoryPath, $"*{Paths.ExtentionVSTemplateManifest}", SearchOption.AllDirectories);
+
+			var parsed1 = ptmps.Select(x => XDocument.Load(x)).ToList();
+			foreach (var aa in parsed1)
+			{
+				var aaa = aa.Descendants().ToList();
+				foreach (var aaaa in aaa)
+				{
+					var ab = aaaa.Attributes().Select(x => x).ToList();
+
+					int c = 0;
+				}
+
+				int b = 0;
+			}
+			// XmlSerializer serializer = new XmlSerializer(typeof(string));
+
+			int a = 0;
 		}
 	}
 }

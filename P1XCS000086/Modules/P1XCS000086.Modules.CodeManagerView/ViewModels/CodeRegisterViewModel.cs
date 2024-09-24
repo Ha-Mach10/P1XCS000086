@@ -8,17 +8,22 @@ using Prism.Regions;
 
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-
+using Reactive.Bindings.ObjectExtensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation;
+using System.Windows.Automation.Peers;
 using System.Windows.Forms;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 {
@@ -31,8 +36,6 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 		#region Properties
-
-		public bool KeepAlive { get; private set; } = true;
 
 		public ReactivePropertySlim<bool> IsPaneOc { get; }
 
@@ -84,7 +87,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 			// このビューモデルの生存
-			KeepAlive = true;
+			KeepAlive = false;
 
 			#region Properties
 
@@ -332,11 +335,32 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		{
 			_model.AwakeVS2022();
 		}
-		private void OnContextMenuCreateProject()
+		private async void OnContextMenuCreateProject()
 		{
-			_model.A();
+			// Visual Studio 2022のプロセス名とウィンドウタイトルを定数で宣言
+			const string ProcessName = "devenv";
+			const string WindowTitle = "Microsoft Visual Studio";
+
+			const string CreateNewButtonName = "Button_1";
+
+
+			// 
+			var hWnd = await _model.FindProcessMainwindowHandle(10000);
+			AutomationElement element = AutomationElement.FromHandle(hWnd);
+			PushButtonByName(element, "新しいプロジェクトの作成");
+			// PushButtonById(element, CreateNewButtonName);
+			// UIElementAutomationPeer automationPeer = new UIElementAutomationPeer(element.Current.)
 
 			System.Windows.MessageBox.Show("現在作成中");
+		}
+
+
+
+		public override void OnNavigatedFrom(NavigationContext navigationContext)
+		{
+			base.OnNavigatedFrom(navigationContext);
+
+			ContextMenuItem.ItemsClear();
 		}
 
 
@@ -357,6 +381,37 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			}
 
 			return (devNumber, dirFileName);
+		}
+
+		private void PushButtonById(AutomationElement element, string automationId)
+		{
+			InvokePattern button = FindElementById(element, automationId).GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
+			button.Invoke();
+		}
+		private void PushButtonByName(AutomationElement element, string name)
+		{
+			InvokePattern button = FindElementByName(element, name).First().GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
+			button.Invoke();
+		}
+		/// <summary>
+		/// 指定されたautomationIdに一致するAutomationElementを取得
+		/// </summary>
+		/// <param name="rootElement"></param>
+		/// <param name="automationId"></param>
+		/// <returns></returns>
+		private AutomationElement FindElementById(AutomationElement rootElement, string automationId)
+		{
+			return rootElement.FindFirst(TreeScope.Element | TreeScope.Descendants, new PropertyCondition(AutomationElement.AutomationIdProperty, automationId));
+		}
+		/// <summary>
+		/// 指定された名前に一致するAutomationElementのコレクションをIEnumerableで返す
+		/// </summary>
+		/// <param name="rootElement"></param>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		private IEnumerable<AutomationElement> FindElementByName(AutomationElement rootElement, string name)
+		{
+			return rootElement.FindAll(TreeScope.Element | TreeScope.Descendants, new PropertyCondition(AutomationElement.NameProperty, name)).Cast<AutomationElement>();
 		}
 	}
 }

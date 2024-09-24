@@ -27,6 +27,8 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 
 		public string ResultMessage { get; }
 
+		// public List<dynamic> Windows { get; }
+
 
 
 		// *****************************************************************************
@@ -81,6 +83,6 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 		/// <summary>
 		/// 
 		/// </summary>
-		public Task A();
+		public Task<IntPtr> FindProcessMainwindowHandle(int delayTicks);
 	}
 }
