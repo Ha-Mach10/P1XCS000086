@@ -9,6 +9,10 @@ namespace P1XCS000086.Services.Sql.MySql
 {
 	public class MySqlQueryParser
 	{
+		// *****************************************************************************
+		// Enumerators
+		// *****************************************************************************
+
 		private enum QueryType
 		{
 			SELECT,
@@ -20,6 +24,10 @@ namespace P1XCS000086.Services.Sql.MySql
 
 
 
+		// *****************************************************************************
+		// Properties
+		// *****************************************************************************
+
 		public string QueryTypeName { get; private set; } = string.Empty;
 		public List<string> ColumnNames { get; private set; } = new();
 		public string TableName { get; private set; } = string.Empty;
@@ -27,6 +35,10 @@ namespace P1XCS000086.Services.Sql.MySql
 		public bool IsParse { get; private set; } = false;
 
 
+
+		// *****************************************************************************
+		// Constructor
+		// *****************************************************************************
 
 		public MySqlQueryParser(string query)
 		{
@@ -51,6 +63,10 @@ namespace P1XCS000086.Services.Sql.MySql
 		}
 
 
+
+		// *****************************************************************************
+		// Private Methods
+		// *****************************************************************************
 
 		/// <summary>
 		/// クエリのタイプを判別する
@@ -173,12 +189,28 @@ namespace P1XCS000086.Services.Sql.MySql
 			int startIndex = query.IndexOf(keyword) + keyword.Length;
 
 			// 次に出現するキーワードまでの文字列の長さを取得
-			int lastLength = query.IndexOf(nextKeyword);
+			int length = query.IndexOf(nextKeyword) - keyword.Length;
+
+			int startIndexDeff = startIndex;
+
+			// キーワードの前後にバッククォートが付属しているかチェックする
+			if (Regex.IsMatch(query, $"`{keyword}`"))
+			{
+				startIndex = startIndex + 2;
+
+				startIndexDeff = Math.Abs(startIndexDeff - startIndex);
+			}
+			if (Regex.IsMatch(query, $"`{nextKeyword}`") && startIndexDeff > 0)
+			{
+				length = query.IndexOf(nextKeyword) - (startIndexDeff + keyword.Length);
+			}
 
 			// 取得したインデックス位置と文字長さからテーブルやカラム名等を取得する
-			string resultString = query.Substring(startIndex, lastLength);
+			string resultString = query.Substring(startIndex, length).Replace("`", "").Replace(" ", "");
 
 			return resultString;
 		}
+
+
 	}
 }

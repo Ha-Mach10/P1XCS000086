@@ -26,6 +26,10 @@ namespace P1XCS000086.Services.Models.CodeManager
 {
 	public class CodeRegisterModel : ICodeRegisterModel
 	{
+		// *****************************************************************************
+		// Enumerators
+		// *****************************************************************************
+
 		public enum TranslateDataType
 		{
 			Table,
@@ -36,6 +40,17 @@ namespace P1XCS000086.Services.Models.CodeManager
 			En,
 			Jp,
 		}
+
+
+
+		// *****************************************************************************
+		// Constants
+		// *****************************************************************************
+
+		private const string VS2019SoftwarePath = @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.exe";
+		private const string VS2022SoftwarePath = @"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe";
+		private const string ExplorerPath = "EXPLORER.EXE";
+
 
 		// *****************************************************************************
 		// Fields
@@ -52,8 +67,6 @@ namespace P1XCS000086.Services.Models.CodeManager
 		private string _columnName = string.Empty;
 		private List<string> _columns = new List<string>();
 		private List<string> _values = new List<string>();
-
-		private string s_explorer = "EXPLORER.EXE";
 
 
 
@@ -93,7 +106,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 
 		// *****************************************************************************
-		// Publick Methods
+		// Public Methods
 		// *****************************************************************************
 
 		/// <summary>
@@ -306,7 +319,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 			string languageTypeCode = GetLanguageType(langType);
 			string parentDirPath = GetLanguageDirectry(languageTypeCode);
 
-			Process.Start(s_explorer, parentDirPath);
+			Process.Start(ExplorerPath, parentDirPath);
 		}
 
 		/// <summary>
@@ -321,7 +334,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			string path = $"{parentDirPath}\\{developNumber}";
 
-			Process.Start(s_explorer, path);
+			Process.Start(ExplorerPath, path);
 		}
 
 		/// <summary>
@@ -350,18 +363,12 @@ namespace P1XCS000086.Services.Models.CodeManager
 		/// <summary>
 		/// Visal Studio 2019を起動する
 		/// </summary>
-		public void AwakeVS2019()
-		{
-			Process.Start(@"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.exe");
-		}
+		public void AwakeVS2019() => Process.Start(VS2019SoftwarePath);
 
 		/// <summary>
 		/// Visal Studio 2022を起動する
 		/// </summary>
-		public void AwakeVS2022()
-		{
-			Process.Start(@"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe");
-		}
+		public void AwakeVS2022() => Process.Start(VS2022SoftwarePath);
 
 		/// <summary>
 		/// 
@@ -369,7 +376,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 		/// <returns></returns>
 		public async Task<IntPtr> FindProcessMainwindowHandle(int delayTicks)
 		{
-			// Visual Studio 2022を起動する
+			// Visual Studio 2022を起動する(最新のバージョンを起動)
 			AwakeVS2022();
 
 			// 起動後待機（ミリ秒）
@@ -380,6 +387,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 			const string WindowTitle = "Microsoft Visual Studio";
 
 			List<Window> allElements = new();
+
 
 			IEnumerable<Window> windows = Process.GetProcessesByName(ProcessName)
 				.Select(x => x.MainWindowHandle)
