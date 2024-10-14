@@ -25,6 +25,7 @@ using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Forms;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace P1XCS000086.Modules.CodeManagerView.ViewModels
@@ -226,6 +227,17 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 					}
 				}
 			}).AddTo(_disposables);
+
+			// Initial Process
+
+			// 
+			AutomationElement mainWindow = UiAutomationInnerModel.GetMainWindowElemnt(_model, 5000);
+			// ウィンドウのステータスを変更
+			UiAutomationInnerModel.MainWindowChangeScreen(mainWindow, WindowVisualState.Maximized);
+			// Visual Studioの各種コントロールを操作
+			UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成");
+			// 
+
 		}
 
 
@@ -380,7 +392,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			AutomationElement element = AutomationElement.FromHandle(hWnd);
 
 			// ウィンドウのステータスを変更
-			UiAutomationInnerModel.MainWindowChangeScreen(element, WindowVisualState.Minimized);
+			UiAutomationInnerModel.MainWindowChangeScreen(element, WindowVisualState.Maximized);
 
 			// Visual Studioの各種コントロールを操作
 			PushButtonByName(element, "新しいプロジェクトの作成");
@@ -484,8 +496,14 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			if (controlType.GetSupportedPatterns().Contains(ScrollPattern.Pattern))
 			{
 				var scrollPatt = controlType.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
-				scrollPatt.ScrollVertical(ScrollAmount.LargeIncrement);
-				scrollPatt.ScrollVertical(ScrollAmount.LargeIncrement);
+
+				while (true)
+				{
+					scrollPatt.ScrollVertical(ScrollAmount.LargeIncrement);
+
+					if (scrollPatt.Current.VerticalScrollPercent is 100) break;
+				}
+
 			}
 
 			List<(ScrollItemPattern, SelectionItemPattern, SynchronizedInputPattern, List<string>, string, AutomationElement)> listViewPatternItems = new();

@@ -414,8 +414,6 @@ namespace P1XCS000086.Services.Models.CodeManager
 			return allElements.Select(x => x.hWnd).Last();
 		}
 
-		public void MainWindowChangeIsOffscreen()
-
 
 
 		// *****************************************************************************
