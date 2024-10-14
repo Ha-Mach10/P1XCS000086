@@ -1,6 +1,7 @@
 ﻿using MaterialDesignThemes.Wpf;
 using P1XCS000086.Core.Mvvm;
 using P1XCS000086.Modules.CodeManagerView.Domains;
+using P1XCS000086.Modules.CodeManagerView.InnerModels;
 using P1XCS000086.Modules.CodeManagerView.logics;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using P1XCS000086.Services.Interfaces.Sql;
@@ -30,13 +31,18 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 {
 	public class CodeRegisterViewModel : RegionViewModelBase, INotifyPropertyChanged, IRegionMemberLifetime
 	{
+		// ---------------------------------------------------------------
 		// Fields
+		// --------------------------------------------------------------- 
+
 		private IRegionManager _regionManager;
 		private ICodeRegisterModel _model;
 
 
 
-		#region Properties
+		// ---------------------------------------------------------------
+		// Reactive Properties
+		// --------------------------------------------------------------- 
 
 		public ReactivePropertySlim<bool> IsPaneOc { get; }
 
@@ -75,9 +81,11 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 		public ReactiveCollection<SelectedRowPropertyField> SelectedRowPropertyFieldItems { get; }
 
-		#endregion
 
 
+		// ---------------------------------------------------------------
+		// Constructor
+		// --------------------------------------------------------------- 
 
 		public CodeRegisterViewModel(IRegionManager regionManager, ICodeRegisterModel model)
 			: base(regionManager)
@@ -222,6 +230,23 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 
+		// ---------------------------------------------------------------
+		// Override Methods
+		// --------------------------------------------------------------- 
+
+		public override void OnNavigatedFrom(NavigationContext navigationContext)
+		{
+			base.OnNavigatedFrom(navigationContext);
+
+			ContextMenuItem.ItemsClear();
+		}
+
+
+
+		// ---------------------------------------------------------------
+		// Reactive Commands
+		// --------------------------------------------------------------- 
+
 		/// <summary>
 		/// 言語種別のコンボボックスの項目選択時に発火
 		/// コンテキストメニューをリセットし、開発種別コンボボックス及びUIフレームワーク種別選択コンボボックスの選択項目へ値を再セットする
@@ -312,10 +337,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		/// <summary>
 		/// 現在指定しているプロジェクト番号のプロジェクトが存在する親フォルダをエクスプローラーで開く（コンテキストメニュー用のコマンド）
 		/// </summary>
-		private void OnContextMenuOpenParentFolder()
-		{
-			_model.OpenProjectParentDirectry(SelectedLangType.Value);
-		}
+		private void OnContextMenuOpenParentFolder() => _model.OpenProjectParentDirectry(SelectedLangType.Value);
 		/// <summary>
 		/// 現在指定しているプロジェクト番号のプロジェクトフォルダをエクスプローラーで開く（コンテキストメニュー用のコマンド）
 		/// </summary>
@@ -335,17 +357,11 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		/// <summary>
 		/// Visual Studio 2019 を起動（コンテキストメニュー用のコマンド）
 		/// </summary>
-		private void OnContextMenuAwakeVS2019()
-		{
-			_model.AwakeVS2019();
-		}
+		private void OnContextMenuAwakeVS2019() => _model.AwakeVS2019();
 		/// <summary>
 		/// Visual Studio 2022 を起動（コンテキストメニュー用のコマンド）
 		/// </summary>
-		private void OnContextMenuAwakeVS2022()
-		{
-			_model.AwakeVS2022();
-		}
+		private void OnContextMenuAwakeVS2022() => _model.AwakeVS2022();
 		/// <summary>
 		/// 
 		/// </summary>
@@ -359,9 +375,12 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 			// Visual Sutudioのメインウィンドウハンドルを取得
-			var hWnd = await _model.FindProcessMainwindowHandle(10000);
+			var hWnd = await _model.FindProcessMainwindowHandle(5000);
 			// AutomationElementを取得
 			AutomationElement element = AutomationElement.FromHandle(hWnd);
+
+			// ウィンドウのステータスを変更
+			UiAutomationInnerModel.MainWindowChangeScreen(element, WindowVisualState.Minimized);
 
 			// Visual Studioの各種コントロールを操作
 			PushButtonByName(element, "新しいプロジェクトの作成");
@@ -376,14 +395,9 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 
-		public override void OnNavigatedFrom(NavigationContext navigationContext)
-		{
-			base.OnNavigatedFrom(navigationContext);
-
-			ContextMenuItem.ItemsClear();
-		}
-
-
+		// ---------------------------------------------------------------
+		// Private Methods
+		// --------------------------------------------------------------- 
 
 		/// <summary>
 		/// DataGridの現在指定している行から開発番号と開発ファイル名をタプルで取得するメソッド
@@ -419,6 +433,60 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		{
 			// ***************************************************************************************************************************************************************
 			// ***************************************************************************************************************************************************************
+			/*
+			bool iss = true;
+			int count = 0;
+			AutomationElement listViewElement = null;
+			ScrollPattern scrollPattern = null;
+			foreach (var item in FindElementByLocalizeControlType(element, "一覧項目"))
+			{
+				while (iss)
+				{
+					TreeWalker walker = TreeWalker.ControlViewWalker;
+					listViewElement = walker.GetParent(item);
+
+					if (listViewElement.GetSupportedPatterns().Contains(ScrollPattern.Pattern) is false)
+					{
+						break;
+					}
+
+					scrollPattern = listViewElement.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
+
+					if (scrollPattern.Current.VerticallyScrollable is false)
+					{
+						break;
+					}
+
+					iss = false;
+				}
+
+				if (scrollPattern is not null)
+				{
+					scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
+				}
+
+				count++;
+			}*/
+			/*
+			// Window Pattern
+			if (element.GetSupportedPatterns().Contains(WindowPattern.Pattern))
+			{
+				// ウィンドウ本体のパターンを取得
+				var windowPattern = element.GetCurrentPattern(WindowPattern.Pattern) as WindowPattern;
+				// ウィンドウの表示形式を変更（最小化）
+				windowPattern.SetWindowVisualState(WindowVisualState.Minimized);
+			}
+			*/
+
+			TreeWalker walker = TreeWalker.ControlViewWalker;
+			var controlType = walker.GetParent(FindElementByLocalizeControlType(element, "一覧項目").Last());
+			
+			if (controlType.GetSupportedPatterns().Contains(ScrollPattern.Pattern))
+			{
+				var scrollPatt = controlType.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
+				scrollPatt.ScrollVertical(ScrollAmount.LargeIncrement);
+				scrollPatt.ScrollVertical(ScrollAmount.LargeIncrement);
+			}
 
 			List<(ScrollItemPattern, SelectionItemPattern, SynchronizedInputPattern, List<string>, string, AutomationElement)> listViewPatternItems = new();
 			foreach (var item in FindElementByLocalizeControlType(element, "一覧項目"))
@@ -550,14 +618,12 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			foreach (var pattern in element.GetSupportedPatterns())
 			{
 				var i = pattern;
-				/*
 				if (pattern.ProgrammaticName is "ExpandCollapsePatternIdentifiers.Pattern")
 				{
 					comboPatt = pattern;
 				}
-				*/
 			}
-			/*
+
 			ExpandCollapsePattern comboExpandPatt = element.GetCurrentPattern(comboPatt) as ExpandCollapsePattern;
 			comboExpandPatt.Expand();
 			comboExpandPatt.Collapse();
@@ -573,7 +639,6 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 			SelectionItemPattern selectionItemPattern = listItem.GetCurrentPattern(comboPatt) as SelectionItemPattern;
 			selectionItemPattern.Select();
-			*/
 
 			int a = 0;
 		}

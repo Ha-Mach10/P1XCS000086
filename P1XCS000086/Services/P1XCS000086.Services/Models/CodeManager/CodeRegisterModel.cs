@@ -11,7 +11,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using OpenQA.Selenium.DevTools.V125.Runtime;
@@ -414,6 +413,8 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			return allElements.Select(x => x.hWnd).Last();
 		}
+
+		public void MainWindowChangeIsOffscreen()
 
 
 
