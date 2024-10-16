@@ -143,6 +143,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 				new ContextMenuItem(_regionManager, "Visual Studio 2019を起動", OnContextMenuAwakeVS2019, true),
 				new ContextMenuItem(_regionManager, "Visual Studio 2022を起動", OnContextMenuAwakeVS2022, true)
 			};
+			// ContextMenuItemクラスのItemsプロパティへ追加
 			ContextMenuItem.AddRangeItems(menuItems);
 			ContextMenuItems = new ReactiveCollection<ContextMenuItem>().AddTo(_disposables);
 			ContextMenuItems.AddRangeOnScheduler(ContextMenuItem.Items);
@@ -196,33 +197,39 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 					// 「developNumber」がnullまたはstring.Emptyになっている
 					if (string.IsNullOrEmpty(developNumber) is true)
 					{
-						ContextMenuItems.Clear();
 						ContextMenuItem.ClearParticalItem();
-
 					}
 					else
 					{
 						// 「dirFileName」がnullまたはstring.Emptyである場合
 						if (string.IsNullOrEmpty(dirFileName))
 						{
-							ContextMenuItems.Clear();
-
+							// デフォルトの値以外を削除
 							ContextMenuItem.ClearParticalItem();
+							// メニュー用アイテムを追加
+							ContextMenuItem.AddItem(new ContextMenuItem(_regionManager, $"{developNumber}を作成する", OnContextMenuCreateProject));
+
+							ContextMenuItems.Clear();
+							// 別スレッドでアイテムのリストを追加
 							ContextMenuItems.AddRangeOnScheduler(ContextMenuItem.Items);
-							ContextMenuItems.AddOnScheduler(new ContextMenuItem(_regionManager, $"{developNumber}を作成する", OnContextMenuCreateProject));
 
 							return;
 						}
 
+						// コンテキストメニュー用アイテムのリストを生成
 						List<ContextMenuItem> menuItems = new()
 						{
 							new ContextMenuItem(_regionManager, $"{developNumber}フォルダをエクスプローラーで開く", OnContextMenuOpenProjectFolder),
 							new ContextMenuItem(_regionManager, $"{developNumber}プロジェクトを開く", OnContextMenuOpenProject)
 						};
+						// デフォルトの値以外を削除
 						ContextMenuItem.ClearParticalItem();
+						// メニュー用アイテムを追加
 						ContextMenuItem.AddRangeItems(menuItems);
 
+						// 
 						ContextMenuItems.Clear();
+						// 別スレッドでアイテムのリストを追加
 						ContextMenuItems.AddRangeOnScheduler(ContextMenuItem.Items);
 					}
 				}
@@ -230,14 +237,15 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 			// Initial Process
 
-			// 
-			AutomationElement mainWindow = UiAutomationInnerModel.GetMainWindowElemnt(_model, 5000);
+			// ウィンドウのAutomationElementを取得する
+			// AutomationElement mainWindow = UiAutomationInnerModel.GetMainWindowElemnt(_model, 5000);
 			// ウィンドウのステータスを変更
-			UiAutomationInnerModel.MainWindowChangeScreen(mainWindow, WindowVisualState.Maximized);
+			// UiAutomationInnerModel.MainWindowChangeScreen(mainWindow, WindowVisualState.Maximized);
 			// Visual Studioの各種コントロールを操作
-			UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成");
+			// UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成");
+			// UiAutomationInnerModel.PushButtonById(mainWindow, "Button_1");
 			// 
-
+			SS();
 		}
 
 
@@ -395,7 +403,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			UiAutomationInnerModel.MainWindowChangeScreen(element, WindowVisualState.Maximized);
 
 			// Visual Studioの各種コントロールを操作
-			PushButtonByName(element, "新しいプロジェクトの作成");
+			// PushButtonByName(element, "新しいプロジェクトの作成");
+			UiAutomationInnerModel.PushButtonByName(element, "新しいプロジェクトの作成");
 			await Task.Delay(2000);
 			AA(element, "LanguageFilter");
 			await Task.Delay(2000);
@@ -411,6 +420,31 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		// Private Methods
 		// --------------------------------------------------------------- 
 
+		private async void SS()
+		{
+			// Initial Process
+
+			// Visual Sutudioのメインウィンドウハンドルを取得
+			var hWnd = await _model.FindProcessMainwindowHandle(5000);
+			// AutomationElementを取得
+			AutomationElement mainWindow = AutomationElement.FromHandle(hWnd);
+			// ウィンドウのAutomationElementを取得する
+			// AutomationElement mainWindow = UiAutomationInnerModel.GetMainWindowElemnt(_model, 5000);
+			// ウィンドウのステータスを変更
+			UiAutomationInnerModel.MainWindowChangeScreen(mainWindow, WindowVisualState.Maximized);
+			// Visual Studioの各種コントロールを操作
+			UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成");
+			if (UiAutomationInnerModel.TryGetScrollableListViewElement(mainWindow, "一覧項目", out ScrollPattern scrollPattern))
+			{
+				UiAutomationInnerModel.ScrollableElementScrolling(scrollPattern);
+			}
+			var items = UiAutomationInnerModel.GetListViewContents(mainWindow, "一覧項目", "Windows デスクトップ アプリケーション is unpinned", "区切り線");
+
+			WindowPattern windowPattern = mainWindow.GetCurrentPattern(WindowPattern.Pattern) as WindowPattern;
+			windowPattern.Close();
+
+			int a = 0;
+		}
 		/// <summary>
 		/// DataGridの現在指定している行から開発番号と開発ファイル名をタプルで取得するメソッド
 		/// </summary>
@@ -517,13 +551,15 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 				string aName = aaaItem.Current.SelectionContainer.Current.Name;
 
 				aaaItem.Select();
-				aaItem.ScrollIntoView();
+				// aaItem.ScrollIntoView();
 
 				// UIElementAutomationPeer peer = UIElementAutomationPeer.FromElement(item);
 
 				// listViewPatternItems.Add((aaItem, aaaItem, aaaaItem));
 				listViewPatternItems.Add((aaItem, aaaItem, aaaaItem, pattItems, aName, item));
 			}
+
+			var items = UiAutomationInnerModel.GetListViewContents(element, "一覧項目", "Windows デスクトップ アプリケーション is unpinned", "区切り線");
 
 			List<(AutomationElement, string, string)> allElementItems = new();
 			foreach (var item in FindElementAll(element, "WPF"))

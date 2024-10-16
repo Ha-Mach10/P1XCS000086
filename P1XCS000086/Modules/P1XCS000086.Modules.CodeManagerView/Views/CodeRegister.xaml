@@ -66,6 +66,21 @@
 				</Style.Setters>
 			</Style>
 
+			<Style
+				x:Key="RadioSelectChangeStyle"
+				BasedOn="{StaticResource MahApps.Styles.Button.Flat}"
+				TargetType="RadioButton">
+				<Style.Triggers>
+					<Trigger Property="IsChecked" Value="True">
+						<Setter Property="Foreground" Value="Black" />
+						<Setter Property="Background" Value="#2196F3" />
+					</Trigger>
+					<Trigger Property="IsChecked" Value="False">
+						<Setter Property="Foreground" Value="White" />
+						<Setter Property="Background" Value="Transparent" />
+					</Trigger>
+				</Style.Triggers>
+			</Style>
 		</ResourceDictionary>
 	</UserControl.Resources>
 
@@ -82,123 +97,147 @@
 			IsPaneOpen="{Binding IsPaneOc.Value, FallbackValue=True}"
 			PaneBackground="{StaticResource MahApps.Brushes.Accent}">
 			<mah:SplitView.Pane>
-				<StackPanel>
-					<Border
-						Margin="0,8,8,8"
-						BorderBrush="White"
-						BorderThickness="1"
-						CornerRadius="5">
-						<StackPanel Margin="8" Orientation="Horizontal">
-							<TextBlock Text="項目数：" />
-							<TextBlock Margin="8,0,0,0" Text="{Binding RecordCount.Value}" />
-						</StackPanel>
-					</Border>
-					<GroupBox Style="{StaticResource GroupBoxTemplate}">
-						<GroupBox.Header>
-							<TextBlock Style="{StaticResource GroupBoxHeaderTmplate}" Text="言語種別選択" />
-						</GroupBox.Header>
-						<ComboBox
-							ItemsSource="{Binding LangTypes.Value}"
-							SelectedIndex="0"
-							SelectedValue="{Binding SelectedLangType.Value}">
-							<i:Interaction.Triggers>
-								<i:EventTrigger EventName="SelectionChanged">
-									<prism:InvokeCommandAction Command="{Binding LangTypeSelectionChanged}" />
-								</i:EventTrigger>
-							</i:Interaction.Triggers>
-						</ComboBox>
-					</GroupBox>
-					<GroupBox Style="{StaticResource GroupBoxTemplate}">
-						<GroupBox.Header>
-							<TextBlock Style="{StaticResource GroupBoxHeaderTmplate}" Text="開発種別" />
-						</GroupBox.Header>
-						<ComboBox
-							ItemsSource="{Binding DevTypes.Value}"
-							SelectedIndex="{Binding SelectedIndexDevType.Value}"
-							SelectedValue="{Binding SelectedDevType.Value}">
-							<i:Interaction.Triggers>
-								<i:EventTrigger EventName="SelectionChanged">
-									<prism:InvokeCommandAction Command="{Binding DevTypeSelectionChanged}" />
-								</i:EventTrigger>
-							</i:Interaction.Triggers>
-						</ComboBox>
-					</GroupBox>
-
-					<GroupBox Style="{StaticResource GroupBoxTemplate}">
-						<GroupBox.Header>
-							<TextBlock Style="{StaticResource GroupBoxHeaderTmplate}" Text="登録" />
-						</GroupBox.Header>
-
-						<StackPanel>
-							<TextBlock Style="{StaticResource ContentText}" Text="開発名称" />
-							<TextBox Style="{StaticResource TextBoxTemplate}" Text="{Binding DevelopName.Value}" />
-							<TextBlock Style="{StaticResource ContentText}" Text="使用用途" />
-							<Grid>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition />
-									<ColumnDefinition />
-								</Grid.ColumnDefinitions>
-
-								<StackPanel Margin="4,4,4,4">
-									<TextBlock Margin="0,0,0,4" Text="大分類" />
-									<ComboBox
-										mah:TextBoxHelper.ClearTextButton="True"
-										ItemsSource="{Binding UseAppMajor.Value}"
-										SelectedItem="{Binding SelectedUseAppMajor.Value}">
-										<i:Interaction.Triggers>
-											<i:EventTrigger EventName="SelectionChanged">
-												<prism:InvokeCommandAction Command="{Binding UseAppMajorSelectionChanged}" />
-											</i:EventTrigger>
-										</i:Interaction.Triggers>
-									</ComboBox>
-								</StackPanel>
-								<StackPanel Grid.Column="1" Margin="4,4,4,4">
-									<TextBlock Margin="0,0,0,4" Text="範囲" />
-									<ComboBox
-										mah:TextBoxHelper.ClearTextButton="True"
-										ItemsSource="{Binding UseAppRange.Value}"
-										SelectedIndex="{Binding SelectedIndexUseAppRange.Value}"
-										SelectedItem="{Binding SelectedUseAppRange.Value}" />
-								</StackPanel>
-							</Grid>
-							<TextBlock Style="{StaticResource ContentText}" Text="UIフレームワーク" />
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition />
+					</Grid.RowDefinitions>
+					
+					<StackPanel>
+						<Border
+							Margin="0,8,8,8"
+							BorderBrush="White"
+							BorderThickness="1"
+							CornerRadius="5">
+							<StackPanel Margin="8" Orientation="Horizontal">
+								<TextBlock Text="項目数：" />
+								<TextBlock Margin="8,0,0,0" Text="{Binding RecordCount.Value}" />
+							</StackPanel>
+						</Border>
+						<GroupBox Style="{StaticResource GroupBoxTemplate}">
+							<GroupBox.Header>
+								<TextBlock Style="{StaticResource GroupBoxHeaderTmplate}" Text="言語種別選択" />
+							</GroupBox.Header>
 							<ComboBox
-								Margin="4"
-								mah:TextBoxHelper.ClearTextButton="True"
-								ItemsSource="{Binding UiFramework.Value}"
-								SelectedIndex="{Binding SelectedIndexUiFramework.Value}"
-								SelectedValue="{Binding SelectedUiFramework.Value}" />
-							<TextBlock Style="{StaticResource ContentText}" Text="説明" />
-							<TextBox
-								Height="80"
-								AcceptsReturn="True"
-								Style="{StaticResource TextBoxTemplate}"
-								Text="{Binding Explanation.Value}"
-								TextWrapping="Wrap"
-								VerticalScrollBarVisibility="Auto" />
-							<TextBlock Style="{StaticResource ContentText}" Text="適用" />
-							<TextBox
-								Height="80"
-								AcceptsReturn="True"
-								Style="{StaticResource TextBoxTemplate}"
-								Text="{Binding Summary.Value}"
-								TextWrapping="Wrap"
-								VerticalScrollBarVisibility="Auto" />
+								ItemsSource="{Binding LangTypes.Value}"
+								SelectedIndex="0"
+								SelectedValue="{Binding SelectedLangType.Value}">
+								<i:Interaction.Triggers>
+									<i:EventTrigger EventName="SelectionChanged">
+										<prism:InvokeCommandAction Command="{Binding LangTypeSelectionChanged}" />
+									</i:EventTrigger>
+								</i:Interaction.Triggers>
+							</ComboBox>
+						</GroupBox>
+						<GroupBox Style="{StaticResource GroupBoxTemplate}">
+							<GroupBox.Header>
+								<TextBlock Style="{StaticResource GroupBoxHeaderTmplate}" Text="開発種別" />
+							</GroupBox.Header>
+							<ComboBox
+								ItemsSource="{Binding DevTypes.Value}"
+								SelectedIndex="{Binding SelectedIndexDevType.Value}"
+								SelectedValue="{Binding SelectedDevType.Value}">
+								<i:Interaction.Triggers>
+									<i:EventTrigger EventName="SelectionChanged">
+										<prism:InvokeCommandAction Command="{Binding DevTypeSelectionChanged}" />
+									</i:EventTrigger>
+								</i:Interaction.Triggers>
+							</ComboBox>
+						</GroupBox>
 
-							<Button
-								Height="30"
-								Margin="8,16,8,8"
-								Command="{Binding RegistCodeNumber}">
-								<Button.Content>
-									<StackPanel Orientation="Horizontal">
-										<TextBlock Margin="0,0,16,0" Text="登録" />
-										<mahIcons:PackIconMaterial Kind="DatabaseArrowLeft" />
+						<GroupBox Style="{StaticResource GroupBoxTemplate}">
+							<GroupBox.Header>
+								<TextBlock Style="{StaticResource GroupBoxHeaderTmplate}" Text="登録" />
+							</GroupBox.Header>
+
+							<StackPanel>
+								<TextBlock Style="{StaticResource ContentText}" Text="開発名称" />
+								<TextBox Style="{StaticResource TextBoxTemplate}" Text="{Binding DevelopName.Value}" />
+								<TextBlock Style="{StaticResource ContentText}" Text="使用用途" />
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition />
+										<ColumnDefinition />
+									</Grid.ColumnDefinitions>
+
+									<StackPanel Margin="4,4,4,4">
+										<TextBlock Margin="0,0,0,4" Text="大分類" />
+										<ComboBox
+											mah:TextBoxHelper.ClearTextButton="True"
+											ItemsSource="{Binding UseAppMajor.Value}"
+											SelectedItem="{Binding SelectedUseAppMajor.Value}">
+											<i:Interaction.Triggers>
+												<i:EventTrigger EventName="SelectionChanged">
+													<prism:InvokeCommandAction Command="{Binding UseAppMajorSelectionChanged}" />
+												</i:EventTrigger>
+											</i:Interaction.Triggers>
+										</ComboBox>
 									</StackPanel>
-								</Button.Content>
-							</Button>
-						</StackPanel>
-					</GroupBox>
-				</StackPanel>
+									<StackPanel Grid.Column="1" Margin="4,4,4,4">
+										<TextBlock Margin="0,0,0,4" Text="範囲" />
+										<ComboBox
+											mah:TextBoxHelper.ClearTextButton="True"
+											ItemsSource="{Binding UseAppRange.Value}"
+											SelectedIndex="{Binding SelectedIndexUseAppRange.Value}"
+											SelectedItem="{Binding SelectedUseAppRange.Value}" />
+									</StackPanel>
+								</Grid>
+								<TextBlock Style="{StaticResource ContentText}" Text="UIフレームワーク" />
+								<ComboBox
+									Margin="4"
+									mah:TextBoxHelper.ClearTextButton="True"
+									ItemsSource="{Binding UiFramework.Value}"
+									SelectedIndex="{Binding SelectedIndexUiFramework.Value}"
+									SelectedValue="{Binding SelectedUiFramework.Value}" />
+								<TextBlock Style="{StaticResource ContentText}" Text="説明" />
+								<TextBox
+									Height="80"
+									AcceptsReturn="True"
+									Style="{StaticResource TextBoxTemplate}"
+									Text="{Binding Explanation.Value}"
+									TextWrapping="Wrap"
+									VerticalScrollBarVisibility="Auto" />
+								<TextBlock Style="{StaticResource ContentText}" Text="適用" />
+								<TextBox
+									Height="80"
+									AcceptsReturn="True"
+									Style="{StaticResource TextBoxTemplate}"
+									Text="{Binding Summary.Value}"
+									TextWrapping="Wrap"
+									VerticalScrollBarVisibility="Auto" />
+
+								<Button
+									Height="30"
+									Margin="8,16,8,8"
+									Command="{Binding RegistCodeNumber}">
+									<Button.Content>
+										<StackPanel Orientation="Horizontal">
+											<TextBlock Margin="0,0,16,0" Text="登録" />
+											<mahIcons:PackIconMaterial Kind="DatabaseArrowLeft" />
+										</StackPanel>
+									</Button.Content>
+								</Button>
+							</StackPanel>
+						</GroupBox>
+					</StackPanel>
+					<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" Margin="0,8,8,0">
+						<ItemsControl ItemsSource="{Binding ContextMenuItems}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<StackPanel />
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<Button
+							Margin="0,0,8,8"
+							Command="{Binding ItemCommand}"
+							Content="{Binding Header}" />
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</ScrollViewer>
+				</Grid>
 			</mah:SplitView.Pane>
 			<Grid>
 				<Grid.ColumnDefinitions>
@@ -230,13 +269,14 @@
 					<Grid.RowDefinitions>
 						<RowDefinition />
 						<RowDefinition Height="Auto" />
+						<RowDefinition Height="47" />
 					</Grid.RowDefinitions>
 
 					<DataGrid
 						x:Name="ViewGrid"
-						Margin="4"
 						EnableColumnVirtualization="True"
 						EnableRowVirtualization="True"
+						GridLinesVisibility="Vertical"
 						IsReadOnly="True"
 						ItemsSource="{Binding Table.Value}"
 						SelectionUnit="FullRow"
@@ -272,11 +312,34 @@
 							Content="{Binding ResultMessage.Value}" />
 					</material:Snackbar>
 
+					<Border
+						Grid.Row="2"
+						Margin="0,8,0,0"
+						Padding="0,8,0,0"
+						BorderBrush="White"
+						BorderThickness="0,1,0,0">
+						<StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+							<RadioButton VerticalContentAlignment="Center" Style="{StaticResource RadioSelectChangeStyle}">
+								<RadioButton.Content>
+									<mahIcons:PixelartIcons Kind="List" />
+								</RadioButton.Content>
+							</RadioButton>
+							<RadioButton VerticalContentAlignment="Center" Style="{StaticResource RadioSelectChangeStyle}">
+								<RadioButton.Content>
+									<mahIcons:PixelartIcons Kind="Grid" />
+								</RadioButton.Content>
+							</RadioButton>
+						</StackPanel>
+					</Border>
+
 				</Grid>
 			</Grid>
 		</mah:SplitView>
 
-		<ToggleButton x:Name="PropertyToggleButton" Grid.Column="1" IsChecked="True">
+		<ToggleButton
+			x:Name="PropertyToggleButton"
+			Grid.Column="1"
+			IsChecked="True">
 			<ToggleButton.Template>
 				<ControlTemplate TargetType="ToggleButton">
 					<Grid Margin="0,8,0,0">

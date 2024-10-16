@@ -213,6 +213,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			ReoGridControl reoGrid = ReoGrid.Value;
 			DataTable dt = Table.Value;
 
+			if (dt is null || dt.Columns.Count is 0) return;
+
 			// 現在のワークシートを取得
 			var sheet = reoGrid.CurrentWorksheet;
 

@@ -49,14 +49,13 @@ namespace P1XCS000086.Modules.CodeManagerView.Domains
         {
 			var deletedItems = Items.Where(x => x.IsDefaultItem is false).ToList();
 
-			if (Items.Count > 2)
-            {
-				foreach (var item in deletedItems)
-				{
-					Items.Remove(item);
-				}
+            if (Items.Count < 1) return;
+
+			foreach (var item in deletedItems)
+			{
+				Items.Remove(item);
 			}
-        }
+		}
         public static void ItemsClear()
         {
             Items.Clear();

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Automation;
 using System.Windows.Media.Animation;
@@ -16,10 +17,10 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		// Public Methods
 		// --------------------------------------------------------------- 
 
-		public static AutomationElement GetMainWindowElemnt(ICodeRegisterModel model, int delayTicks)
+		public static async Task<AutomationElement> GetMainWindowElemnt(ICodeRegisterModel model, int delayTicks)
 		{
-			var hWnd = model.FindProcessMainwindowHandle(5000);
-			return AutomationElement.FromHandle(hWnd.Result);
+			var hWnd = await model.FindProcessMainwindowHandle(delayTicks);
+			return AutomationElement.FromHandle(hWnd);
 		}
 		public static void CloseWindow(AutomationElement window)
 		{
@@ -64,18 +65,22 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 			// ツリーウォーカーを宣言
 			TreeWalker walker = TreeWalker.ControlViewWalker;
 
-			// 
-			IEnumerable<AutomationElement> children = FindElementByLocalizeControlType(parent, elementName);
-			// 親要素を取得する
-			var controlType = walker.GetParent(children.Last());
-
-			// 取得した親要素が"ScrollPattern"を持っている場合
-			if (controlType.GetSupportedPatterns().Contains(ScrollItemPattern.Pattern))
+			while (FindElementByLocalizeControlType(parent, elementName) is null)
 			{
-				// ScrollPatternを取得
-				var scrollPatt = controlType.GetCurrentPattern(ScrollItemPattern.Pattern) as ScrollPattern;
-				scrollPattern = scrollPatt;
-				return scrollPatt.Current.VerticallyScrollable;
+				var s = FindElementByLocalizeControlType(parent, elementName).Last();
+				var d = walker.GetParent(s);
+				// 親要素を取得する
+				var controlType = walker.GetParent(FindElementByLocalizeControlType(parent, elementName).Last());
+
+				bool aas = controlType.GetSupportedPatterns().Contains(ScrollItemPattern.Pattern);
+				// 取得した親要素が"ScrollPattern"を持っている場合
+				if (controlType.GetSupportedPatterns().Contains(ScrollItemPattern.Pattern))
+				{
+					// ScrollPatternを取得
+					var scrollPatt = controlType.GetCurrentPattern(ScrollItemPattern.Pattern) as ScrollPattern;
+					scrollPattern = scrollPatt;
+					return scrollPatt.Current.VerticallyScrollable;
+				}
 			}
 
 			scrollPattern = null;
@@ -94,24 +99,55 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 				if (scrollPattern.Current.VerticalScrollPercent is 100) break;
 			}
 		}
-		public static List<(string, string)> GetListViewContents(AutomationElement element, string localizeElementType, string a, string b)
+		public static List<(string name, string helpText)> GetListViewContents(AutomationElement element, string localizeElementType, string first = "", string second = "")
 		{
 			if (TryGetScrollableListViewElement(element, localizeElementType, out ScrollPattern scrollPattern))
 			{
 				ScrollableElementScrolling(scrollPattern);
 			}
 
+			// ScrollItemPattern scrollItemPatten = null;
+			SelectionItemPattern selectionItemPattrn = null;
+
+			bool isEnter = false;
+
+			List<(string, string)> nameAndHelpText = new();
+
 			foreach (var item in FindElementByLocalizeControlType(element, localizeElementType))
 			{
-				if (item.GetSupportedPatterns().Contains(SynchronizedInputPattern.Pattern) &&
+				// 指定のパターンが含まれていない場合、処理を抜ける
+				if (item.GetSupportedPatterns().Contains(SelectionItemPattern.Pattern) is false) continue;
+				/*
+				if (item.GetSupportedPatterns().Contains(ScrollItemPattern.Pattern) &&
 					item.GetSupportedPatterns().Contains(SelectionItemPattern.Pattern))
 				{
 					return null;
 				}
+				*/
 
-				var synchronizedInputPattrn = item.GetCurrentPattern(SynchronizedInputPattern.Pattern) as SynchronizedInputPattern;
-				var selectionItemPattrn = item.GetCurrentPattern(SelectionItemPattern.Pattern) as SelectionItemPattern;
+				// scrollItemPatten = item.GetCurrentPattern(ScrollItemPattern.Pattern) as ScrollItemPattern;
+				selectionItemPattrn = item.GetCurrentPattern(SelectionItemPattern.Pattern) as SelectionItemPattern;
+
+				// 
+				if (item.Current.Name == first) isEnter = true;
+				if (item.Current.Name == second) isEnter = false;
+
+				if (isEnter)
+				{
+					// 文字列に「*** is [un]pinned」が含まれている場合、foreachステートメントの最初からやりなおす
+					if (Regex.IsMatch(first, ".+ is [un]*pinned"))
+					{
+						continue;
+					}
+
+					nameAndHelpText.Add((item.Current.Name, item.Current.HelpText));
+				}
+
+				// 現在のitemを選択
+				selectionItemPattrn.Select();
 			}
+
+			return nameAndHelpText;
 		}
 
 		/// <summary>

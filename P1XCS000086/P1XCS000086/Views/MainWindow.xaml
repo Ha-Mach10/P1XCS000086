@@ -50,6 +50,7 @@
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="Auto" />
 			<RowDefinition />
+			<RowDefinition Height="35" />
 		</Grid.RowDefinitions>
 
 		<StackPanel Height="40" Orientation="Horizontal">
@@ -153,6 +154,11 @@
 			Grid.Row="2"
 			Margin="8"
 			prism:RegionManager.RegionName="{x:Static core:RegionNames.ContentRegion}" />
-
+		<Border
+			Grid.Row="3"
+			BorderBrush="Gray"
+			BorderThickness="0,1,0,0">
+			<Grid />
+		</Border>
 	</Grid>
 </mah:MetroWindow>
