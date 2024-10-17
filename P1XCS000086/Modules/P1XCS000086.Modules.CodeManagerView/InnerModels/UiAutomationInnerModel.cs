@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Automation;
+using System.Windows.Markup;
 using System.Windows.Media.Animation;
 using System.Xml.Linq;
 
@@ -56,33 +57,41 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="parent"></param>
-		/// <param name="elementName"></param>
-		/// <param name="isScrollable"></param>
+		/// <param name="parent">親である<see cref="AutomationElement"/></param>
+		/// <param name="elementName">目的の<see cref="AutomationElement"/>のLocalizeControlTypeの名称</param>
+		/// <param name="scrollPattern">戻す</param>
+		/// <param name="ticks"></param>
 		/// <returns></returns>
-		public static bool TryGetScrollableListViewElement(AutomationElement parent, string elementName, out ScrollPattern scrollPattern)
+		public static bool TryGetScrollableListViewElement(AutomationElement parent, string elementName, out ScrollPattern scrollPattern, int ticks = 1000)
 		{
+			// 開始をticksミリ秒待つ
+			Task.Delay(ticks);
+
 			// ツリーウォーカーを宣言
 			TreeWalker walker = TreeWalker.ControlViewWalker;
 
-			while (FindElementByLocalizeControlType(parent, elementName) is null)
+			while (true)
 			{
-				var s = FindElementByLocalizeControlType(parent, elementName).Last();
-				var d = walker.GetParent(s);
+				// 指定のコントロールタイプが見つかるまでコンティニュー
+				if (FindElementByLocalizeControlType(parent, elementName) is null) continue;
+
 				// 親要素を取得する
 				var controlType = walker.GetParent(FindElementByLocalizeControlType(parent, elementName).Last());
 
-				bool aas = controlType.GetSupportedPatterns().Contains(ScrollItemPattern.Pattern);
+				// 上記のcontrolTypeがnullであった場合、ループを抜ける
+				if (controlType is null) break;
+
 				// 取得した親要素が"ScrollPattern"を持っている場合
-				if (controlType.GetSupportedPatterns().Contains(ScrollItemPattern.Pattern))
+				if (controlType.GetSupportedPatterns().Contains(ScrollPattern.Pattern))
 				{
 					// ScrollPatternを取得
-					var scrollPatt = controlType.GetCurrentPattern(ScrollItemPattern.Pattern) as ScrollPattern;
+					var scrollPatt = controlType.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
 					scrollPattern = scrollPatt;
 					return scrollPatt.Current.VerticallyScrollable;
 				}
 			}
 
+			// 処理が失敗した際の戻り値
 			scrollPattern = null;
 			return false;
 		}
@@ -98,6 +107,8 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 
 				if (scrollPattern.Current.VerticalScrollPercent is 100) break;
 			}
+
+			Task.Delay(2000);
 		}
 		public static List<(string name, string helpText)> GetListViewContents(AutomationElement element, string localizeElementType, string first = "", string second = "")
 		{
@@ -117,15 +128,8 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 			{
 				// 指定のパターンが含まれていない場合、処理を抜ける
 				if (item.GetSupportedPatterns().Contains(SelectionItemPattern.Pattern) is false) continue;
-				/*
-				if (item.GetSupportedPatterns().Contains(ScrollItemPattern.Pattern) &&
-					item.GetSupportedPatterns().Contains(SelectionItemPattern.Pattern))
-				{
-					return null;
-				}
-				*/
 
-				// scrollItemPatten = item.GetCurrentPattern(ScrollItemPattern.Pattern) as ScrollItemPattern;
+
 				selectionItemPattrn = item.GetCurrentPattern(SelectionItemPattern.Pattern) as SelectionItemPattern;
 
 				// 
@@ -135,7 +139,7 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 				if (isEnter)
 				{
 					// 文字列に「*** is [un]pinned」が含まれている場合、foreachステートメントの最初からやりなおす
-					if (Regex.IsMatch(first, ".+ is [un]*pinned"))
+					if (Regex.IsMatch(item.Current.Name, ".+ is [un]*pinned"))
 					{
 						continue;
 					}
@@ -166,8 +170,11 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		/// </summary>
 		/// <param name="element"></param>
 		/// <param name="name"></param>
-		public static void PushButtonByName(AutomationElement element, string name)
+		public static void PushButtonByName(AutomationElement element, string name, int ticks = 1000)
 		{
+			// 処理を待機する
+			Task.Delay(ticks);
+
 			// ボタンコントロールの取得
 			InvokePattern button = FindElementByName(element, name).First().GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
 			button.Invoke();

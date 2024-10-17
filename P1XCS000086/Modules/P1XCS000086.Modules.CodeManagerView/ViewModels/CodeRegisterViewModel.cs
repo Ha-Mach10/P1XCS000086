@@ -33,6 +33,14 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 	public class CodeRegisterViewModel : RegionViewModelBase, INotifyPropertyChanged, IRegionMemberLifetime
 	{
 		// ---------------------------------------------------------------
+		// Static Fields
+		// --------------------------------------------------------------- 
+
+		private static bool s_isEntried = true;
+
+
+
+		// ---------------------------------------------------------------
 		// Fields
 		// --------------------------------------------------------------- 
 
@@ -244,8 +252,12 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			// Visual Studioの各種コントロールを操作
 			// UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成");
 			// UiAutomationInnerModel.PushButtonById(mainWindow, "Button_1");
-			// 
-			SS();
+			//
+			if (s_isEntried)
+			{
+				SS();
+				s_isEntried = false;
+			}
 		}
 
 
@@ -387,12 +399,13 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		/// </summary>
 		private async void OnContextMenuCreateProject()
 		{
+			/*
 			// Visual Studio 2022のプロセス名とウィンドウタイトルを定数で宣言
 			const string ProcessName = "devenv";
 			const string WindowTitle = "Microsoft Visual Studio";
 
 			const string CreateNewButtonName = "Button_1";
-
+			*/
 
 			// Visual Sutudioのメインウィンドウハンドルを取得
 			var hWnd = await _model.FindProcessMainwindowHandle(5000);
@@ -406,12 +419,19 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			// PushButtonByName(element, "新しいプロジェクトの作成");
 			UiAutomationInnerModel.PushButtonByName(element, "新しいプロジェクトの作成");
 			await Task.Delay(2000);
-			AA(element, "LanguageFilter");
+			
+			if (UiAutomationInnerModel.TryGetScrollableListViewElement(element, "一覧項目", out ScrollPattern scrollPattern))
+			{
+				UiAutomationInnerModel.ScrollableElementScrolling(scrollPattern);
+			}
+			var items = UiAutomationInnerModel.GetListViewContents(element, "一覧項目", "Windows デスクトップ アプリケーション is unpinned", "区切り線");
+			
+			// AA(element, "LanguageFilter");
 			await Task.Delay(2000);
-			PushButtonById(element, "button_Next");
+			// PushButtonById(element, "button_Next");
 
 			// メソッドを通っているかテストの為の表示。　いらんかも＾＾
-			System.Windows.MessageBox.Show("現在作成中");
+			// System.Windows.MessageBox.Show("現在作成中");
 		}
 
 

@@ -81,6 +81,15 @@
 					</Trigger>
 				</Style.Triggers>
 			</Style>
+			<Style
+				x:Key="RegisterContentButton"
+				TargetType="Button"
+				BasedOn="{StaticResource MahApps.Styles.Button.VisualStudio}">
+				<Style.Setters>
+					<Setter Property="Height" Value="30"/>
+					<Setter Property="Margin" Value="8"/>
+				</Style.Setters>
+			</Style>
 		</ResourceDictionary>
 	</UserControl.Resources>
 
@@ -191,7 +200,7 @@
 									SelectedValue="{Binding SelectedUiFramework.Value}" />
 								<TextBlock Style="{StaticResource ContentText}" Text="説明" />
 								<TextBox
-									Height="80"
+									Height="60"
 									AcceptsReturn="True"
 									Style="{StaticResource TextBoxTemplate}"
 									Text="{Binding Explanation.Value}"
@@ -199,7 +208,7 @@
 									VerticalScrollBarVisibility="Auto" />
 								<TextBlock Style="{StaticResource ContentText}" Text="適用" />
 								<TextBox
-									Height="80"
+									Height="60"
 									AcceptsReturn="True"
 									Style="{StaticResource TextBoxTemplate}"
 									Text="{Binding Summary.Value}"
@@ -207,8 +216,7 @@
 									VerticalScrollBarVisibility="Auto" />
 
 								<Button
-									Height="30"
-									Margin="8,16,8,8"
+									Style="{StaticResource RegisterContentButton}"
 									Command="{Binding RegistCodeNumber}">
 									<Button.Content>
 										<StackPanel Orientation="Horizontal">
@@ -217,6 +225,17 @@
 										</StackPanel>
 									</Button.Content>
 								</Button>
+								<Button Style="{StaticResource RegisterContentButton}" Command="{Binding }">
+									<Button.Content>
+										<StackPanel Orientation="Horizontal">
+											<TextBlock Margin="0,0,16,0" Text="登録・作成" />
+											<mahIcons:PackIconMaterial Kind="DatabaseArrowLeft" />
+											<mahIcons:PackIconMaterial Kind="Plus" Margin="8,0,8,0" Width="12"/>
+											<mahIcons:PackIconBoxIcons Kind="RegularWindowAlt" />
+										</StackPanel>
+									</Button.Content>
+								</Button>
+
 							</StackPanel>
 						</GroupBox>
 					</StackPanel>
