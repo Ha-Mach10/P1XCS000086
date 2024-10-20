@@ -62,11 +62,8 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		/// <param name="scrollPattern">戻す</param>
 		/// <param name="ticks"></param>
 		/// <returns></returns>
-		public static bool TryGetScrollableListViewElement(AutomationElement parent, string elementName, out ScrollPattern scrollPattern, int ticks = 1000)
+		public static bool TryGetScrollableListViewElement(AutomationElement parent, string elementName, out ScrollPattern scrollPattern)
 		{
-			// 開始をticksミリ秒待つ
-			Task.Delay(ticks);
-
 			// ツリーウォーカーを宣言
 			TreeWalker walker = TreeWalker.ControlViewWalker;
 
@@ -75,25 +72,28 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 				// 指定のコントロールタイプが見つかるまでコンティニュー
 				if (FindElementByLocalizeControlType(parent, elementName) is null) continue;
 
-				// 親要素を取得する
-				var controlType = walker.GetParent(FindElementByLocalizeControlType(parent, elementName).Last());
-
-				// 上記のcontrolTypeがnullであった場合、ループを抜ける
-				if (controlType is null) break;
-
-				// 取得した親要素が"ScrollPattern"を持っている場合
-				if (controlType.GetSupportedPatterns().Contains(ScrollPattern.Pattern))
+				try
 				{
+					// 親要素を取得する
+					var controlType = walker.GetParent(FindElementByLocalizeControlType(parent, elementName).Last());
+
+					// 取得した親要素が"ScrollPattern"を持っている場合
+					if (controlType.GetSupportedPatterns().Contains(ScrollPattern.Pattern) is false) continue;
+
 					// ScrollPatternを取得
 					var scrollPatt = controlType.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
+
+					// 
 					scrollPattern = scrollPatt;
 					return scrollPatt.Current.VerticallyScrollable;
 				}
+				catch(InvalidOperationException ex)
+				{
+					// 処理が失敗した際の戻り値
+					scrollPattern = null;
+					return false;
+				}
 			}
-
-			// 処理が失敗した際の戻り値
-			scrollPattern = null;
-			return false;
 		}
 		/// <summary>
 		/// スクロール
@@ -172,12 +172,12 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		/// <param name="name"></param>
 		public static void PushButtonByName(AutomationElement element, string name, int ticks = 1000)
 		{
-			// 処理を待機する
-			Task.Delay(ticks);
-
 			// ボタンコントロールの取得
 			InvokePattern button = FindElementByName(element, name).First().GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
 			button.Invoke();
+
+			// 処理を待機する
+			Task.Delay(ticks);
 		}
 
 

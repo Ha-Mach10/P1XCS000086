@@ -21,6 +21,8 @@ using Prism.Ioc;
 using Prism.Modularity;
 
 using System.Windows;
+using P1XCS000086.Modules.CodeManagerView.Views;
+using P1XCS000086.Modules.CodeManagerView.ViewModels;
 
 namespace P1XCS000086
 {
@@ -51,12 +53,14 @@ namespace P1XCS000086
 			// # CodeManageMaster
 			containerRegistry.RegisterSingleton<ICodeRegisterModel, CodeRegisterModel>();
 			containerRegistry.RegisterSingleton<IMasterManagerModel, MasterManagerModel>();
+			containerRegistry.RegisterSingleton<IVSCreateDialogModel, VSCreateDialogModel>();
 			// # HouseholdExpenses
 			containerRegistry.RegisterSingleton<IHEHomeModel, HEHomeModel>();
 			// # Common Models
 			containerRegistry.RegisterSingleton<IDTConveter, DTConverter>();
 			// # Automation
 			containerRegistry.RegisterSingleton<IPixivDataModel, PixivDataModel>();
+
 
 		}
 		// モジュールカタログの設定

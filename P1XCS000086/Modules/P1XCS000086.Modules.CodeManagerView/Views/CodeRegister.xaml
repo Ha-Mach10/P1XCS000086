@@ -129,7 +129,7 @@
 							</GroupBox.Header>
 							<ComboBox
 								ItemsSource="{Binding LangTypes.Value}"
-								SelectedIndex="0"
+								SelectedIndex="-1"
 								SelectedValue="{Binding SelectedLangType.Value}">
 								<i:Interaction.Triggers>
 									<i:EventTrigger EventName="SelectionChanged">
@@ -161,7 +161,7 @@
 
 							<StackPanel>
 								<TextBlock Style="{StaticResource ContentText}" Text="開発名称" />
-								<TextBox Style="{StaticResource TextBoxTemplate}" Text="{Binding DevelopName.Value}" />
+								<TextBox Style="{StaticResource TextBoxTemplate}" mah:TextBoxHelper.ClearTextButton="True" Text="{Binding DevelopName.Value}" />
 								<TextBlock Style="{StaticResource ContentText}" Text="使用用途" />
 								<Grid>
 									<Grid.ColumnDefinitions>
@@ -225,7 +225,7 @@
 										</StackPanel>
 									</Button.Content>
 								</Button>
-								<Button Style="{StaticResource RegisterContentButton}" Command="{Binding }">
+								<Button Style="{StaticResource RegisterContentButton}" Command="{Binding RegistCodeNumberAndCreateProject}">
 									<Button.Content>
 										<StackPanel Orientation="Horizontal">
 											<TextBlock Margin="0,0,16,0" Text="登録・作成" />

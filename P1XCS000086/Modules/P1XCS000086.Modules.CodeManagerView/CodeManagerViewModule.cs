@@ -24,6 +24,8 @@ namespace P1XCS000086.Modules.CodeManagerView
 			containerRegistry.RegisterForNavigation<CodeManager>();
 			containerRegistry.RegisterForNavigation<CodeRegister>();
 			// containerRegistry.RegisterForNavigation<CodeRegisterEsc>();
+			containerRegistry.RegisterDialog<VSCreateDialog>();
+
 		}
 	}
 }
