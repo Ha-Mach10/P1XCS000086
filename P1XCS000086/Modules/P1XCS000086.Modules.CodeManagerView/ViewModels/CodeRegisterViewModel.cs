@@ -2,7 +2,6 @@
 using P1XCS000086.Core.Mvvm;
 using P1XCS000086.Modules.CodeManagerView.Domains;
 using P1XCS000086.Modules.CodeManagerView.InnerModels;
-using P1XCS000086.Modules.CodeManagerView.logics;
 using P1XCS000086.Modules.CodeManagerView.Views;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using P1XCS000086.Services.Interfaces.Sql;
@@ -419,7 +418,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		/// </summary>
 		private void OnContextMenuCreateProject()
 		{
-			SS();
+			// SS();
 
 			IDialogParameters param = new DialogParameters()
 			{

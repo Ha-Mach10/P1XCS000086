@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using OpenQA.Selenium.DevTools.V125.Runtime;
+using OpenQA.Selenium.DevTools.V129.Runtime;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using P1XCS000086.Services.IO;

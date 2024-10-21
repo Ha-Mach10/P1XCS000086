@@ -18,6 +18,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
@@ -50,7 +51,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		// Static Fields
 		// --------------------------------------------------------------- 
 
-
+		private static bool _isEnterd = true;
 
 
 
@@ -71,6 +72,15 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public ReactivePropertySlim<Visibility> ListViewVisibility { get; }
 		public ReactivePropertySlim<Visibility> ProgressVisibility { get; }
 
+		public ReactivePropertySlim<List<string>> LanguageFilterItems { get; }
+		public ReactivePropertySlim<List<string>> PlatformFilterItems { get; }
+		public ReactivePropertySlim<List<string>> ProjectTypeFilterItems { get; }
+		public ReactivePropertySlim<string> SelectedLanguageItem { get; }
+		public ReactivePropertySlim<string> SelectedPlatformItem { get; }
+		public ReactivePropertySlim<string> SelectedProjectTypeItem { get; }
+
+		public ReactiveCollection<ProjectTypeItem> ProjectTypes { get; }
+		public ReactivePropertySlim<ProjectTypeItem> SelectedProjectType { get; }
 
 
 
@@ -86,18 +96,32 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			_dialogService = dialogService;
 			_model = model;
 
-			SetUiAutomationVisalstudioContent();
+			if (_isEnterd)
+			{
+				 Task.Run(SetUiAutomationVisualStudioContent);
+				_isEnterd = false;
+			}
 
 			// Properties
 			ListViewVisibility = new ReactivePropertySlim<Visibility>(Visibility.Collapsed);
 			ProgressVisibility = new ReactivePropertySlim<Visibility>(Visibility.Visible);
 
+			LanguageFilterItems = new ReactivePropertySlim<List<string>>().AddTo(_disposables);
+			PlatformFilterItems = new ReactivePropertySlim<List<string>>().AddTo(_disposables);
+			ProjectTypeFilterItems = new ReactivePropertySlim<List<string>>().AddTo(_disposables);
+			SelectedLanguageItem = new ReactivePropertySlim<string>(string.Empty);
+			SelectedPlatformItem = new ReactivePropertySlim<string>(string.Empty);
+			SelectedProjectTypeItem = new ReactivePropertySlim<string>(string.Empty);
+
+			ProjectTypes = new ReactiveCollection<ProjectTypeItem>().AddTo(_disposables);
+			SelectedProjectType = new ReactivePropertySlim<ProjectTypeItem>().AddTo(_disposables);
+
 
 			// Commands
 			AcceptCreate = new ReactiveCommandSlim();
-			AcceptCreate.Subscribe(OnAcceptCreate);
+			AcceptCreate.Subscribe(OnAcceptCreate).AddTo(_disposables);
 			Cancel = new ReactiveCommandSlim();
-			Cancel.Subscribe(OnCancel);
+			Cancel.Subscribe(OnCancel).AddTo(_disposables);
 		}
 
 
@@ -182,7 +206,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		// Private Methods
 		// --------------------------------------------------------------- 
 
-		private async void SetUiAutomationVisalstudioContent()
+		private async void SetUiAutomationVisualStudioContent()
 		{
 			// Initial Process
 
@@ -197,7 +221,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			// Visual Studioの各種コントロールを操作
 			UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成", 2000);
 			await Task.Delay(2000);
-			UiAutomationInnerModel.PushButtonByName(mainWindow, "すべてクリア(_C)");
+			// UiAutomationInnerModel.PushButtonByName(mainWindow, "すべてクリア(_C)");
 			if (UiAutomationInnerModel.TryGetScrollableListViewElement(mainWindow, "一覧項目", out ScrollPattern scrollPattern))
 			{
 				UiAutomationInnerModel.ScrollableElementScrolling(scrollPattern);
@@ -208,6 +232,9 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			windowPattern.Close();
 
 			int a = 0;
+
+			ProgressVisibility.Value = Visibility.Collapsed;
+			ListViewVisibility.Value = Visibility.Visible;
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿using OpenQA.Selenium.DevTools.V125.Browser;
+﻿using OpenQA.Selenium.DevTools.V129.Browser;
 using P1XCS000086.Services.Interfaces.Objects;
 using System;
 using System.Collections.Generic;

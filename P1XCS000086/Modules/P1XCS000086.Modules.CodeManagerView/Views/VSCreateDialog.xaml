@@ -10,22 +10,22 @@
 	xmlns:material="http://materialdesigninxaml.net/winfx/xaml/themes"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:prism="http://prismlibrary.com/"
+	Width="1000"
+	Height="700"
 	d:DesignHeight="700"
 	d:DesignWidth="1000"
 	prism:ViewModelLocator.AutoWireViewModel="True"
-	mc:Ignorable="d"
-	Height="700"
-	Width="1000">
+	mc:Ignorable="d">
 
 	<prism:Dialog.WindowStyle>
 		<Style TargetType="Window">
-			<Setter Property="prism:Dialog.WindowStartupLocation" Value="CenterOwner"/>
-			<Setter Property="ResizeMode" Value="NoResize"/>
-			<Setter Property="ShowInTaskbar" Value="True"/>
-			<Setter Property="SizeToContent" Value="WidthAndHeight"/>
+			<Setter Property="prism:Dialog.WindowStartupLocation" Value="CenterOwner" />
+			<Setter Property="ResizeMode" Value="NoResize" />
+			<Setter Property="ShowInTaskbar" Value="True" />
+			<Setter Property="SizeToContent" Value="WidthAndHeight" />
 		</Style>
 	</prism:Dialog.WindowStyle>
-	
+
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -33,16 +33,28 @@
 				<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Colors.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 
-			<Style x:Key="ResultMessageButton" TargetType="Button" BasedOn="{StaticResource MahApps.Styles.Button.Dialogs}">
+			<Style
+				x:Key="ResultMessageButton"
+				BasedOn="{StaticResource MahApps.Styles.Button.Dialogs}"
+				TargetType="Button">
 				<Style.Setters>
-					<Setter Property="Height" Value="30"/>
+					<Setter Property="Height" Value="30" />
 				</Style.Setters>
 			</Style>
-			<Style x:Key="CommonComboBox" TargetType="ComboBox" BasedOn="{StaticResource MahApps.Styles.ComboBox}">
+			<Style
+				x:Key="CommonComboBox"
+				BasedOn="{StaticResource MahApps.Styles.ComboBox}"
+				TargetType="ComboBox">
 				<Style.Setters>
-					<Setter Property="Width" Value="180"/>
-					<Setter Property="Height" Value="25"/>
-					<Setter Property="Margin" Value="0,0,24,0"/>
+					<Setter Property="Width" Value="180" />
+					<Setter Property="Height" Value="25" />
+					<Setter Property="Margin" Value="0,0,24,0" />
+					<Setter Property="{x:Static mah:TextBoxHelper.ClearTextButtonProperty}" Value="True" />
+				</Style.Setters>
+			</Style>
+			<Style x:Key="CommonTextBlock" TargetType="TextBlock" BasedOn="{StaticResource MahApps.Styles.TextBlock}">
+				<Style.Setters>
+					<Setter Property="Margin" Value="0,0,0,8"/>
 				</Style.Setters>
 			</Style>
 		</ResourceDictionary>
@@ -51,28 +63,100 @@
 	<Grid Background="{StaticResource MahApps.Brushes.Accent}">
 		<Grid.RowDefinitions>
 			<RowDefinition />
-			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<Grid Margin="8">
 			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto" />
 				<RowDefinition />
 			</Grid.RowDefinitions>
-			<StackPanel Orientation="Horizontal" Margin="16">
-				<ComboBox ItemsSource="{Binding }" SelectedValue="{Binding A}" Style="{StaticResource CommonComboBox}"/>
-				<ComboBox ItemsSource="{Binding }" SelectedValue="{Binding A}" Style="{StaticResource CommonComboBox}"/>
-				<ComboBox ItemsSource="{Binding }" SelectedValue="{Binding A}" Style="{StaticResource CommonComboBox}"/>
+			<StackPanel Margin="16" Orientation="Horizontal">
+				<StackPanel Margin="0,0,24,0">
+					<TextBlock Text="言語" Style="{StaticResource CommonTextBlock}" />
+					<ComboBox
+						mah:TextBoxHelper.Watermark="Language"
+						ItemsSource="{Binding LanguageFilterItems.Value}"
+						SelectedValue="{Binding SelectedLanguageItem.Value}"
+						Style="{StaticResource CommonComboBox}" />
+				</StackPanel>
+				<StackPanel Margin="0,0,24,0">
+					<TextBlock Text="プラットフォーム" Style="{StaticResource CommonTextBlock}" />
+					<ComboBox
+						mah:TextBoxHelper.Watermark="Platform"
+						ItemsSource="{Binding PlatformFilterItems.Value}"
+						SelectedValue="{Binding SelectedPlatformItem.Value}"
+						Style="{StaticResource CommonComboBox}" />
+				</StackPanel>
+				<StackPanel Margin="0,0,24,0">
+					<TextBlock Text="プロジェクト種別" Style="{StaticResource CommonTextBlock}"/>
+					<ComboBox
+						mah:TextBoxHelper.Watermark="Project Type"
+						ItemsSource="{Binding ProjectTypeFilterItems.Value}"
+						SelectedValue="{Binding SelectedProjectTypeItem.Value}"
+						Style="{StaticResource CommonComboBox}" />
+				</StackPanel>
 			</StackPanel>
 			<Grid Grid.Row="1">
-				<ListView Visibility="{Binding ListViewVisibility.Value}" ItemsSource="{Binding }" SelectedItem="{Binding V}">
-					
+				<ListView
+					ItemsSource="{Binding ProjectTypes}"
+					SelectedItem="{Binding SelectedProjectType.Value}"
+					Visibility="{Binding ListViewVisibility.Value}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition />
+								</Grid.ColumnDefinitions>
+
+								<StackPanel Grid.Column="1" Margin="8">
+									<TextBlock Text="{Binding ProjectText}"/>
+									<TextBlock Text="{Binding ProjectHelpText}" TextWrapping="WrapWithOverflow"/>
+									<ItemsControl ItemsSource="{Binding Tags}">
+										<ItemsControl.ItemsPanel>
+											<ItemsPanelTemplate>
+												<StackPanel Orientation="Horizontal"/>
+											</ItemsPanelTemplate>
+										</ItemsControl.ItemsPanel>
+										<ItemsControl.ItemTemplate>
+											<DataTemplate>
+												<Border CornerRadius="4" BorderThickness="1" BorderBrush="Gray">
+													<ContentPresenter/>
+												</Border>
+											</DataTemplate>
+										</ItemsControl.ItemTemplate>
+									</ItemsControl>
+								</StackPanel>
+							</Grid>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
 				</ListView>
-				<mah:ProgressRing Visibility="{Binding ProgressVisibility.Value}" IsActive="True" IsLarge="True" Foreground="White"/>
+				<mah:ProgressRing
+					Foreground="White"
+					IsActive="True"
+					IsLarge="True"
+					Visibility="{Binding ProgressVisibility.Value}" />
 			</Grid>
 		</Grid>
-		<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,32,16">
-			<Button Content="作成" Command="{Binding AcceptCreate}" Style="{StaticResource ResultMessageButton}" Margin="0,0,16,0"/>
-			<Button Content="キャンセル" Command="{Binding Cancel}" Style="{StaticResource ResultMessageButton}"/>
+		<StackPanel
+			Grid.Row="1"
+			Margin="0,16,32,16"
+			HorizontalAlignment="Right"
+			Orientation="Horizontal">
+			<Button
+				Margin="0,0,16,0"
+				Command="{Binding AcceptCreate}"
+				Content="作成"
+				Style="{StaticResource ResultMessageButton}" />
+			<Button
+				Command="{Binding Cancel}"
+				Content="キャンセル"
+				Style="{StaticResource ResultMessageButton}" />
 		</StackPanel>
 	</Grid>
 </UserControl>
