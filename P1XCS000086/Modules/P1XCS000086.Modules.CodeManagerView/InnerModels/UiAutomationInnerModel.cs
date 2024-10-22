@@ -95,6 +95,29 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 				}
 			}
 		}
+		public static bool TryGetScrollableComboBoxElement(AutomationElement element, string targetName, out List<string> items)
+		{
+			var combo = FindElementByName(element, targetName).First();
+			var comboExpandCollapsePattern = combo.GetCurrentPattern(ExpandCollapsePattern.Pattern) as ExpandCollapsePattern;
+
+			comboExpandCollapsePattern.Expand();
+
+			var patts = combo.GetSupportedPatterns();
+			while (true)
+			{
+				ScrollPattern scrollPattern = combo.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
+				if (scrollPattern.Current.VerticallyScrollable)
+				{
+					scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
+				}
+				if (scrollPattern.Current.VerticalScrollPercent is 100) break;
+			}
+
+			items = FindElementByLocalizeControlType(combo, "テキスト").Select(x => x.Current.Name).ToList();
+			comboExpandCollapsePattern.Collapse();
+
+			return true;
+		}
 		/// <summary>
 		/// スクロール
 		/// </summary>

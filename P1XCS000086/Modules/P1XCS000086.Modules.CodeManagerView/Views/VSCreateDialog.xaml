@@ -52,9 +52,13 @@
 					<Setter Property="{x:Static mah:TextBoxHelper.ClearTextButtonProperty}" Value="True" />
 				</Style.Setters>
 			</Style>
-			<Style x:Key="CommonTextBlock" TargetType="TextBlock" BasedOn="{StaticResource MahApps.Styles.TextBlock}">
+			<Style
+				x:Key="CommonTextBlock"
+				BasedOn="{StaticResource MahApps.Styles.TextBlock}"
+				TargetType="TextBlock">
 				<Style.Setters>
-					<Setter Property="Margin" Value="0,0,0,8"/>
+					<Setter Property="Margin" Value="0,0,0,8" />
+					<Setter Property="Foreground" Value="White" />
 				</Style.Setters>
 			</Style>
 		</ResourceDictionary>
@@ -72,7 +76,7 @@
 			</Grid.RowDefinitions>
 			<StackPanel Margin="16" Orientation="Horizontal">
 				<StackPanel Margin="0,0,24,0">
-					<TextBlock Text="言語" Style="{StaticResource CommonTextBlock}" />
+					<TextBlock Style="{StaticResource CommonTextBlock}" Text="言語" />
 					<ComboBox
 						mah:TextBoxHelper.Watermark="Language"
 						ItemsSource="{Binding LanguageFilterItems.Value}"
@@ -80,7 +84,7 @@
 						Style="{StaticResource CommonComboBox}" />
 				</StackPanel>
 				<StackPanel Margin="0,0,24,0">
-					<TextBlock Text="プラットフォーム" Style="{StaticResource CommonTextBlock}" />
+					<TextBlock Style="{StaticResource CommonTextBlock}" Text="プラットフォーム" />
 					<ComboBox
 						mah:TextBoxHelper.Watermark="Platform"
 						ItemsSource="{Binding PlatformFilterItems.Value}"
@@ -88,7 +92,7 @@
 						Style="{StaticResource CommonComboBox}" />
 				</StackPanel>
 				<StackPanel Margin="0,0,24,0">
-					<TextBlock Text="プロジェクト種別" Style="{StaticResource CommonTextBlock}"/>
+					<TextBlock Style="{StaticResource CommonTextBlock}" Text="プロジェクト種別" />
 					<ComboBox
 						mah:TextBoxHelper.Watermark="Project Type"
 						ItemsSource="{Binding ProjectTypeFilterItems.Value}"
@@ -96,52 +100,60 @@
 						Style="{StaticResource CommonComboBox}" />
 				</StackPanel>
 			</StackPanel>
-			<Grid Grid.Row="1">
-				<ListView
-					ItemsSource="{Binding ProjectTypes}"
-					SelectedItem="{Binding SelectedProjectType.Value}"
-					Visibility="{Binding ListViewVisibility.Value}">
-					<ItemsControl.ItemsPanel>
-						<ItemsPanelTemplate>
-							<StackPanel />
-						</ItemsPanelTemplate>
-					</ItemsControl.ItemsPanel>
-					<ItemsControl.ItemTemplate>
-						<DataTemplate>
-							<Grid>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="Auto"/>
-									<ColumnDefinition />
-								</Grid.ColumnDefinitions>
+			<Border
+				Grid.Row="1"
+				BorderBrush="Gray"
+				BorderThickness="1">
+				<Grid>
+					<ListView
+						ItemsSource="{Binding ProjectTypes}"
+						SelectedItem="{Binding SelectedProjectType.Value}"
+						Visibility="{Binding ListViewVisibility.Value}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition />
+									</Grid.ColumnDefinitions>
 
-								<StackPanel Grid.Column="1" Margin="8">
-									<TextBlock Text="{Binding ProjectText}"/>
-									<TextBlock Text="{Binding ProjectHelpText}" TextWrapping="WrapWithOverflow"/>
-									<ItemsControl ItemsSource="{Binding Tags}">
-										<ItemsControl.ItemsPanel>
-											<ItemsPanelTemplate>
-												<StackPanel Orientation="Horizontal"/>
-											</ItemsPanelTemplate>
-										</ItemsControl.ItemsPanel>
-										<ItemsControl.ItemTemplate>
-											<DataTemplate>
-												<Border CornerRadius="4" BorderThickness="1" BorderBrush="Gray">
-													<ContentPresenter/>
-												</Border>
-											</DataTemplate>
-										</ItemsControl.ItemTemplate>
-									</ItemsControl>
-								</StackPanel>
-							</Grid>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
-				</ListView>
-				<mah:ProgressRing
-					Foreground="White"
-					IsActive="True"
-					IsLarge="True"
-					Visibility="{Binding ProgressVisibility.Value}" />
-			</Grid>
+									<StackPanel Grid.Column="1" Margin="8">
+										<TextBlock Text="{Binding ProjectText}" />
+										<TextBlock Text="{Binding ProjectHelpText}" TextWrapping="WrapWithOverflow" />
+										<ItemsControl ItemsSource="{Binding Tags}">
+											<ItemsControl.ItemsPanel>
+												<ItemsPanelTemplate>
+													<StackPanel Orientation="Horizontal" />
+												</ItemsPanelTemplate>
+											</ItemsControl.ItemsPanel>
+											<ItemsControl.ItemTemplate>
+												<DataTemplate>
+													<Border
+														BorderBrush="Gray"
+														BorderThickness="1"
+														CornerRadius="4">
+														<ContentPresenter />
+													</Border>
+												</DataTemplate>
+											</ItemsControl.ItemTemplate>
+										</ItemsControl>
+									</StackPanel>
+								</Grid>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ListView>
+					<mah:ProgressRing
+						Foreground="White"
+						IsActive="True"
+						IsLarge="True"
+						Visibility="{Binding ProgressVisibility.Value}" />
+				</Grid>
+			</Border>
 		</Grid>
 		<StackPanel
 			Grid.Row="1"

@@ -72,9 +72,9 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public ReactivePropertySlim<Visibility> ListViewVisibility { get; }
 		public ReactivePropertySlim<Visibility> ProgressVisibility { get; }
 
-		public ReactivePropertySlim<List<string>> LanguageFilterItems { get; }
-		public ReactivePropertySlim<List<string>> PlatformFilterItems { get; }
-		public ReactivePropertySlim<List<string>> ProjectTypeFilterItems { get; }
+		public ReactiveCollection<string> LanguageFilterItems { get; }
+		public ReactiveCollection<string> PlatformFilterItems { get; }
+		public ReactiveCollection<string> ProjectTypeFilterItems { get; }
 		public ReactivePropertySlim<string> SelectedLanguageItem { get; }
 		public ReactivePropertySlim<string> SelectedPlatformItem { get; }
 		public ReactivePropertySlim<string> SelectedProjectTypeItem { get; }
@@ -106,9 +106,9 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			ListViewVisibility = new ReactivePropertySlim<Visibility>(Visibility.Collapsed);
 			ProgressVisibility = new ReactivePropertySlim<Visibility>(Visibility.Visible);
 
-			LanguageFilterItems = new ReactivePropertySlim<List<string>>().AddTo(_disposables);
-			PlatformFilterItems = new ReactivePropertySlim<List<string>>().AddTo(_disposables);
-			ProjectTypeFilterItems = new ReactivePropertySlim<List<string>>().AddTo(_disposables);
+			LanguageFilterItems = new ReactiveCollection<string>().AddTo(_disposables);
+			PlatformFilterItems = new ReactiveCollection<string>().AddTo(_disposables);
+			ProjectTypeFilterItems = new ReactiveCollection<string>().AddTo(_disposables);
 			SelectedLanguageItem = new ReactivePropertySlim<string>(string.Empty);
 			SelectedPlatformItem = new ReactivePropertySlim<string>(string.Empty);
 			SelectedProjectTypeItem = new ReactivePropertySlim<string>(string.Empty);
@@ -222,6 +222,26 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成", 2000);
 			await Task.Delay(2000);
 			// UiAutomationInnerModel.PushButtonByName(mainWindow, "すべてクリア(_C)");
+
+			foreach (string comboName in new List<string>() { "LanguageFilter", "PlatformFilter", "ProjectTypeFilter" })
+			{
+				UiAutomationInnerModel.TryGetScrollableComboBoxElement(mainWindow, comboName, out List<string> comboTtems);
+
+				switch (comboName)
+				{
+					case "LanguageFilter":
+						LanguageFilterItems.AddRangeOnScheduler(comboTtems);
+						break;
+					case "PlatformFilter":
+						PlatformFilterItems.AddRangeOnScheduler(comboTtems);
+						break;
+					case "ProjectTypeFilter":
+						ProjectTypeFilterItems.AddRangeOnScheduler(comboTtems);
+						break;
+				}
+			}
+
+
 			if (UiAutomationInnerModel.TryGetScrollableListViewElement(mainWindow, "一覧項目", out ScrollPattern scrollPattern))
 			{
 				UiAutomationInnerModel.ScrollableElementScrolling(scrollPattern);
