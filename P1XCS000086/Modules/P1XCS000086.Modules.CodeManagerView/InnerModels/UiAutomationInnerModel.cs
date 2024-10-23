@@ -110,13 +110,24 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 				{
 					scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
 				}
-				if (scrollPattern.Current.VerticalScrollPercent is 100) break;
+				if (scrollPattern.Current.VerticalScrollPercent is 100 || scrollPattern.Current.VerticalScrollPercent is -1) break;
 			}
 
 			items = FindElementByLocalizeControlType(combo, "テキスト").Select(x => x.Current.Name).ToList();
 			comboExpandCollapsePattern.Collapse();
 
 			return true;
+		}
+		public static void PushTextBlockElement(AutomationElement element, string targetName)
+		{
+			var textBlock = FindElementByName(element, targetName).First();
+			var patterns = textBlock.GetSupportedPatterns().Select(x => x.ProgrammaticName).ToList();
+
+			SynchronizedInputPattern textBlockSynchromizedInputPattern = textBlock.GetCurrentPattern(SynchronizedInputPattern.Pattern) as SynchronizedInputPattern;
+			textBlockSynchromizedInputPattern.StartListening(SynchronizedInputType.MouseLeftButtonDown);
+			textBlockSynchromizedInputPattern.Cancel();
+			textBlockSynchromizedInputPattern.StartListening(SynchronizedInputType.MouseLeftButtonUp);
+			textBlockSynchromizedInputPattern.Cancel();
 		}
 		/// <summary>
 		/// スクロール

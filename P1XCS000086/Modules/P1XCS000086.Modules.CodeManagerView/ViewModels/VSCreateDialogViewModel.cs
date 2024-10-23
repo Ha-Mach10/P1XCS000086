@@ -53,6 +53,15 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 		private static bool _isEnterd = true;
 
+		private static Visibility _listViewVisibility = Visibility.Collapsed;
+		private static Visibility _progressVisibility = Visibility.Visible;
+
+		private static List<string> _languageFilterItems = new List<string>();
+		private static List<string> _platformFilterItems = new List<string>();
+		private static List<string> _projectTypeFilterItems = new List<string>();
+		
+		private static List<ProjectTypeItem> _projectTypes = new List<ProjectTypeItem>();
+
 
 
 		// ---------------------------------------------------------------
@@ -96,15 +105,10 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			_dialogService = dialogService;
 			_model = model;
 
-			if (_isEnterd)
-			{
-				 Task.Run(SetUiAutomationVisualStudioContent);
-				_isEnterd = false;
-			}
 
 			// Properties
-			ListViewVisibility = new ReactivePropertySlim<Visibility>(Visibility.Collapsed);
-			ProgressVisibility = new ReactivePropertySlim<Visibility>(Visibility.Visible);
+			ListViewVisibility = new ReactivePropertySlim<Visibility>(_listViewVisibility);
+			ProgressVisibility = new ReactivePropertySlim<Visibility>(_progressVisibility);
 
 			LanguageFilterItems = new ReactiveCollection<string>().AddTo(_disposables);
 			PlatformFilterItems = new ReactiveCollection<string>().AddTo(_disposables);
@@ -116,6 +120,19 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			ProjectTypes = new ReactiveCollection<ProjectTypeItem>().AddTo(_disposables);
 			SelectedProjectType = new ReactivePropertySlim<ProjectTypeItem>().AddTo(_disposables);
 
+			if (_isEnterd)
+			{
+				Task.Run(SetUiAutomationVisualStudioContent);
+				_isEnterd = false;
+			}
+			else
+			{
+				LanguageFilterItems.AddRangeOnScheduler(_languageFilterItems);
+				PlatformFilterItems.AddRangeOnScheduler(_platformFilterItems);
+				ProjectTypeFilterItems.AddRangeOnScheduler(_projectTypeFilterItems);
+
+				ProjectTypes.AddRangeOnScheduler(_projectTypes);
+			}
 
 			// Commands
 			AcceptCreate = new ReactiveCommandSlim();
@@ -221,7 +238,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			// Visual Studioの各種コントロールを操作
 			UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成", 2000);
 			await Task.Delay(2000);
-			// UiAutomationInnerModel.PushButtonByName(mainWindow, "すべてクリア(_C)");
+
+			// UiAutomationInnerModel.PushTextBlockElement(mainWindow, "すべてクリア(_C)");
 
 			foreach (string comboName in new List<string>() { "LanguageFilter", "PlatformFilter", "ProjectTypeFilter" })
 			{
@@ -231,12 +249,15 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 				{
 					case "LanguageFilter":
 						LanguageFilterItems.AddRangeOnScheduler(comboTtems);
+						_languageFilterItems.AddRange(comboTtems);
 						break;
 					case "PlatformFilter":
 						PlatformFilterItems.AddRangeOnScheduler(comboTtems);
+						_platformFilterItems.AddRange(comboTtems);
 						break;
 					case "ProjectTypeFilter":
 						ProjectTypeFilterItems.AddRangeOnScheduler(comboTtems);
+						_projectTypeFilterItems.AddRange(comboTtems);
 						break;
 				}
 			}
@@ -247,14 +268,55 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 				UiAutomationInnerModel.ScrollableElementScrolling(scrollPattern);
 			}
 			var items = UiAutomationInnerModel.GetListViewContents(mainWindow, "一覧項目", "Windows デスクトップ アプリケーション is unpinned", "区切り線");
+			List<ProjectTypeItem> projTypeItems	= new List<ProjectTypeItem>();
+			foreach (var item in items)
+			{
+				if (TryGetTags(item.helpText, out string helpText, out List<string> tags))
+				{
+					projTypeItems.Add(new ProjectTypeItem(item.name, helpText, tags));
+				}
+			}
+			ProjectTypes.AddRangeOnScheduler(projTypeItems);
+			_projectTypes = projTypeItems;
 
+			// ウィンドウを閉じる
 			WindowPattern windowPattern = mainWindow.GetCurrentPattern(WindowPattern.Pattern) as WindowPattern;
 			windowPattern.Close();
 
 			int a = 0;
 
+			// 可視性を変更
 			ProgressVisibility.Value = Visibility.Collapsed;
 			ListViewVisibility.Value = Visibility.Visible;
+			_progressVisibility = ProgressVisibility.Value;
+			_listViewVisibility = ListViewVisibility.Value;
+		}
+
+		private static bool TryGetTags(string text, out string helpText, out List<string> tags)
+		{
+			if (string.IsNullOrEmpty(text))
+			{
+				helpText = string.Empty;
+				tags = new List<string>();
+				return false;
+			}
+			
+			List<string> splitedValues = text.Split(',').ToList();
+			if (splitedValues.Count <= 0)
+			{
+				helpText = string.Empty;
+				tags = new List<string>();
+				return false;
+			}
+
+			helpText = splitedValues[0];
+			tags = splitedValues
+				.Select((x, id) => new { X = x, Id = id })
+				.Where(x => x.Id > 0)
+				.Select(x => x.X)
+				.ToList();
+
+			return true;
 		}
 	}
 }

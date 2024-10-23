@@ -79,7 +79,7 @@
 					<TextBlock Style="{StaticResource CommonTextBlock}" Text="言語" />
 					<ComboBox
 						mah:TextBoxHelper.Watermark="Language"
-						ItemsSource="{Binding LanguageFilterItems.Value}"
+						ItemsSource="{Binding LanguageFilterItems}"
 						SelectedValue="{Binding SelectedLanguageItem.Value}"
 						Style="{StaticResource CommonComboBox}" />
 				</StackPanel>
@@ -87,7 +87,7 @@
 					<TextBlock Style="{StaticResource CommonTextBlock}" Text="プラットフォーム" />
 					<ComboBox
 						mah:TextBoxHelper.Watermark="Platform"
-						ItemsSource="{Binding PlatformFilterItems.Value}"
+						ItemsSource="{Binding PlatformFilterItems}"
 						SelectedValue="{Binding SelectedPlatformItem.Value}"
 						Style="{StaticResource CommonComboBox}" />
 				</StackPanel>
@@ -95,7 +95,7 @@
 					<TextBlock Style="{StaticResource CommonTextBlock}" Text="プロジェクト種別" />
 					<ComboBox
 						mah:TextBoxHelper.Watermark="Project Type"
-						ItemsSource="{Binding ProjectTypeFilterItems.Value}"
+						ItemsSource="{Binding ProjectTypeFilterItems}"
 						SelectedValue="{Binding SelectedProjectTypeItem.Value}"
 						Style="{StaticResource CommonComboBox}" />
 				</StackPanel>
@@ -108,7 +108,25 @@
 					<ListView
 						ItemsSource="{Binding ProjectTypes}"
 						SelectedItem="{Binding SelectedProjectType.Value}"
-						Visibility="{Binding ListViewVisibility.Value}">
+						Visibility="{Binding ListViewVisibility.Value}"
+						Background="Transparent">
+						<ListView.ItemContainerStyle>
+							<Style TargetType="ListViewItem">
+								<Style.Triggers>
+									<Trigger Property="IsSelected" Value="True">
+										<Setter Property="Background" Value="{StaticResource MahApps.Brushes.Accent2}"/>
+										<Setter Property="Foreground" Value="White"/>
+									</Trigger>
+									<Trigger Property="IsSelected" Value="False">
+										<Setter Property="Background" Value="Transparent"/>
+										<Setter Property="Foreground" Value="White"/>
+									</Trigger>
+									<Trigger Property="IsMouseOver" Value="True">
+										<Setter Property="Foreground" Value="White"/>
+									</Trigger>
+								</Style.Triggers>
+							</Style>
+						</ListView.ItemContainerStyle>
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>
 								<StackPanel />
@@ -136,8 +154,11 @@
 													<Border
 														BorderBrush="Gray"
 														BorderThickness="1"
-														CornerRadius="4">
-														<ContentPresenter />
+														CornerRadius="4"
+														Margin="8,4,0,0"
+														Padding="4"
+														Background="{StaticResource MahApps.Brushes.Background.Normal}">
+														<TextBlock Text="{Binding .}"/>
 													</Border>
 												</DataTemplate>
 											</ItemsControl.ItemTemplate>
