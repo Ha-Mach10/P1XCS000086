@@ -120,8 +120,17 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		}
 		public static void PushTextBlockElement(AutomationElement element, string targetName)
 		{
+			TreeWalker walker = TreeWalker.ControlViewWalker;
+
+			var sa = FindElementByName(element, targetName);
 			var textBlock = FindElementByName(element, targetName).First();
 			var patterns = textBlock.GetSupportedPatterns().Select(x => x.ProgrammaticName).ToList();
+
+			var t = textBlock.FindAll(TreeScope.Element | TreeScope.Descendants, Condition.TrueCondition);
+
+			// var asss = fin
+
+
 
 			SynchronizedInputPattern textBlockSynchromizedInputPattern = textBlock.GetCurrentPattern(SynchronizedInputPattern.Pattern) as SynchronizedInputPattern;
 			textBlockSynchromizedInputPattern.StartListening(SynchronizedInputType.MouseLeftButtonDown);
