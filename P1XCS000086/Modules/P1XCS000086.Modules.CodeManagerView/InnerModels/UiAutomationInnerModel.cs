@@ -1,11 +1,14 @@
-﻿using P1XCS000086.Services.Interfaces.Models.CodeManager;
+﻿using ControlzEx.Standard;
+using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Automation;
+using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Windows.Media.Animation;
 using System.Xml.Linq;
@@ -97,23 +100,39 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		}
 		public static bool TryGetScrollableComboBoxElement(AutomationElement element, string targetName, out List<string> items)
 		{
+			// 指定のコンボボックスコントロールを取得
 			var combo = FindElementByName(element, targetName).First();
 			var comboExpandCollapsePattern = combo.GetCurrentPattern(ExpandCollapsePattern.Pattern) as ExpandCollapsePattern;
 
+			// 取得したコンボボックスを展開
 			comboExpandCollapsePattern.Expand();
 
 			var patts = combo.GetSupportedPatterns();
 			while (true)
 			{
+				// スクロールパターンを取得
 				ScrollPattern scrollPattern = combo.GetCurrentPattern(ScrollPattern.Pattern) as ScrollPattern;
+				// スクロールパターンが縦方向にスクロール可能かチェック
 				if (scrollPattern.Current.VerticallyScrollable)
 				{
+					// コンボボックスをスクロール
 					scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
 				}
-				if (scrollPattern.Current.VerticalScrollPercent is 100 || scrollPattern.Current.VerticalScrollPercent is -1) break;
+				// スクロール可能な量が100％に達したまたはスクロールの必要が無い場合、whileループを抜ける
+				if (scrollPattern.Current.VerticalScrollPercent is 100 || scrollPattern.Current.VerticalScrollPercent is -1)
+				{
+					break;
+				}
+				else
+				{
+					items = new List<string>();
+					return false;
+				}
 			}
 
+			// "text"タイプのローカライズコントロールを全て列挙し、リストへ格納
 			items = FindElementByLocalizeControlType(combo, "テキスト").Select(x => x.Current.Name).ToList();
+			// コンボボックスを閉じる
 			comboExpandCollapsePattern.Collapse();
 
 			return true;
@@ -122,21 +141,42 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		{
 			TreeWalker walker = TreeWalker.ControlViewWalker;
 
+			var hyperlink1 = FindElementClassName(element, "Hyperlink");
+			var hyperlink3 = FindElementByLocalizeControlType(element, "ハイパーリンク");
+			var hyperlink4 = FindElementByLocalizeControlType(element, "リンク");
+			var hyperlink5 = FindElementByName(element, "ハイパーリンク");
+			var hyperlink6 = FindElementByName(element, "リンク");
+
+
+			int a = 0;
+
 			var sa = FindElementByName(element, targetName);
+			if (FindElementByName(element, targetName).Count() is 0) return;
 			var textBlock = FindElementByName(element, targetName).First();
 			var patterns = textBlock.GetSupportedPatterns().Select(x => x.ProgrammaticName).ToList();
 
-			var t = textBlock.FindAll(TreeScope.Element | TreeScope.Descendants, Condition.TrueCondition);
+			var t = textBlock.FindAll(TreeScope.Element | TreeScope.Descendants | TreeScope.Children, PropertyCondition.FalseCondition);
 
 			// var asss = fin
 
+			try
+			{
+				SynchronizedInputPattern textBlockSynchromizedInputPattern = textBlock.GetCurrentPattern(SynchronizedInputPattern.Pattern) as SynchronizedInputPattern;
+				textBlockSynchromizedInputPattern.StartListening(SynchronizedInputType.MouseLeftButtonDown);
 
+				Task.Delay(500).Wait();
+				textBlockSynchromizedInputPattern.Cancel();
+				textBlockSynchromizedInputPattern.StartListening(SynchronizedInputType.MouseLeftButtonUp);
 
-			SynchronizedInputPattern textBlockSynchromizedInputPattern = textBlock.GetCurrentPattern(SynchronizedInputPattern.Pattern) as SynchronizedInputPattern;
-			textBlockSynchromizedInputPattern.StartListening(SynchronizedInputType.MouseLeftButtonDown);
-			textBlockSynchromizedInputPattern.Cancel();
-			textBlockSynchromizedInputPattern.StartListening(SynchronizedInputType.MouseLeftButtonUp);
-			textBlockSynchromizedInputPattern.Cancel();
+				InvokePattern textBlockInvokePattern = textBlock.GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
+				textBlockInvokePattern.Invoke();
+
+				// textBlockSynchromizedInputPattern.Cancel();
+			}
+			catch
+			{
+				Debug.Print("Visual Studio で（すべてクリア）ハイパーテキストをクリックできませんでした。");
+			}
 		}
 		/// <summary>
 		/// スクロール
@@ -155,10 +195,20 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		}
 		public static List<(string name, string helpText)> GetListViewContents(AutomationElement element, string localizeElementType, string first = "", string second = "")
 		{
+			// スクロールパターンを取得
+			ScrollPattern scrollPattern = null;
+			// ****** * * * * * * * * * ******
+			if (TryGetScrollableListViewElement(element, "一覧項目", out ScrollPattern scrollPatt))
+			{
+				scrollPattern = scrollPatt;
+			}
+
+			/*
 			if (TryGetScrollableListViewElement(element, localizeElementType, out ScrollPattern scrollPattern))
 			{
 				ScrollableElementScrolling(scrollPattern);
 			}
+			*/
 
 			// ScrollItemPattern scrollItemPatten = null;
 			SelectionItemPattern selectionItemPattrn = null;
@@ -167,12 +217,27 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 
 			List<(string, string)> nameAndHelpText = new();
 
+			var bbbbbb = FindElementByLocalizeControlType(element, localizeElementType).Select(x => (x.Current.Name, x.Current.HelpText)).ToList();
+			var items = FindElementByLocalizeControlType(element, localizeElementType)
+				.Select(x => (x.Current.Name, x.Current.HelpText))
+				.Where(x => Regex.IsMatch(x.Name, ".+ is [un]*pinned") is false)
+				.Select(x =>
+				{
+					scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
+					return x;
+				})
+				.ToList();
+			nameAndHelpText.AddRange(items);
+			/*
 			foreach (var item in FindElementByLocalizeControlType(element, localizeElementType))
 			{
-				// 指定のパターンが含まれていない場合、処理を抜ける
+				// 指定のパターンが含まれていない場合、今回のループを抜ける
 				if (item.GetSupportedPatterns().Contains(SelectionItemPattern.Pattern) is false) continue;
+				
+				// 逐次スクロール
+				scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
 
-
+				// 
 				selectionItemPattrn = item.GetCurrentPattern(SelectionItemPattern.Pattern) as SelectionItemPattern;
 
 				// 
@@ -193,8 +258,10 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 				// 現在のitemを選択
 				selectionItemPattrn.Select();
 			}
+			*/
 
-			return nameAndHelpText;
+
+			return nameAndHelpText.DistinctBy(x => new {x.Item1, x.Item2}).ToList();
 		}
 
 		/// <summary>

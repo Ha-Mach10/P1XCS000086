@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
@@ -239,7 +240,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成", 2000);
 			await Task.Delay(2000);
 
-			// UiAutomationInnerModel.PushTextBlockElement(mainWindow, "すべてクリア(_C)");
+			UiAutomationInnerModel.PushTextBlockElement(mainWindow, "すべてクリア(_C)");
 
 			foreach (string comboName in new List<string>() { "LanguageFilter", "PlatformFilter", "ProjectTypeFilter" })
 			{
@@ -262,7 +263,6 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 				}
 			}
 
-
 			if (UiAutomationInnerModel.TryGetScrollableListViewElement(mainWindow, "一覧項目", out ScrollPattern scrollPattern))
 			{
 				UiAutomationInnerModel.ScrollableElementScrolling(scrollPattern);
@@ -271,7 +271,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			List<ProjectTypeItem> projTypeItems	= new List<ProjectTypeItem>();
 			foreach (var item in items)
 			{
-				if (TryGetTags(item.helpText, out string helpText, out List<string> tags))
+				if (TryGetHelptextAndTags(item.helpText, out string helpText, out List<string> tags))
 				{
 					projTypeItems.Add(new ProjectTypeItem(item.name, helpText, tags));
 				}
@@ -292,7 +292,14 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			_listViewVisibility = ListViewVisibility.Value;
 		}
 
-		private static bool TryGetTags(string text, out string helpText, out List<string> tags)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="helpText"></param>
+		/// <param name="tags"></param>
+		/// <returns></returns>
+		private static bool TryGetHelptextAndTags(string text, out string helpText, out List<string> tags)
 		{
 			if (string.IsNullOrEmpty(text))
 			{
@@ -300,23 +307,26 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 				tags = new List<string>();
 				return false;
 			}
-			
-			List<string> splitedValues = text.Split(',').ToList();
-			if (splitedValues.Count <= 0)
+
+			string splitString = "tags: ";
+			string[] splitedStrings = text.Split(splitString);
+
+			if (splitedStrings.Count() is 1)
 			{
-				helpText = string.Empty;
+				helpText = splitedStrings[0];
 				tags = new List<string>();
-				return false;
+				return true;
+			}
+			if (Regex.IsMatch(text, "tags: .+"))
+			{
+				helpText = splitedStrings[0];
+				tags = splitedStrings[1].Split(',').Select(x => x.Trim(' ')).ToList();
+				return true;
 			}
 
-			helpText = splitedValues[0];
-			tags = splitedValues
-				.Select((x, id) => new { X = x, Id = id })
-				.Where(x => x.Id > 0)
-				.Select(x => x.X)
-				.ToList();
-
-			return true;
+			helpText = string.Empty;
+			tags = new List<string>();
+			return false;
 		}
 	}
 }
