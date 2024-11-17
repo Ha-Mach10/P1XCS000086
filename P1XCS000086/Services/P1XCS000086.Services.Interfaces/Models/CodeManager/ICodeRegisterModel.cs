@@ -84,5 +84,12 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 		/// 
 		/// </summary>
 		public Task<IntPtr> FindProcessMainwindowHandle(int delayTicks);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="selectedLanguageTypeCode"></param>
+		/// <returns></returns>
+		public string GetProjectDirTableToDirPath(string selectedLanguageTypeCode);
 	}
 }

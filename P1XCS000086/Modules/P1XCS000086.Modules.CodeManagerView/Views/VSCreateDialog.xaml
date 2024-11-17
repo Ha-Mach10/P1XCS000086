@@ -81,7 +81,13 @@
 						mah:TextBoxHelper.Watermark="Language"
 						ItemsSource="{Binding LanguageFilterItems}"
 						SelectedValue="{Binding SelectedLanguageItem.Value}"
-						Style="{StaticResource CommonComboBox}" />
+						Style="{StaticResource CommonComboBox}">
+						<i:Interaction.Triggers>
+							<i:EventTrigger EventName="SelectionChanged">
+								<prism:InvokeCommandAction Command="{Binding LangComboSelectionChanged}"/>
+							</i:EventTrigger>
+						</i:Interaction.Triggers>
+					</ComboBox>
 				</StackPanel>
 				<StackPanel Margin="0,0,24,0">
 					<TextBlock Style="{StaticResource CommonTextBlock}" Text="プラットフォーム" />
@@ -89,7 +95,13 @@
 						mah:TextBoxHelper.Watermark="Platform"
 						ItemsSource="{Binding PlatformFilterItems}"
 						SelectedValue="{Binding SelectedPlatformItem.Value}"
-						Style="{StaticResource CommonComboBox}" />
+						Style="{StaticResource CommonComboBox}">
+						<i:Interaction.Triggers>
+							<i:EventTrigger EventName="SelectionChanged">
+								<prism:InvokeCommandAction Command="{Binding PlatformComboSelectionChanged}"/>
+							</i:EventTrigger>
+						</i:Interaction.Triggers>
+					</ComboBox>
 				</StackPanel>
 				<StackPanel Margin="0,0,24,0">
 					<TextBlock Style="{StaticResource CommonTextBlock}" Text="プロジェクト種別" />
@@ -97,7 +109,13 @@
 						mah:TextBoxHelper.Watermark="Project Type"
 						ItemsSource="{Binding ProjectTypeFilterItems}"
 						SelectedValue="{Binding SelectedProjectTypeItem.Value}"
-						Style="{StaticResource CommonComboBox}" />
+						Style="{StaticResource CommonComboBox}" >
+						<i:Interaction.Triggers>
+							<i:EventTrigger EventName="SelectionChanged">
+								<prism:InvokeCommandAction Command="{Binding ProjTypeComboSelectionChanged}"/>
+							</i:EventTrigger>
+						</i:Interaction.Triggers>
+					</ComboBox>
 				</StackPanel>
 			</StackPanel>
 			<Border

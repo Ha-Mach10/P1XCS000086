@@ -12,6 +12,17 @@ namespace P1XCS000086.Services.Sql.MySql
 	public class SqlUpdate : ISqlUpdate
 	{
 		// ****************************************************************************
+		// Fields
+		// ****************************************************************************
+
+		private string _connStr;
+		private string _command;
+		private List<string> _columnNames;
+		private List<string> _values;
+
+
+
+		// ****************************************************************************
 		// Properties
 		// ****************************************************************************
 
@@ -31,7 +42,15 @@ namespace P1XCS000086.Services.Sql.MySql
 		// Constructor
 		// ****************************************************************************
 
-		public SqlUpdate() { }
+		public SqlUpdate()
+		{
+
+		}
+		public SqlUpdate(string connStr)
+			:this()
+		{
+			_connStr = connStr;
+		}
 
 
 
@@ -39,6 +58,10 @@ namespace P1XCS000086.Services.Sql.MySql
 		// Public Methods
 		// ****************************************************************************
 
+		public bool Update(string command, List<string> columnNames, List<string> values)
+		{
+			return Update(command, _connStr, columnNames, values);
+		}
 		/// <summary>
 		/// UPDATEクエリを実行
 		/// </summary>

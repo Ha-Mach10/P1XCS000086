@@ -196,34 +196,25 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		public static List<(string name, string helpText)> GetListViewContents(AutomationElement element, string localizeElementType, string first = "", string second = "")
 		{
 			// スクロールパターンを取得
-			ScrollPattern scrollPattern = null;
-			// ****** * * * * * * * * * ******
-			if (TryGetScrollableListViewElement(element, "一覧項目", out ScrollPattern scrollPatt))
+
+			if (TryGetScrollableListViewElement(element, "一覧項目", out ScrollPattern scrollPattern) is false)
 			{
-				scrollPattern = scrollPatt;
+				return new();
 			}
 
-			/*
-			if (TryGetScrollableListViewElement(element, localizeElementType, out ScrollPattern scrollPattern))
-			{
-				ScrollableElementScrolling(scrollPattern);
-			}
-			*/
-
-			// ScrollItemPattern scrollItemPatten = null;
 			SelectionItemPattern selectionItemPattrn = null;
 
 			bool isEnter = false;
 
 			List<(string, string)> nameAndHelpText = new();
 
-			var bbbbbb = FindElementByLocalizeControlType(element, localizeElementType).Select(x => (x.Current.Name, x.Current.HelpText)).ToList();
+			// var bbbbbb = FindElementByLocalizeControlType(element, localizeElementType).Select(x => (x.Current.Name, x.Current.HelpText)).ToList();
 			var items = FindElementByLocalizeControlType(element, localizeElementType)
 				.Select(x => (x.Current.Name, x.Current.HelpText))
 				.Where(x => Regex.IsMatch(x.Name, ".+ is [un]*pinned") is false)
 				.Select(x =>
 				{
-					scrollPattern.ScrollVertical(ScrollAmount.SmallIncrement);
+					scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
 					return x;
 				})
 				.ToList();
@@ -263,6 +254,29 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 
 			return nameAndHelpText.DistinctBy(x => new {x.Item1, x.Item2}).ToList();
 		}
+		public static bool TryFindTriggerKeyword(AutomationElement element, string keyword)
+		{
+			if (FindElementByName(element, keyword).Any())
+			{
+				return true;
+			}
+
+			return false;
+		}
+		public static void InputToTextBox(AutomationElement element, string textBoxAutomationId, string inputValue)
+		{
+			AutomationElement textBox = FindElementById(element, textBoxAutomationId);
+
+			if (textBox is null) return;
+
+			var patts = textBox.GetSupportedPatterns();
+
+			TextPattern text = textBox.GetCurrentPattern(TextPattern.Pattern) as TextPattern;
+			ValuePattern value = textBox.GetCurrentPattern(ValuePattern.Pattern) as ValuePattern;
+			value.SetValue(inputValue);
+
+			int a = 0;
+		}
 
 		/// <summary>
 		/// 
@@ -293,7 +307,7 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 
 
 		// ---------------------------------------------------------------
-		// Private Methods
+		// Internal Methods
 		// --------------------------------------------------------------- 
 
 
@@ -304,7 +318,7 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		/// <param name="rootElement"></param>
 		/// <param name="automationId"></param>
 		/// <returns></returns>
-		private static AutomationElement FindElementById(AutomationElement rootElement, string automationId)
+		internal static AutomationElement FindElementById(AutomationElement rootElement, string automationId)
 			=> rootElement
 			.FindFirst(TreeScope.Element | TreeScope.Descendants | TreeScope.Subtree, new PropertyCondition(AutomationElement.AutomationIdProperty, automationId));
 		
@@ -314,7 +328,7 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		/// <param name="rootElement"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		private static IEnumerable<AutomationElement> FindElementByName(AutomationElement rootElement, string name)
+		internal static IEnumerable<AutomationElement> FindElementByName(AutomationElement rootElement, string name)
 			=> rootElement
 			.FindAll(TreeScope.Element | TreeScope.Descendants, new PropertyCondition(AutomationElement.NameProperty, name))
 			.Cast<AutomationElement>();
@@ -325,7 +339,7 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		/// <param name="rootElement"></param>
 		/// <param name="localizedControlType"></param>
 		/// <returns></returns>
-		private static IEnumerable<AutomationElement> FindElementByLocalizeControlType(AutomationElement rootElement, string localizedControlType)
+		internal static IEnumerable<AutomationElement> FindElementByLocalizeControlType(AutomationElement rootElement, string localizedControlType)
 			=>rootElement
 			.FindAll(TreeScope.Element | TreeScope.Descendants, new PropertyCondition(AutomationElement.LocalizedControlTypeProperty, localizedControlType))
 			.Cast<AutomationElement>();
@@ -336,7 +350,7 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		/// <param name="rootElement"></param>
 		/// <param name="a"></param>
 		/// <returns></returns>
-		private static IEnumerable<AutomationElement> FindElementAll(AutomationElement rootElement, string a)
+		internal static IEnumerable<AutomationElement> FindElementAll(AutomationElement rootElement, string a)
 			=>rootElement
 			.FindAll(TreeScope.Element | TreeScope.Descendants, new PropertyCondition(AutomationElement.FrameworkIdProperty, a))
 			.Cast<AutomationElement>();
@@ -347,7 +361,7 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		/// <param name="rootElement"></param>
 		/// <param name="className"></param>
 		/// <returns></returns>
-		private static IEnumerable<AutomationElement> FindElementClassName(AutomationElement rootElement, string className)
+		internal static IEnumerable<AutomationElement> FindElementClassName(AutomationElement rootElement, string className)
 			=> rootElement
 			.FindAll(TreeScope.Element | TreeScope.Descendants, new PropertyCondition(AutomationElement.ClassNameProperty, className))
 			.Cast<AutomationElement>();

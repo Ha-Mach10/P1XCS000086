@@ -37,6 +37,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		// --------------------------------------------------------------- 
 
 		private static bool s_isEntried = true;
+		private static string s_codeDir = string.Empty;
 
 
 
@@ -256,22 +257,6 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 					}
 				}
 			}).AddTo(_disposables);
-
-			// Initial Process
-
-			// ウィンドウのAutomationElementを取得する
-			// AutomationElement mainWindow = UiAutomationInnerModel.GetMainWindowElemnt(_model, 5000);
-			// ウィンドウのステータスを変更
-			// UiAutomationInnerModel.MainWindowChangeScreen(mainWindow, WindowVisualState.Maximized);
-			// Visual Studioの各種コントロールを操作
-			// UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成");
-			// UiAutomationInnerModel.PushButtonById(mainWindow, "Button_1");
-			//
-			if (s_isEntried)
-			{
-				// SS();
-				s_isEntried = false;
-			}
 		}
 
 
@@ -311,6 +296,9 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 			UiFramework.Value = _model.SetFrameworkName(SelectedLangType.Value);
 			SelectedIndexUiFramework.Value = -1;
+
+			// 取得した言語種別からディレクトリをDataBaseから取得
+			s_codeDir = _model.GetProjectDirTableToDirPath(SelectedLangType.Value);
 		}
 
 		/// <summary>
@@ -418,8 +406,8 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		/// </summary>
 		private void OnContextMenuCreateProject()
 		{
-			// SS();
-
+			SS();
+			/*
 			IDialogParameters param = new DialogParameters()
 			{
 				{ "test", "テストダイアログ" },
@@ -435,7 +423,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 					// var result = dialogResult.Parameters.GetValues<string>("resultParam");
 				}
 			});
-
+			*/
 		}
 
 
@@ -448,28 +436,31 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		{
 			// Initial Process
 
-			// Visual Sutudioのメインウィンドウハンドルを取得
-			var hWnd = await _model.FindProcessMainwindowHandle(5000);
-			// AutomationElementを取得
-			AutomationElement mainWindow = AutomationElement.FromHandle(hWnd);
-			// ウィンドウのAutomationElementを取得する
-			// AutomationElement mainWindow = UiAutomationInnerModel.GetMainWindowElemnt(_model, 5000);
-			// ウィンドウのステータスを変更
-			UiAutomationInnerModel.MainWindowChangeScreen(mainWindow, WindowVisualState.Maximized);
-			// Visual Studioの各種コントロールを操作
-			UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成", 2000);
-			await Task.Delay(2000);
-			UiAutomationInnerModel.PushButtonByName(mainWindow, "すべてクリア(_C)");
-			if (UiAutomationInnerModel.TryGetScrollableListViewElement(mainWindow, "一覧項目", out ScrollPattern scrollPattern))
+			// 
+			await Task.Run(() =>
 			{
-				UiAutomationInnerModel.ScrollableElementScrolling(scrollPattern);
-			}
-			var items = UiAutomationInnerModel.GetListViewContents(mainWindow, "一覧項目", "Windows デスクトップ アプリケーション is unpinned", "区切り線");
+				// Visual Sutudioのメインウィンドウハンドルを取得
+				var hWnd = _model.FindProcessMainwindowHandle(5000);
+				// AutomationElementを取得
+				AutomationElement mainWindow = AutomationElement.FromHandle(hWnd.Result);
+				// ウィンドウのステータスを変更
+				UiAutomationInnerModel.MainWindowChangeScreen(mainWindow, WindowVisualState.Maximized);
+				// Visual Studioの各種コントロールを操作
+				UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成", 2000);
 
-			WindowPattern windowPattern = mainWindow.GetCurrentPattern(WindowPattern.Pattern) as WindowPattern;
-			windowPattern.Close();
+				while (UiAutomationInnerModel.TryFindTriggerKeyword(mainWindow, "新しいプロジェクトを構成します") is not true)
+				{
+					string developNumber = SelectedRowPropertyFieldItems
+					.Where(x => x.TextBlockValue is "開発番号")
+					.Select(x => x.TextBoxValue)
+					.First();
 
-			int a = 0;
+					UiAutomationInnerModel.InputToTextBox(mainWindow, "projectNameText", developNumber);
+					UiAutomationInnerModel.InputToTextBox(mainWindow, "PART_EditableTextBox", s_codeDir);
+				}
+
+				int a = 0;
+			});
 		}
 		/// <summary>
 		/// DataGridの現在指定している行から開発番号と開発ファイル名をタプルで取得するメソッド

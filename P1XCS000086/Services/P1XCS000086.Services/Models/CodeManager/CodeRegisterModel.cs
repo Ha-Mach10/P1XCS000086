@@ -62,6 +62,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 		private SqlShowTables _showTables;
 		private SqlSelect _select;
 		private SqlInsert _insert;
+		private SqlUpdate _update;
 
 		private string _columnName = string.Empty;
 		private List<string> _columns = new List<string>();
@@ -123,14 +124,13 @@ namespace P1XCS000086.Services.Models.CodeManager
 			_showTables = new SqlShowTables(_connStr);
 			_select = new SqlSelect(_connStr);
 			_insert = new SqlInsert(_connStr);
+			_update = new SqlUpdate(_connStr);
 
 
 			// "manager_language_type"テーブルから"language_type"カラムを文字列のリストで取得
 			LangTypes = _common.LangTypes;
 			UseAppMajor = _common.UseAppMajor;
 			UseAppRange = _common.UseAppRange;
-
-			int a = 0;
 		}
 		
 		/// <summary>
@@ -206,9 +206,8 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			// 
 			DataTable dt = _select.Select(query);
-			// Table = SetColumnName(dt, "manager_register_code", TranslateTargetLanguage.Jp);
+			// dt = SetColumnName(dt, "manager_register_code", TranslateTargetLanguage.Jp);
 
-			// return Table;
 			return dt;
 		}
 
@@ -409,9 +408,31 @@ namespace P1XCS000086.Services.Models.CodeManager
 				}
 			}
 
-			A();
-
 			return allElements.Select(x => x.hWnd).Last();
+		}
+		public string GetProjectDirTableToDirPath(string selectedLanguageTypeCode)
+		{
+			string columnName = "language_directry";
+			string query = $"SELECT `{columnName}` FROM `manager_development_project_directry` WHERE `language_type_code`=(SELECT `language_type_code` FROM `manager_language_type` WHERE `language_type` = '{selectedLanguageTypeCode}');";
+
+			return _select.GetJustOneSelectedItem(columnName, query);
+		}
+		public bool UpdateProjectFileName(string selectedLanguageTypeCode)
+		{
+			string updateQuery = string.Empty;
+			List<string> columnNames = new List<string>();
+			List<string> values = new List<string>();
+
+			switch (selectedLanguageTypeCode)
+			{
+				case "C++" or "C#":
+					columnNames.AddRange(new List<string>() { "dir_file_name", "develop_number" });
+					values.AddRange(new List<string>() { $"{selectedLanguageTypeCode}.sl", selectedLanguageTypeCode });
+					updateQuery = $"UPDATE `manager_register_code` SET `dir_file_name`='{selectedLanguageTypeCode}.sln' WHERE `develop_number`='{selectedLanguageTypeCode}';";
+					break;
+			}
+
+			return _update.Update(updateQuery, columnNames, values);
 		}
 
 
@@ -525,29 +546,6 @@ namespace P1XCS000086.Services.Models.CodeManager
 			_columnName = string.Empty;
 			_columns = null;
 			_values = null;
-		}
-
-		private void A()
-		{
-			var tmps = Directory.EnumerateFiles(Paths.VSProjectTemplateDirectoryPath, $"*{Paths.ExtentionVSTemplate}", SearchOption.AllDirectories);
-			var ptmps = Directory.EnumerateFiles(Paths.VSProjectTemplateDirectoryPath, $"*{Paths.ExtentionVSTemplateManifest}", SearchOption.AllDirectories);
-
-			var parsed1 = ptmps.Select(x => XDocument.Load(x)).ToList();
-			foreach (var aa in parsed1)
-			{
-				var aaa = aa.Descendants().ToList();
-				foreach (var aaaa in aaa)
-				{
-					var ab = aaaa.Attributes().Select(x => x).ToList();
-
-					int c = 0;
-				}
-
-				int b = 0;
-			}
-			// XmlSerializer serializer = new XmlSerializer(typeof(string));
-
-			int a = 0;
 		}
 	}
 }

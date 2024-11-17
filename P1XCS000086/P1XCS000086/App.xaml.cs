@@ -2,6 +2,8 @@
 using P1XCS000086.Modules.HomeView;
 using P1XCS000086.Modules.HouseholdExpenses;
 using P1XCS000086.Modules.AutomationView;
+using P1XCS000086.Modules.DirectoryManager;
+using P1XCS000086.Modules;
 using P1XCS000086.Services;
 using P1XCS000086.Services.Data;
 using P1XCS000086.Services.Interfaces;
@@ -23,6 +25,8 @@ using Prism.Modularity;
 using System.Windows;
 using P1XCS000086.Modules.CodeManagerView.Views;
 using P1XCS000086.Modules.CodeManagerView.ViewModels;
+using P1XCS000086.Services.Interfaces.Models.DirectoryManager;
+using P1XCS000086.Services.Models.DirectoryManager;
 
 namespace P1XCS000086
 {
@@ -60,6 +64,8 @@ namespace P1XCS000086
 			containerRegistry.RegisterSingleton<IDTConveter, DTConverter>();
 			// # Automation
 			containerRegistry.RegisterSingleton<IPixivDataModel, PixivDataModel>();
+			// # DirectryManager
+			containerRegistry.RegisterSingleton<IMovieDirectryManagerDialogModel, MovieDirectryManagerDialogModel>();
 
 
 		}
@@ -74,6 +80,8 @@ namespace P1XCS000086
 			moduleCatalog.AddModule<HouseholdExpensesModule>();
 			//
 			moduleCatalog.AddModule<AutomationViewModule>();
+			// 
+			moduleCatalog.AddModule<DirectoryManagerModule>();
 		}
 	}
 }

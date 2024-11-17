@@ -90,6 +90,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		public ReactivePropertySlim<string> SelectedProjectTypeItem { get; }
 
 		public ReactiveCollection<ProjectTypeItem> ProjectTypes { get; }
+		public ReactiveCollection<ProjectTypeItem> SortedProjectTypes { get; }
 		public ReactivePropertySlim<ProjectTypeItem> SelectedProjectType { get; }
 
 
@@ -119,11 +120,12 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			SelectedProjectTypeItem = new ReactivePropertySlim<string>(string.Empty);
 
 			ProjectTypes = new ReactiveCollection<ProjectTypeItem>().AddTo(_disposables);
+			SortedProjectTypes = new ReactiveCollection<ProjectTypeItem>().AddTo(_disposables);
 			SelectedProjectType = new ReactivePropertySlim<ProjectTypeItem>().AddTo(_disposables);
 
 			if (_isEnterd)
 			{
-				Task.Run(SetUiAutomationVisualStudioContent);
+				Task.Run(SetUiAutomationVisualStudioContentAsync);
 				_isEnterd = false;
 			}
 			else
@@ -140,6 +142,13 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			AcceptCreate.Subscribe(OnAcceptCreate).AddTo(_disposables);
 			Cancel = new ReactiveCommandSlim();
 			Cancel.Subscribe(OnCancel).AddTo(_disposables);
+
+			LangComboSelectionChanged = new ReactiveCommandSlim();
+			LangComboSelectionChanged.Subscribe(OnLangComboSelectionChanged).AddTo(_disposables);
+			PlatformComboSelectionChanged = new ReactiveCommandSlim();
+			PlatformComboSelectionChanged.Subscribe(OnPlatformComboSelectionChanged).AddTo(_disposables);
+			ProjTypeComboSelectionChanged = new ReactiveCommandSlim();
+			ProjTypeComboSelectionChanged.Subscribe(OnProjTypeComboSelectionChanged).AddTo(_disposables);
 		}
 
 
@@ -209,6 +218,30 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			// ダイアログを閉じる
 			RequestClose?.Invoke(result);
 		}
+		/// <summary>
+		/// 言語コンボボックス選択時発火コマンド
+		/// </summary>
+		public ReactiveCommandSlim LangComboSelectionChanged { get; }
+		private void OnLangComboSelectionChanged()
+		{
+
+		}
+		/// <summary>
+		/// プラットフォームコンボボックス選択時発火コマンド
+		/// </summary>
+		public ReactiveCommandSlim PlatformComboSelectionChanged { get; }
+		private void OnPlatformComboSelectionChanged()
+		{
+
+		}
+		/// <summary>
+		/// プロジェクト種別コンボボックス選択時発火コマンド
+		/// </summary>
+		public ReactiveCommandSlim ProjTypeComboSelectionChanged { get; }
+		private void OnProjTypeComboSelectionChanged()
+		{
+
+		}
 
 
 
@@ -224,7 +257,10 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		// Private Methods
 		// --------------------------------------------------------------- 
 
-		private async void SetUiAutomationVisualStudioContent()
+		/// <summary>
+		/// Visual Studioの「新しいプロジェクトの作成」画面からUIオートメーションを使用して必要な値を取得する
+		/// </summary>
+		private async void SetUiAutomationVisualStudioContentAsync()
 		{
 			// Initial Process
 
@@ -283,8 +319,6 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			WindowPattern windowPattern = mainWindow.GetCurrentPattern(WindowPattern.Pattern) as WindowPattern;
 			windowPattern.Close();
 
-			int a = 0;
-
 			// 可視性を変更
 			ProgressVisibility.Value = Visibility.Collapsed;
 			ListViewVisibility.Value = Visibility.Visible;
@@ -293,12 +327,12 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		}
 
 		/// <summary>
-		/// 
+		/// 取得したヘルプテキストからテキスト本体とタグを分離する
 		/// </summary>
-		/// <param name="text"></param>
-		/// <param name="helpText"></param>
-		/// <param name="tags"></param>
-		/// <returns></returns>
+		/// <param name="text">対象のヘルプテキスト</param>
+		/// <param name="helpText">分離されたヘルプテキスト</param>
+		/// <param name="tags">分離されたタグのリスト</param>
+		/// <returns>各種値が取得できたかの成否を返す。成功：True, 失敗：False</returns>
 		private static bool TryGetHelptextAndTags(string text, out string helpText, out List<string> tags)
 		{
 			if (string.IsNullOrEmpty(text))
