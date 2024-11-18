@@ -91,5 +91,12 @@ namespace P1XCS000086.Services.Interfaces.Models.CodeManager
 		/// <param name="selectedLanguageTypeCode"></param>
 		/// <returns></returns>
 		public string GetProjectDirTableToDirPath(string selectedLanguageTypeCode);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="selectedLanguageTypeCode"></param>
+		/// <returns></returns>
+		public bool UpdateProjectFileName(string selectedLanguageTypeCode);
 	}
 }

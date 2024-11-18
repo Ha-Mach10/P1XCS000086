@@ -436,18 +436,18 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 		{
 			// Initial Process
 
+			// Visual Sutudioのメインウィンドウハンドルを取得
+			var hWnd = await _model.FindProcessMainwindowHandle(2500);
+			// AutomationElementを取得
+			AutomationElement mainWindow = AutomationElement.FromHandle(hWnd);
+			// ウィンドウのステータスを変更
+			UiAutomationInnerModel.MainWindowChangeScreen(mainWindow, WindowVisualState.Maximized);
+			// Visual Studioの各種コントロールを操作
+			UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成");
+
 			// 
 			await Task.Run(() =>
 			{
-				// Visual Sutudioのメインウィンドウハンドルを取得
-				var hWnd = _model.FindProcessMainwindowHandle(5000);
-				// AutomationElementを取得
-				AutomationElement mainWindow = AutomationElement.FromHandle(hWnd.Result);
-				// ウィンドウのステータスを変更
-				UiAutomationInnerModel.MainWindowChangeScreen(mainWindow, WindowVisualState.Maximized);
-				// Visual Studioの各種コントロールを操作
-				UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成", 2000);
-
 				while (UiAutomationInnerModel.TryFindTriggerKeyword(mainWindow, "新しいプロジェクトを構成します") is not true)
 				{
 					string developNumber = SelectedRowPropertyFieldItems
@@ -458,9 +458,15 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 					UiAutomationInnerModel.InputToTextBox(mainWindow, "projectNameText", developNumber);
 					UiAutomationInnerModel.InputToTextBox(mainWindow, "PART_EditableTextBox", s_codeDir);
 				}
-
-				int a = 0;
 			});
+
+			// 
+			_model.UpdateProjectFileName(SelectedLangType.Value);
+
+			// 
+			UiAutomationInnerModel.PushButtonById(mainWindow, "button_Next");
+
+			int a = 0;
 		}
 		/// <summary>
 		/// DataGridの現在指定している行から開発番号と開発ファイル名をタプルで取得するメソッド

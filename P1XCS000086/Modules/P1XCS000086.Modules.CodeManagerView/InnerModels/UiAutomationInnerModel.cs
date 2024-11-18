@@ -208,7 +208,6 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 
 			List<(string, string)> nameAndHelpText = new();
 
-			// var bbbbbb = FindElementByLocalizeControlType(element, localizeElementType).Select(x => (x.Current.Name, x.Current.HelpText)).ToList();
 			var items = FindElementByLocalizeControlType(element, localizeElementType)
 				.Select(x => (x.Current.Name, x.Current.HelpText))
 				.Where(x => Regex.IsMatch(x.Name, ".+ is [un]*pinned") is false)
@@ -219,38 +218,6 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 				})
 				.ToList();
 			nameAndHelpText.AddRange(items);
-			/*
-			foreach (var item in FindElementByLocalizeControlType(element, localizeElementType))
-			{
-				// 指定のパターンが含まれていない場合、今回のループを抜ける
-				if (item.GetSupportedPatterns().Contains(SelectionItemPattern.Pattern) is false) continue;
-				
-				// 逐次スクロール
-				scrollPattern.ScrollVertical(ScrollAmount.LargeIncrement);
-
-				// 
-				selectionItemPattrn = item.GetCurrentPattern(SelectionItemPattern.Pattern) as SelectionItemPattern;
-
-				// 
-				if (item.Current.Name == first) isEnter = true;
-				if (item.Current.Name == second) isEnter = false;
-
-				if (isEnter)
-				{
-					// 文字列に「*** is [un]pinned」が含まれている場合、foreachステートメントの最初からやりなおす
-					if (Regex.IsMatch(item.Current.Name, ".+ is [un]*pinned"))
-					{
-						continue;
-					}
-
-					nameAndHelpText.Add((item.Current.Name, item.Current.HelpText));
-				}
-
-				// 現在のitemを選択
-				selectionItemPattrn.Select();
-			}
-			*/
-
 
 			return nameAndHelpText.DistinctBy(x => new {x.Item1, x.Item2}).ToList();
 		}
@@ -285,23 +252,38 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		/// <param name="automationId"></param>
 		public static void PushButtonById(AutomationElement element, string automationId)
 		{
-			// ボタンコントロールの取得
-			InvokePattern button = FindElementById(element, automationId).GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
-			button.Invoke();
+			InvokePattern button;
+
+			while (true)
+			{
+				// ボタンコントロールの取得
+				button = FindElementById(element, automationId).GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
+
+				if (button is not null)
+				{
+					button.Invoke();
+				}
+			}
 		}
 		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="element"></param>
 		/// <param name="name"></param>
-		public static void PushButtonByName(AutomationElement element, string name, int ticks = 1000)
+		public static void PushButtonByName(AutomationElement element, string name)
 		{
-			// ボタンコントロールの取得
-			InvokePattern button = FindElementByName(element, name).First().GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
-			button.Invoke();
+			InvokePattern button;
 
-			// 処理を待機する
-			Task.Delay(ticks);
+			while (true)
+			{
+				// ボタンコントロールの取得
+				button = FindElementByName(element, name).First().GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
+				
+				if (button is not null)
+				{
+					button.Invoke();
+				}
+			}
 		}
 
 

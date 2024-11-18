@@ -374,64 +374,79 @@ namespace P1XCS000086.Services.Models.CodeManager
 		/// <returns></returns>
 		public async Task<IntPtr> FindProcessMainwindowHandle(int delayTicks)
 		{
-			// Visual Studio 2022を起動する(最新のバージョンを起動)
-			AwakeVS2022();
-
-			// 起動後待機（ミリ秒）
-			await Task.Delay(delayTicks);
+			List<Window> allElements = new();
 
 			// Visual Studio 2022のプロセス名とウィンドウタイトルを定数で宣言
 			const string ProcessName = "devenv";
 			const string WindowTitle = "Microsoft Visual Studio";
 
-			List<Window> allElements = new();
+			// Visual Studio 2022を起動する(最新のバージョンを起動)
+			await Task.Run(AwakeVS2022);
 
+			// 起動後待機（ミリ秒）
+			await Task.Delay(delayTicks);
 
-			IEnumerable<Window> windows = Process.GetProcessesByName(ProcessName)
-				.Select(x => x.MainWindowHandle)
-				.Select(x => ProcessUser32.GetWindow(x));
-
-			foreach (Window window in windows)
+			await Task.Run(() =>
 			{
-				// 指定のクラス名、タイトルでない場合はコンティニュー
-				if (window.ClassName != ProcessName && window.Title != WindowTitle) { continue; }
-
 				while (true)
 				{
-					// 指定したウィンドウのハンドルが存在するか
-					if (ProcessUser32.IsWindow(window.hWnd))
+					IEnumerable<Window> windows = Process.GetProcessesByName(ProcessName)
+					.Select(x => x.MainWindowHandle)
+					.Select(x => ProcessUser32.GetWindow(x));
+
+					foreach (Window window in windows)
 					{
-						// 要素を全て取得し、処理を抜ける
-						allElements = ProcessUser32.GetAllChildWindows(window, allElements);
-						break;
+						// 指定のクラス名、タイトルでない場合はコンティニュー
+						if (window.ClassName != ProcessName && window.Title != WindowTitle) { continue; }
+
+						while (true)
+						{
+							// 指定したウィンドウのハンドルが存在するか
+							if (ProcessUser32.IsWindow(window.hWnd))
+							{
+								// 要素を全て取得し、処理を抜ける
+								allElements = ProcessUser32.GetAllChildWindows(window, allElements);
+								break;
+							}
+						}
 					}
+
+					break;
 				}
-			}
+			});
 
 			return allElements.Select(x => x.hWnd).Last();
 		}
 		public string GetProjectDirTableToDirPath(string selectedLanguageTypeCode)
 		{
-			string columnName = "language_directry";
+			const string columnName = "language_directry";
 			string query = $"SELECT `{columnName}` FROM `manager_development_project_directry` WHERE `language_type_code`=(SELECT `language_type_code` FROM `manager_language_type` WHERE `language_type` = '{selectedLanguageTypeCode}');";
 
 			return _select.GetJustOneSelectedItem(columnName, query);
 		}
 		public bool UpdateProjectFileName(string selectedLanguageTypeCode)
 		{
+			// 
+			string developNumber = GetLanguageType(selectedLanguageTypeCode);
+			string devNumFileName = $"{developNumber}.sln";
+
+			// 
 			string updateQuery = string.Empty;
 			List<string> columnNames = new List<string>();
 			List<string> values = new List<string>();
 
+			// 
 			switch (selectedLanguageTypeCode)
 			{
+				// 
 				case "C++" or "C#":
 					columnNames.AddRange(new List<string>() { "dir_file_name", "develop_number" });
-					values.AddRange(new List<string>() { $"{selectedLanguageTypeCode}.sl", selectedLanguageTypeCode });
-					updateQuery = $"UPDATE `manager_register_code` SET `dir_file_name`='{selectedLanguageTypeCode}.sln' WHERE `develop_number`='{selectedLanguageTypeCode}';";
+					values.AddRange(new List<string>() { devNumFileName, developNumber });
+					updateQuery = $"UPDATE `manager_register_code` SET `dir_file_name`='{devNumFileName}' WHERE `develop_number`='{developNumber}';";
 					break;
 			}
 
+			// 
 			return _update.Update(updateQuery, columnNames, values);
 		}
 
