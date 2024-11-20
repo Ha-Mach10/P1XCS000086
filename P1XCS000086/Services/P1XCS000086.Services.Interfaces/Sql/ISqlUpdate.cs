@@ -34,6 +34,14 @@ namespace P1XCS000086.Services.Interfaces.Sql
 		/// <param name="columnNames">パラメータクエリに使用するカラム名のリスト</param>
 		/// <param name="values">パラメータクエリ用の値リスト</param>
 		/// <returns>クエリの成否</returns>
-		public bool Update(string command, string connStr, List<string> columnNames, List<string> values);
+		public bool Update(string connStr, string command, List<string> columnNames, List<string> values);
+		/// <summary>
+		/// INSERTクエリを実行
+		/// </summary>
+		/// <param name="command">実行するクエリ文</param>
+		/// <param name="columns">パラメータクエリ用カラム名のリスト</param>
+		/// <param name="values">パラメータクエリ用の値リスト</param>
+		/// <returns>クエリの成否</returns>
+		public bool Update(string command, List<string> columns, List<string> values);
 	}
 }

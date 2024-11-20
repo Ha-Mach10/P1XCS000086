@@ -262,6 +262,7 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 				if (button is not null)
 				{
 					button.Invoke();
+					break;
 				}
 			}
 		}
@@ -270,7 +271,7 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		/// </summary>
 		/// <param name="element"></param>
 		/// <param name="name"></param>
-		public static void PushButtonByName(AutomationElement element, string name)
+		public static bool PushButtonByName(AutomationElement element, string name)
 		{
 			InvokePattern button;
 
@@ -282,6 +283,7 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 				if (button is not null)
 				{
 					button.Invoke();
+					return true;
 				}
 			}
 		}

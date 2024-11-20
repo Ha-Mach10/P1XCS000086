@@ -273,7 +273,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			// ウィンドウのステータスを変更
 			UiAutomationInnerModel.MainWindowChangeScreen(mainWindow, WindowVisualState.Maximized);
 			// Visual Studioの各種コントロールを操作
-			UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成", 2000);
+			UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成");
 			await Task.Delay(2000);
 
 			UiAutomationInnerModel.PushTextBlockElement(mainWindow, "すべてクリア(_C)");

@@ -132,7 +132,7 @@ namespace P1XCS000086.Services.Sql.MySql
 						// cmd.CommandTimeout = 999999;
 
 						// 実行された結果が1行未満のとき
-						if (result < 0)
+						if (result <= 0)
 						{
 							ResultMessage = "データ更新の失敗";
 

@@ -58,9 +58,16 @@ namespace P1XCS000086.Services.Sql.MySql
 		// Public Methods
 		// ****************************************************************************
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="command"></param>
+		/// <param name="columnNames"></param>
+		/// <param name="values"></param>
+		/// <returns></returns>
 		public bool Update(string command, List<string> columnNames, List<string> values)
 		{
-			return Update(command, _connStr, columnNames, values);
+			return Update(_connStr, command, columnNames, values);
 		}
 		/// <summary>
 		/// UPDATEクエリを実行
@@ -70,7 +77,7 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <param name="columnNames">パラメータクエリに使用するカラム名のリスト</param>
 		/// <param name="values">パラメータクエリ用の値リスト</param>
 		/// <returns>クエリの成否</returns>
-		public bool Update(string command, string connStr, List<string> columnNames, List<string> values)
+		public bool Update(string connStr, string command, List<string> columnNames, List<string> values)
 		{
 			bool result = ExecuteUpdate(command, columnNames, values, connStr);
 			return result;
@@ -90,8 +97,77 @@ namespace P1XCS000086.Services.Sql.MySql
 		/// <param name="values">パラメータクエリ用の値リスト</param>
 		/// <param name="connStr">接続文字列</param>
 		/// <returns></returns>
-		private bool ExecuteUpdate(string command, List<string> columnNames, List<string> values, string connStr = "")
+		private bool ExecuteUpdate(string command, List<string> columns, List<string> values, string connStr = "")
 		{
+			// 
+			string connectionString = connStr;
+
+			if (string.IsNullOrEmpty(connStr) == false)
+			{
+				// connectionString = _connStr;
+				connectionString = $"{_connStr};allowuservariables=True;";
+			}
+
+
+			try
+			{
+				// コネクションを生成し、コマンドを生成
+				using (MySqlConnection conn = new MySqlConnection(connectionString))
+				using (MySqlCommand cmd = new MySqlCommand(command, conn))
+				{
+					MySqlTransaction tran = null;
+
+					try
+					{
+						// コネクションを開く
+						conn.Open();
+
+						// コマンドパラメータを設定
+
+						var parameters = columns.Zip(values, (column, value) => new MySqlParameter(column, value)).ToArray();
+						cmd.Parameters.AddRange(parameters);
+
+						// トランザクションを開始
+						tran = conn.BeginTransaction();
+
+						// コマンドを実行
+						var result = cmd.ExecuteNonQuery();
+						// タイムアウト設定の変更
+						// cmd.CommandTimeout = 999999;
+
+						// 実行された結果が1行未満のとき
+						if (result <= 0)
+						{
+							ResultMessage = "データ更新の失敗";
+
+							// ロールバックする
+							tran.Rollback();
+							return false;
+						}
+
+						// コミットする
+						tran.Commit();
+
+						// 挿入に成功
+						ResultMessage = "データ更新に成功";
+						ExceptionMessage = string.Empty;
+						return true;
+					}
+					// データベース操作で例外が発生した場合
+					catch (MySqlException sqlEx)
+					{
+						ExceptionMessage = $"発生した例外：{sqlEx.Message}\n\n発生元：{sqlEx.Source}\n\nMySQLエラーコード：{sqlEx.Code}";
+						return false;
+					}
+				}
+			}
+			// コネクションおよびコマンド生成時に例外が発生した場合
+			catch (MySqlException ex)
+			{
+				ExceptionMessage = $"発生した例外：{ex.Message}\n\n発生元：{ex.Source}";
+				return false;
+			}
+			/*
 			// 接続文字列を設定
 			string connectionString = connStr;
 			if (connStr == "")
@@ -154,6 +230,7 @@ namespace P1XCS000086.Services.Sql.MySql
 			ResultMessage = "データ更新に成功";
 			ExceptionMessage = string.Empty;
 			return true;
+			*/
 		}
 	}
 }

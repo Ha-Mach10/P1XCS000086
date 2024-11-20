@@ -445,7 +445,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			// Visual Studioの各種コントロールを操作
 			UiAutomationInnerModel.PushButtonByName(mainWindow, "新しいプロジェクトの作成");
 
-			// 
+
 			await Task.Run(() =>
 			{
 				while (UiAutomationInnerModel.TryFindTriggerKeyword(mainWindow, "新しいプロジェクトを構成します") is not true)
@@ -460,11 +460,20 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 				}
 			});
 
-			// 
-			_model.UpdateProjectFileName(SelectedLangType.Value);
+			
 
 			// 
-			UiAutomationInnerModel.PushButtonById(mainWindow, "button_Next");
+			if (_model.UpdateProjectFileName(SelectedLangType.Value))
+			{
+				// 
+				UiAutomationInnerModel.PushButtonById(mainWindow, "button_Next");
+			}
+			else
+			{
+				UiAutomationInnerModel.PushButtonById(mainWindow, "button_Close");
+			}
+
+
 
 			int a = 0;
 		}

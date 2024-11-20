@@ -442,7 +442,7 @@ namespace P1XCS000086.Services.Models.CodeManager
 				case "C++" or "C#":
 					columnNames.AddRange(new List<string>() { "dir_file_name", "develop_number" });
 					values.AddRange(new List<string>() { devNumFileName, developNumber });
-					updateQuery = $"UPDATE `manager_register_code` SET `dir_file_name`='{devNumFileName}' WHERE `develop_number`='{developNumber}';";
+					updateQuery = $"UPDATE `manager_register_code` SET `dir_file_name`=@dir_file_name WHERE `develop_number`=@develop_number;";
 					break;
 			}
 
