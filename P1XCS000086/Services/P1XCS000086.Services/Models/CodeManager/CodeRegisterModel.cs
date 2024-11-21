@@ -424,30 +424,33 @@ namespace P1XCS000086.Services.Models.CodeManager
 
 			return _select.GetJustOneSelectedItem(columnName, query);
 		}
-		public bool UpdateProjectFileName(string selectedLanguageTypeCode)
+		public async Task<bool> UpdateProjectFileNameAsync(string selectedLanguageTypeCode)
 		{
-			// 
-			string developNumber = GetLanguageType(selectedLanguageTypeCode);
-			string devNumFileName = $"{developNumber}.sln";
-
-			// 
-			string updateQuery = string.Empty;
-			List<string> columnNames = new List<string>();
-			List<string> values = new List<string>();
-
-			// 
-			switch (selectedLanguageTypeCode)
+			return await Task.Run(() =>
 			{
 				// 
-				case "C++" or "C#":
-					columnNames.AddRange(new List<string>() { "dir_file_name", "develop_number" });
-					values.AddRange(new List<string>() { devNumFileName, developNumber });
-					updateQuery = $"UPDATE `manager_register_code` SET `dir_file_name`=@dir_file_name WHERE `develop_number`=@develop_number;";
-					break;
-			}
+				string developNumber = GetLanguageType(selectedLanguageTypeCode);
+				string devNumFileName = $"{developNumber}.sln";
 
-			// 
-			return _update.Update(updateQuery, columnNames, values);
+				// 
+				string updateQuery = string.Empty;
+				List<string> columnNames = new List<string>();
+				List<string> values = new List<string>();
+
+				// 
+				switch (selectedLanguageTypeCode)
+				{
+					// 
+					case "C++" or "C#":
+						columnNames.AddRange(new List<string>() { "dir_file_name", "develop_number" });
+						values.AddRange(new List<string>() { devNumFileName, developNumber });
+						updateQuery = $"UPDATE `manager_register_code` SET `dir_file_name`=@dir_file_name WHERE `develop_number`=@develop_number;";
+						break;
+				}
+
+				// 
+				return _update.Update(updateQuery, columnNames, values);
+			});
 		}
 
 

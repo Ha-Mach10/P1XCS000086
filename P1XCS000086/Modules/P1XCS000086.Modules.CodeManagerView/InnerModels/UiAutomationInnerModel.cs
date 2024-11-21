@@ -256,13 +256,19 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 
 			while (true)
 			{
+				/*
+				var sapportedPatterns = FindElementById(element, automationId).GetSupportedPatterns();
+				var targetPattern = InvokePattern.Pattern;
+				if (IsContainPattern(sapportedPatterns, targetPattern) is false) return;
+				*/
+
 				// ボタンコントロールの取得
 				button = FindElementById(element, automationId).GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
 
 				if (button is not null)
 				{
 					button.Invoke();
-					break;
+					return;
 				}
 			}
 		}
@@ -271,19 +277,25 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		/// </summary>
 		/// <param name="element"></param>
 		/// <param name="name"></param>
-		public static bool PushButtonByName(AutomationElement element, string name)
+		public static void PushButtonByName(AutomationElement element, string name)
 		{
 			InvokePattern button;
 
 			while (true)
 			{
+				/*
+				var sapportedPatterns = FindElementById(element, name).GetSupportedPatterns();
+				var targetPattern = InvokePattern.Pattern;
+				if (IsContainPattern(sapportedPatterns, targetPattern) is false) return;
+				*/
+
 				// ボタンコントロールの取得
 				button = FindElementByName(element, name).First().GetCurrentPattern(InvokePattern.Pattern) as InvokePattern;
 				
 				if (button is not null)
 				{
 					button.Invoke();
-					return true;
+					break;
 				}
 			}
 		}
@@ -293,8 +305,6 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 		// ---------------------------------------------------------------
 		// Internal Methods
 		// --------------------------------------------------------------- 
-
-
 
 		/// <summary>
 		/// 指定されたautomationIdに一致するAutomationElementを取得
@@ -349,5 +359,21 @@ namespace P1XCS000086.Modules.CodeManagerView.InnerModels
 			=> rootElement
 			.FindAll(TreeScope.Element | TreeScope.Descendants, new PropertyCondition(AutomationElement.ClassNameProperty, className))
 			.Cast<AutomationElement>();
+
+
+
+		// ---------------------------------------------------------------
+		// Private Methods
+		// --------------------------------------------------------------- 
+
+		private static bool IsContainPattern(AutomationPattern[] patterns, AutomationPattern targetPattern)
+		{
+			if (patterns.Contains(targetPattern))
+			{
+				return true;
+			}
+
+			return false;
+		}
 	}
 }
