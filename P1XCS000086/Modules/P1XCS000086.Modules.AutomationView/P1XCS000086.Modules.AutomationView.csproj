@@ -8,8 +8,8 @@
     <PackageReference Include="MahApps.Metro.IconPacks" Version="5.1.0" />
     <PackageReference Include="Meowtrix.PixivApi" Version="0.3.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2792.45" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.122" />
-    <PackageReference Include="Prism.Wpf" Version="8.1.97" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+    <PackageReference Include="Prism.Wpf" Version="9.0.537" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\P1XCS000086.Core\P1XCS000086.Core.csproj" />

@@ -1,5 +1,5 @@
 ﻿using P1XCS000086.Core.Mvvm;
-using Prism.Regions;
+using Prism.Navigation.Regions;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -13,7 +13,7 @@ using System.Windows;
 
 namespace P1XCS000086.Modules.HouseholdExpenses.Domains
 {
-    public class PriceItem : RegionViewModelBase, INotifyPropertyChanged, IRegionMemberLifetime
+    public class PriceItem : RegionViewModelBase
     {
         private static int tabIndex = 0;
         public static Dictionary<string, ReactiveCollection<PriceItem>> PriceItemPair { get; set; } = new();
@@ -24,7 +24,6 @@ namespace P1XCS000086.Modules.HouseholdExpenses.Domains
 
 
         // Properties
-        public bool KeepAlive { get; } = false;
         public string Key { get; }
         public bool IsChecked { get; set; } = false;
         public Visibility TextBlockVisibility { get; set; } = Visibility.Visible;
@@ -59,6 +58,9 @@ namespace P1XCS000086.Modules.HouseholdExpenses.Domains
 		public PriceItem(IRegionManager regionManager, string keyName, string itemText, Action addAction, Action<string> deleteAction, Action<string> checkedChangedAction)
             :base(regionManager)
         {
+            KeepAlive = true;
+
+
             Key = keyName;
             ItemText = itemText;
             

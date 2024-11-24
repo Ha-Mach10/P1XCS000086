@@ -1,6 +1,6 @@
 ﻿using P1XCS000086.Core.Mvvm;
 using P1XCS000086.Services.Interfaces.Domains;
-using Prism.Regions;
+using Prism.Navigation.Regions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

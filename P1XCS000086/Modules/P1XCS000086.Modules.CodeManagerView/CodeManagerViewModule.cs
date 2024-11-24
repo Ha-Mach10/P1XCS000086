@@ -3,7 +3,7 @@ using P1XCS000086.Modules.CodeManagerView.Views;
 using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Mvvm;
-using Prism.Regions;
+using Prism.Navigation.Regions;
 
 namespace P1XCS000086.Modules.CodeManagerView
 {

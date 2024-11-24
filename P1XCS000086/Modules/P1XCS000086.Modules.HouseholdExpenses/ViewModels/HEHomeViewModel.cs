@@ -2,7 +2,7 @@
 using P1XCS000086.Modules.HouseholdExpenses.Domains;
 using P1XCS000086.Services.Interfaces.Models.HouseholdExpenses;
 
-using Prism.Regions;
+using Prism.Navigation.Regions;
 
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -16,7 +16,7 @@ using System.Windows;
 
 namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 {
-	public class HEHomeViewModel : RegionViewModelBase, INotifyPropertyChanged, IRegionMemberLifetime
+	public class HEHomeViewModel : RegionViewModelBase
 	{
 		// ****************************************************************************
 		// Const Members
@@ -42,7 +42,6 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 		// Properties
 		// ****************************************************************************
 
-		public bool KeepAlive { get; private set; } = true;
 		public ReactivePropertySlim<int> PaneMaxLength { get; }
 
 		public ReactivePropertySlim<List<string>> ShopTypeNames { get; }
@@ -76,6 +75,7 @@ namespace P1XCS000086.Modules.HouseholdExpenses.ViewModels
 			_regionManager = regionManager;
 			_model = model;
 
+			KeepAlive = true;
 
 			PaneMaxLength = new ReactivePropertySlim<int>(int.MaxValue);
 

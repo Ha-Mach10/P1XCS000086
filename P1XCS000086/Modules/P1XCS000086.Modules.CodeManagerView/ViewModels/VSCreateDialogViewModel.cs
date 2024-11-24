@@ -5,8 +5,8 @@ using P1XCS000086.Modules.CodeManagerView.InnerModels;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using P1XCS000086.Services.Interfaces.Sql;
 using Prism.Mvvm;
-using Prism.Regions;
-using Prism.Services.Dialogs;
+using Prism.Navigation.Regions;
+using Prism.Dialogs;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.ObjectExtensions;
@@ -31,7 +31,7 @@ using System.Xml.Serialization;
 
 namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 {
-	public class VSCreateDialogViewModel : RegionViewModelBase, IDialogAware, INotifyPropertyChanged
+	public class VSCreateDialogViewModel : RegionViewModelBase
 	{
 		// ---------------------------------------------------------------
 		// Reference Sources

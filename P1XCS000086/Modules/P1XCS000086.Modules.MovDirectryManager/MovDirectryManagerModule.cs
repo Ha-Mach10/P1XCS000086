@@ -1,11 +1,11 @@
-﻿using P1XCS000086.Modules.DirectoryManager.Views;
+﻿using P1XCS000086.Modules.MovDirectryManager.Views;
 using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Navigation.Regions;
 
-namespace P1XCS000086.Modules.DirectoryManager
+namespace P1XCS000086.Modules.MovDirectryManager
 {
-	public class DirectoryManagerModule : IModule
+	public class MovDirectryManagerModule : IModule
 	{
 		public void OnInitialized(IContainerProvider containerProvider)
 		{
@@ -14,7 +14,7 @@ namespace P1XCS000086.Modules.DirectoryManager
 
 		public void RegisterTypes(IContainerRegistry containerRegistry)
 		{
-			containerRegistry.RegisterDialog<MovieDirectryManagerDialog>();
+			containerRegistry.RegisterForNavigation<MovieDirectryManager>();
 		}
 	}
 }

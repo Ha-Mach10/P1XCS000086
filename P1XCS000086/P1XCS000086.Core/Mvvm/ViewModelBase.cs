@@ -1,6 +1,6 @@
 ﻿using Prism.Mvvm;
 using Prism.Navigation;
-using Prism.Regions;
+using Prism.Navigation.Regions;
 using System.Reactive;
 using System.Reactive.Disposables;
 

@@ -4,7 +4,7 @@ using P1XCS000086.Modules.HomeView.Views;
 using P1XCS000086.Services.Interfaces.Models;
 using P1XCS000086.Services.Interfaces.Domains;
 
-using Prism.Regions;
+using Prism.Navigation.Regions;
 
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;

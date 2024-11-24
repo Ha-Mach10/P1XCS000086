@@ -6,8 +6,8 @@
   <ItemGroup>
     <PackageReference Include="MahApps.Metro" Version="2.4.10" />
     <PackageReference Include="MahApps.Metro.IconPacks" Version="5.1.0" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.122" />
-    <PackageReference Include="Prism.Wpf" Version="8.1.97" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+    <PackageReference Include="Prism.Wpf" Version="9.0.537" />
     <PackageReference Include="ReactiveProperty.WPF" Version="9.6.0" />
   </ItemGroup>
   <ItemGroup>
@@ -15,6 +15,8 @@
     <ProjectReference Include="..\..\Services\P1XCS000086.Services.Interfaces\P1XCS000086.Services.Interfaces.csproj" />
     <ProjectReference Include="..\P1XCS000086.Modules.AutomationView\P1XCS000086.Modules.AutomationView.csproj" />
     <ProjectReference Include="..\P1XCS000086.Modules.CodeManagerView\P1XCS000086.Modules.CodeManagerView.csproj" />
+    <ProjectReference Include="..\P1XCS000086.Modules.DirectoryManager\P1XCS000086.Modules.DirectoryManager.csproj" />
     <ProjectReference Include="..\P1XCS000086.Modules.HouseholdExpenses\P1XCS000086.Modules.HouseholdExpenses.csproj" />
+    <ProjectReference Include="..\P1XCS000086.Modules.MovDirectryManager\P1XCS000086.Modules.MovDirectryManager.csproj" />
   </ItemGroup>
 </Project>

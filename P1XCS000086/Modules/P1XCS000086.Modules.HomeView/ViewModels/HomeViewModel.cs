@@ -2,11 +2,12 @@
 using P1XCS000086.Modules.CodeManagerView.Views;
 using P1XCS000086.Modules.HouseholdExpenses.Views;
 using P1XCS000086.Modules.HomeView.Domains;
+using P1XCS000086.Modules.MovDirectryManager.Views;
 using P1XCS000086.Services.Interfaces.Domains;
 using P1XCS000086.Services.Interfaces.Models;
 using P1XCS000086.Modules.AutomationView.Views;
 
-using Prism.Regions;
+using Prism.Navigation.Regions;
 
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -20,7 +21,7 @@ using P1XCS000086.Core;
 
 namespace P1XCS000086.Modules.HomeView.ViewModels
 {
-	public class HomeViewModel : RegionViewModelBase, INotifyPropertyChanged
+	public class HomeViewModel : RegionViewModelBase
 	{
 		// ****************************************************************************
 		// Fields
@@ -99,6 +100,7 @@ namespace P1XCS000086.Modules.HomeView.ViewModels
 			yield return new TileContainer<TransitionButton>("コード管理", true, GenerateCodeManagerButtons());
 			yield return new TileContainer<TransitionButton>("家計管理", true, GenerateHouseholdExpensesButtons());
 			yield return new TileContainer<TransitionButton>("自動化", true, GenerateAutomationButtons());
+			yield return new TileContainer<TransitionButton>("データ管理", true, GenerateDataManagerButtons());
 		}
 		/// <summary>
 		/// コード管理用の画面遷移用のボタン列挙用
@@ -125,6 +127,14 @@ namespace P1XCS000086.Modules.HomeView.ViewModels
 		private IEnumerable<TransitionButton> GenerateAutomationButtons()
 		{
 			yield return new TransitionButton(nameof(PixivData), "Pixiv作品", "FileImageOutline", OnViewTransiton);
+		}
+		/// <summary>
+		/// データ管理用の画面遷移用のボタン列挙用
+		/// </summary>
+		/// <returns>列挙された遷移用ボタン</returns>
+		private IEnumerable<TransitionButton> GenerateDataManagerButtons()
+		{
+			yield return new TransitionButton(nameof(MovieDirectryManager), "動画ファイル管理", "Movie", OnViewTransiton);
 		}
 	}
 }

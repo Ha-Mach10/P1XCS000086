@@ -1,7 +1,7 @@
 ﻿using P1XCS000086.Modules.AutomationView.Views;
 using Prism.Ioc;
 using Prism.Modularity;
-using Prism.Regions;
+using Prism.Navigation.Regions;
 using P1XCS000086.Modules.AutomationView.Views;
 
 namespace P1XCS000086.Modules.AutomationView

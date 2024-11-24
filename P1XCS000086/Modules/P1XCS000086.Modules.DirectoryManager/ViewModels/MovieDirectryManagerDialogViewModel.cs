@@ -1,8 +1,8 @@
 ﻿using P1XCS000086.Core.Mvvm;
 using Prism.Commands;
-using Prism.Services.Dialogs;
+using Prism.Dialogs;
 using Prism.Mvvm;
-using Prism.Regions;
+using Prism.Navigation.Regions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

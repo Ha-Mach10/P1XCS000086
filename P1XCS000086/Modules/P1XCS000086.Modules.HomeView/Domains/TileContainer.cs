@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using P1XCS000086.Core.Mvvm;
 using P1XCS000086.Services.Interfaces.Domains;
-using Prism.Regions;
+using Prism.Navigation.Regions;
 using Reactive.Bindings;
 
 namespace P1XCS000086.Modules.HomeView.Domains

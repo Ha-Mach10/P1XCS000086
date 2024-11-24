@@ -6,8 +6,8 @@ using P1XCS000086.Modules.CodeManagerView.Views;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using P1XCS000086.Services.Interfaces.Sql;
 
-using Prism.Regions;
-using Prism.Services.Dialogs;
+using Prism.Navigation.Regions;
+using Prism.Dialogs;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Reactive.Bindings.ObjectExtensions;
@@ -30,7 +30,7 @@ using System.Xml.Serialization;
 
 namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 {
-	public class CodeRegisterViewModel : RegionViewModelBase, INotifyPropertyChanged, IRegionMemberLifetime
+	public class CodeRegisterViewModel : RegionViewModelBase
 	{
 		// ---------------------------------------------------------------
 		// Static Fields
@@ -439,7 +439,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 			await Task.Run(() =>
 			{
 				// Visual Sutudioのメインウィンドウハンドルを取得
-				var hWnd = _model.FindProcessMainwindowHandle(2500);
+				var hWnd = _model.FindProcessMainwindowHandle(3000);
 				// AutomationElementを取得
 				AutomationElement mainWindow = AutomationElement.FromHandle(hWnd.Result);
 				// ウィンドウのステータスを変更
@@ -466,7 +466,7 @@ namespace P1XCS000086.Modules.CodeManagerView.ViewModels
 
 
 				// 
-				if (_model.UpdateProjectFileName(developNumber))
+				if (_model.UpdateProjectFileName(SelectedLangType.Value, developNumber))
 				{
 					// 
 					UiAutomationInnerModel.PushButtonById(mainWindow, "button_Next");

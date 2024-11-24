@@ -1,5 +1,5 @@
-﻿using Prism.Regions;
-using Prism.Services.Dialogs;
+﻿using Prism.Navigation.Regions;
+using Prism.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -38,6 +38,8 @@ namespace P1XCS000086.Core.Mvvm
 		// ---------------------------------------------------------------
 
 		public virtual string Title => "defaultDialog";
+
+		DialogCloseListener IDialogAware.RequestClose => DialogAware.RequestClose;
 
 		public event Action<IDialogResult> RequestClose;
 

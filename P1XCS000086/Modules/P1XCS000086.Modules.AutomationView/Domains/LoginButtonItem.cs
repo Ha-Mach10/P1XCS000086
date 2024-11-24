@@ -1,5 +1,5 @@
 ﻿using P1XCS000086.Core.Mvvm;
-using Prism.Regions;
+using Prism.Navigation.Regions;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;

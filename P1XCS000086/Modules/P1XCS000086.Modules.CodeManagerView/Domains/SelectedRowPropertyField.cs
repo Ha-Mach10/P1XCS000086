@@ -1,7 +1,7 @@
 ﻿using P1XCS000086.Core.Mvvm;
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using P1XCS000086.Services.Interfaces.Sql;
-using Prism.Regions;
+using Prism.Navigation.Regions;
 using System;	
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace P1XCS000086.Modules.CodeManagerView.Domains
 {
-	public class SelectedRowPropertyField : RegionViewModelBase, INotifyPropertyChanged, IRegionMemberLifetime
+	public class SelectedRowPropertyField : RegionViewModelBase, IRegionMemberLifetime
 	{
 		public bool KeepAlive { get; } = false;
 

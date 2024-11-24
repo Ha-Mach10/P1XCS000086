@@ -1,5 +1,5 @@
 ﻿using P1XCS000086.Core.Mvvm;
-using Prism.Regions;
+using Prism.Navigation.Regions;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
@@ -12,10 +12,8 @@ using System.Xml.Serialization;
 
 namespace P1XCS000086.Modules.CodeManagerView.Domains
 {
-    public class ContextMenuItem : RegionViewModelBase, INotifyPropertyChanged, IRegionMemberLifetime
+    public class ContextMenuItem : RegionViewModelBase
     {
-        public bool KeepAlive { get; private set; } = false;
-
         public string Header { get; set; }
         public ReactiveCommandSlim ItemCommand { get; }
         public bool IsDefaultItem { get; }
@@ -27,6 +25,8 @@ namespace P1XCS000086.Modules.CodeManagerView.Domains
         public ContextMenuItem(IRegionManager regionManager, string header, Action action, bool isDefaultItem = false)
             : base(regionManager)
         {
+            KeepAlive = false;
+
             Header = header;
 
             ItemCommand = new();

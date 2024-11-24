@@ -2,7 +2,7 @@
 using P1XCS000086.Services.Interfaces.Models.CodeManager;
 using P1XCS000086.Services.Interfaces.Sql;
 
-using Prism.Regions;
+using Prism.Navigation.Regions;
 
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;

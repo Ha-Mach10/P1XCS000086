@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using P1XCS000086.Core.Mvvm;
 using P1XCS000086.Services.Interfaces.Models.Automation;
-using Prism.Regions;
+using Prism.Navigation.Regions;
 using Reactive.Bindings.Disposables;
 using System.ComponentModel;
 using Reactive.Bindings;

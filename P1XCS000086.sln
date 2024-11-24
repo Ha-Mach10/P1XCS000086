@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "P1XCS000086.Modules.Automat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "P1XCS000086.Modules.DirectoryManager", "P1XCS000086\Modules\P1XCS000086.Modules.DirectoryManager\P1XCS000086.Modules.DirectoryManager.csproj", "{6EF540E2-5721-4261-ACD7-23E7A92E0AA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "P1XCS000086.Modules.MovDirectryManager", "P1XCS000086\Modules\P1XCS000086.Modules.MovDirectryManager\P1XCS000086.Modules.MovDirectryManager.csproj", "{48558D20-614C-4E03-A506-8A3B5FCB3CA3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{6EF540E2-5721-4261-ACD7-23E7A92E0AA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EF540E2-5721-4261-ACD7-23E7A92E0AA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EF540E2-5721-4261-ACD7-23E7A92E0AA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48558D20-614C-4E03-A506-8A3B5FCB3CA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48558D20-614C-4E03-A506-8A3B5FCB3CA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48558D20-614C-4E03-A506-8A3B5FCB3CA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48558D20-614C-4E03-A506-8A3B5FCB3CA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,6 +94,7 @@ Global
 		{5D8713DA-590C-40A2-AF10-A90F6EC13F5F} = {8D7CE1E1-2CDC-4B35-A845-D3349860BDCF}
 		{FB1FC9B7-E817-489B-B156-69D88EB61F0B} = {8D7CE1E1-2CDC-4B35-A845-D3349860BDCF}
 		{6EF540E2-5721-4261-ACD7-23E7A92E0AA4} = {8D7CE1E1-2CDC-4B35-A845-D3349860BDCF}
+		{48558D20-614C-4E03-A506-8A3B5FCB3CA3} = {8D7CE1E1-2CDC-4B35-A845-D3349860BDCF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {32623ECF-DB24-4828-A3B4-D638EEEB3D3D}
