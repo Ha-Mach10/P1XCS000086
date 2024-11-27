@@ -3,6 +3,7 @@ using P1XCS000086.Modules.HomeView;
 using P1XCS000086.Modules.HouseholdExpenses;
 using P1XCS000086.Modules.AutomationView;
 using P1XCS000086.Modules.DirectoryManager;
+using P1XCS000086.Modules.MovDirectryManager;
 using P1XCS000086.Modules;
 using P1XCS000086.Services;
 using P1XCS000086.Services.Data;
@@ -16,6 +17,7 @@ using P1XCS000086.Services.Models;
 using P1XCS000086.Services.Models.Automation;
 using P1XCS000086.Services.Models.CodeManager;
 using P1XCS000086.Services.Models.HouseholdExpenses;
+using P1XCS000086.Services.Models.MovDirectryManager;
 using P1XCS000086.Views;
 
 using Prism.DryIoc;
@@ -27,6 +29,8 @@ using P1XCS000086.Modules.CodeManagerView.Views;
 using P1XCS000086.Modules.CodeManagerView.ViewModels;
 using P1XCS000086.Services.Interfaces.Models.DirectoryManager;
 using P1XCS000086.Services.Models.DirectoryManager;
+using P1XCS000086.Modules.MovDirectryManager.Views;
+using P1XCS000086.Services.Interfaces.Models.MovDirectryManager;
 
 namespace P1XCS000086
 {
@@ -66,6 +70,8 @@ namespace P1XCS000086
 			containerRegistry.RegisterSingleton<IPixivDataModel, PixivDataModel>();
 			// # DirectryManager
 			containerRegistry.RegisterSingleton<IMovieDirectryManagerDialogModel, MovieDirectryManagerDialogModel>();
+			// # 
+			containerRegistry.RegisterSingleton<IMovieDirectryManagerModel, MovieDirectryManagerModel>();
 
 
 		}
@@ -82,6 +88,8 @@ namespace P1XCS000086
 			moduleCatalog.AddModule<AutomationViewModule>();
 			// 
 			moduleCatalog.AddModule<DirectoryManagerModule>();
+			// 
+			moduleCatalog.AddModule<MovDirectryManagerModule>();
 		}
 	}
 }

@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Modules\P1XCS000086.Modules.DirectoryManager\P1XCS000086.Modules.DirectoryManager.csproj" />
     <ProjectReference Include="..\Modules\P1XCS000086.Modules.HomeView\P1XCS000086.Modules.HomeView.csproj" />
     <ProjectReference Include="..\Modules\P1XCS000086.Modules.HouseholdExpenses\P1XCS000086.Modules.HouseholdExpenses.csproj" />
+    <ProjectReference Include="..\Modules\P1XCS000086.Modules.MovDirectryManager\P1XCS000086.Modules.MovDirectryManager.csproj" />
     <ProjectReference Include="..\P1XCS000086.Core\P1XCS000086.Core.csproj" />
     <ProjectReference Include="..\Services\P1XCS000086.Services.Interfaces\P1XCS000086.Services.Interfaces.csproj" />
     <ProjectReference Include="..\Services\P1XCS000086.Services\P1XCS000086.Services.csproj" />

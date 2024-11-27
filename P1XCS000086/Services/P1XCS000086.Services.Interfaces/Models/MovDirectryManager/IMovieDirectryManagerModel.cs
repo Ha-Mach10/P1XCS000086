@@ -6,5 +6,18 @@ namespace P1XCS000086.Services.Interfaces.Models.MovDirectryManager
 {
 	public interface IMovieDirectryManagerModel
 	{
+		// ---------------------------------------------------------------
+		// Properties
+		// --------------------------------------------------------------- 
+
+		public List<string> WorkSpaceDirectries { get; }
+
+
+
+		// ---------------------------------------------------------------
+		// Public Methods
+		// --------------------------------------------------------------- 
+
+		public void SetNeedInitializeProperties(string workSpaceDirectry);
 	}
 }

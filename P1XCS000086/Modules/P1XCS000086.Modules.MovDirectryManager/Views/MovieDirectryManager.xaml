@@ -7,6 +7,7 @@
 	xmlns:core="clr-namespace:P1XCS000086.Modules.MovDirectryManager.Views"
 	xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
 	xmlns:mahIcons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+	xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
 	xmlns:material="http://materialdesigninxaml.net/winfx/xaml/themes"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:prism="http://prismlibrary.com/"
@@ -24,7 +25,15 @@
 
 			<Style x:Key="EditableTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource MahApps.Styles.TextBox}">
 				<Style.Setters>
-					<Setter Property="Width" Value="210"/>
+					<Setter Property="Width" Value="300"/>
+				</Style.Setters>
+			</Style>
+			<Style x:Key="MediaButtonStyle" TargetType="Button" BasedOn="{StaticResource MahApps.Styles.Button.VisualStudio}">
+				<Style.Setters>
+					<Setter Property="Height" Value="30"/>
+					<Setter Property="Width" Value="30"/>
+					<Setter Property="Background" Value="Transparent"/>
+					<Setter Property="Foreground" Value="White"/>
 				</Style.Setters>
 			</Style>
 		</ResourceDictionary>
@@ -50,12 +59,12 @@
 					<ColumnDefinition/>
 					<ColumnDefinition Width="40"/>
 				</Grid.ColumnDefinitions>
-				<TextBox Text="{Binding WSDirectryName}" IsReadOnly="{Binding IsReadOnlyWSDirectry}" Style="{StaticResource EditableTextBoxStyle}"/>
+				<TextBox Text="{Binding WSDirectryName.Value}" IsReadOnly="{Binding IsReadOnlyWSDirectry.Value}" Style="{StaticResource EditableTextBoxStyle}"/>
 				<Button Grid.Column="1" Command="{Binding IsReadOnlyWSDirectryChange}" Style="{StaticResource MahApps.Styles.Button.Flat}" Background="Transparent">
 					<mahIcons:Material Kind="Pencil"/>
 				</Button>
 			</Grid>
-			<ListView Grid.Row="1" ItemsSource="{Binding WorkSpaceDirectries}" SelectedItem="{Binding SelectedWSDirectty.Value}">
+			<ListView Grid.Row="1" ItemsSource="{Binding WorkSpaceDirectries}" SelectedItem="{Binding SelectedWSDirectry.Value}">
 				<ListView.ItemContainerStyle>
 					<Style TargetType="ListViewItem">
 						<Style.Triggers>
@@ -65,6 +74,11 @@
 						</Style.Triggers>
 					</Style>
 				</ListView.ItemContainerStyle>
+				<i:Interaction.Triggers>
+					<i:EventTrigger EventName="SelectionChanged">
+						<prism:InvokeCommandAction Command="{Binding DirSelectionChanged}" CommandParameter="{Binding .}"/>
+					</i:EventTrigger>
+				</i:Interaction.Triggers>
 				<ListView.ItemsPanel>
 					<ItemsPanelTemplate>
 						<StackPanel/>
@@ -117,7 +131,59 @@
 					
 				</ListView>
 			</Grid>
-			<GridSplitter Background="Transparent"/>
+			<GridSplitter Grid.Row="1" Background="Transparent"/>
+			<Grid Grid.Row="2">
+				<Grid.RowDefinitions>
+					<RowDefinition/>
+					<RowDefinition Height="Auto"/>
+				</Grid.RowDefinitions>
+
+				<ContentControl x:Name="VlcPlaiyerBase" Content="{Binding VlcControl.Value}"/>
+				<Grid Grid.Row="1">
+					<Grid.RowDefinitions>
+						<RowDefinition/>
+						<RowDefinition/>
+					</Grid.RowDefinitions>
+
+					<Slider Margin="16,4" Value="{Binding MediaSeekValue}" Grid.Column="1" Style="{StaticResource MahApps.Styles.Slider.Flat}"/>
+					<Grid Grid.Row="1" Margin="8,4">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto"/>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="300"/>
+						</Grid.ColumnDefinitions>
+						<StackPanel Orientation="Horizontal">
+							<Button Content="{mahIcons:Material Kind=Play}" Command="{Binding MoviePlay}" Style="{StaticResource MediaButtonStyle}" Margin="0,0,16,0"/>
+							<Button Content="{mahIcons:Material Kind=Stop}" Command="{Binding MovieStop}" Style="{StaticResource MediaButtonStyle}"/>
+						</StackPanel>
+						<mahIcons:PackIconMaterial Grid.Column="1" Kind="VolumeHigh" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" Margin="32,0,12,0"/>
+						<Expander Grid.Column="2" ExpandDirection="Right" IsExpanded="True">
+							<Expander.Template>
+								<ControlTemplate>
+									<Grid VerticalAlignment="Center">
+										<mahIcons:PackIconMaterial Kind="VolumeHigh"/>
+									</Grid>
+								</ControlTemplate>
+							</Expander.Template>
+							<Expander.HeaderTemplate>
+								<DataTemplate>
+									<mahIcons:PackIconMaterial Kind="VolumeHigh"/>
+								</DataTemplate>
+							</Expander.HeaderTemplate>
+							<Expander.ContentTemplate>
+								<DataTemplate>
+									<Grid>
+										<Slider Grid.Column="2" Value="{Binding MediaVolume.Value}"/>
+										<ContentPresenter/>
+									</Grid>
+								</DataTemplate>
+							</Expander.ContentTemplate>
+
+
+						</Expander>
+					</Grid>
+				</Grid>
+			</Grid>
 		</Grid>
 		<GridSplitter Grid.Column="3" Background="Transparent"/>
 		<Grid Grid.Column="4">
