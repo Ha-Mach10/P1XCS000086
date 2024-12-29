@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace P1XCS000086.Services.Models.MovDirectryManager
@@ -12,14 +14,14 @@ namespace P1XCS000086.Services.Models.MovDirectryManager
 		// Fields
 		// --------------------------------------------------------------- 
 
-		
+
 
 
 		// ---------------------------------------------------------------
 		// Properties
 		// --------------------------------------------------------------- 
 
-		public List<string> WorkSpaceDirectries { get; private set; }
+		public List<string> WorkSpaceDirectries { get; private set; } = new();
 
 
 
@@ -38,9 +40,14 @@ namespace P1XCS000086.Services.Models.MovDirectryManager
 		// Public Methods
 		// --------------------------------------------------------------- 
 
-		public void SetNeedInitializeProperties(string workSpaceDirectry)
+		public void SetNeedInitializeProperties(string workSpaceDirectory)
 		{
-			SetWorkSpaceDirectries(workSpaceDirectry);
+			SetWorkSpaceDirectries(workSpaceDirectory);
+		}
+		public IEnumerable<string> GetMovieDirectoryFiles(string movieFileDirectory)
+		{
+			// var a = Directory.GetFiles(movieFileDirectory).Select(x => Path.GetFileName(x)).ToList();
+			return Directory.GetFiles(movieFileDirectory).Select(x => Path.GetFileName(x));
 		}
 
 
@@ -49,13 +56,15 @@ namespace P1XCS000086.Services.Models.MovDirectryManager
 		// Private Methods
 		// --------------------------------------------------------------- 
 
-		private void SetWorkSpaceDirectries(string workSpaceDirectry)
+		private void SetWorkSpaceDirectries(string workSpaceDirectory)
 		{
 			// 存在していない場合は処理を抜ける
-			if (Directory.Exists(workSpaceDirectry) is false) return;
+			if (Directory.Exists(workSpaceDirectory) is false) return;
+			// 
+			if (WorkSpaceDirectries is null && WorkSpaceDirectries.Count == 0) return;
 
 			// プロパティへ列挙されたディレクトリを格納
-			WorkSpaceDirectries.AddRange(Directory.GetDirectories(workSpaceDirectry));
+			WorkSpaceDirectries.AddRange(Directory.GetDirectories(workSpaceDirectory).Select(x => Path.GetFileName(x)));
 		}
 	}
 }

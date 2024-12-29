@@ -18,6 +18,7 @@ namespace P1XCS000086.Services.Interfaces.Models.MovDirectryManager
 		// Public Methods
 		// --------------------------------------------------------------- 
 
-		public void SetNeedInitializeProperties(string workSpaceDirectry);
+		public void SetNeedInitializeProperties(string workSpaceDirectory);
+		public IEnumerable<string> GetMovieDirectoryFiles(string movieFileDirectory);
 	}
 }

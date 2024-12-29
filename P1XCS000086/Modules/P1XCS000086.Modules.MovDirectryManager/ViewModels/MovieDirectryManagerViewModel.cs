@@ -51,6 +51,7 @@ namespace P1XCS000086.Modules.MovDirectryManager.ViewModels
 		public ReactivePropertySlim<string> SelectedWSDirectry { get; }
 
 		public ReactiveCollection<string> SourceMovieFiles { get; }
+		public ReactivePropertySlim<string> SelectedSourceMovieFile { get; }
 
 		// Vlc Media
 		public ReactivePropertySlim<VideoView> VlcControl { get; }
@@ -69,7 +70,6 @@ namespace P1XCS000086.Modules.MovDirectryManager.ViewModels
 			// Keep Alive
 			KeepAlive = false;
 
-
 			// Properties Initialize
 			WSDirectryName = new ReactivePropertySlim<string>(string.Empty);
 			IsReadOnlyWSDirectry = new ReactivePropertySlim<bool>(false);
@@ -78,11 +78,14 @@ namespace P1XCS000086.Modules.MovDirectryManager.ViewModels
 			SelectedWSDirectry = new ReactivePropertySlim<string>(string.Empty);
 
 			SourceMovieFiles = new ReactiveCollection<string>().AddTo(_disposables);
+			SelectedSourceMovieFile = new ReactivePropertySlim<string>().AddTo(_disposables);
 
+			/*
 			// VlcMediaPlayer Setting
 			LibVLCSharp.Shared.Core.Initialize();
-			VlcControl = new ReactivePropertySlim<VideoView>();
-			VlcControl.Value.MediaPlayer = new MediaPlayer(new LibVLC()).AddTo(_disposables);
+			VlcControl = new ReactivePropertySlim<VideoView>().AddTo(_disposables);
+			VlcControl.Value.MediaPlayer = new MediaPlayer(new LibVLC());
+			*/
 
 
 			// Properties Setting
@@ -98,6 +101,8 @@ namespace P1XCS000086.Modules.MovDirectryManager.ViewModels
 
 			// Awake Collection Initialize Method
 			CollectionsInitialize();
+
+			// WorkSpaceDirectries.AddRangeOnScheduler(_model.WorkSpaceDirectries);
 		}
 
 
@@ -115,6 +120,13 @@ namespace P1XCS000086.Modules.MovDirectryManager.ViewModels
 		private void OnDirSelectionChanged(string param)
 		{
 			_mediaPlaingFilePath = param;
+
+			SourceMovieFiles.AddRangeOnScheduler(_model.GetMovieDirectoryFiles(@$"{s_wsDirName}\{SelectedWSDirectry.Value}"));
+		}
+		public ReactiveCommandSlim<string> MovieDirectryChanged { get; }
+		private void OnMovieDirectryChanged(string param)
+		{
+
 		}
 
 
@@ -136,9 +148,6 @@ namespace P1XCS000086.Modules.MovDirectryManager.ViewModels
 
 		private void CollectionsInitialize()
 		{
-			// モデルがnullの場合、処理を抜ける
-			if (_model is null) return;
-
 			// モデルのプロパティ初期値設定を行う
 			_model.SetNeedInitializeProperties(s_wsDirName);
 
