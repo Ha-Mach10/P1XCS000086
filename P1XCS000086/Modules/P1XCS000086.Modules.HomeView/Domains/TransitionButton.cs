@@ -23,6 +23,7 @@ namespace P1XCS000086.Modules.HomeView.Domains
 		public string Name { get; }
 		public string Content { get; }
 		public string IconKind { get; }
+		public dynamic Icon { get; }
 
 
 
